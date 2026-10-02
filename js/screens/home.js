@@ -33,7 +33,7 @@
     const tiles = D.tiles.map((t, i) => i === 0 ? { ...t, num: DS.callsDone() + ' / 40', vals: t.vals.map((v, j) => j === t.vals.length - 1 ? DS.callsDone() : v) } : t);
     const d = tiles[st.tile];
     return `<section class="ds-metrics" aria-label="Metrics">
-      <div class="ds-metrics__strip"><div class="ds-metrics__tabs" role="tablist" aria-label="Areas" id="metric-tabs" data-keep-scroll="metric-tabs">${tiles.map((t, i) => `<button type="button" class="ds-mtab" role="tab" aria-selected="${i === st.tile}" tabindex="${i === st.tile ? 0 : -1}" data-act="tile" data-arg="${i}"><span class="ds-mtab__name">${icon(t.icon)}${esc(t.name)}</span><span class="ds-meta">${esc(t.label)}</span><span class="ds-mtab__num"${i === 0 ? ' data-count="calls"' : ''}>${esc(t.num)}</span></button>`).join('')}</div>
+      <div class="ds-metrics__strip" data-overflow-host><div class="ds-metrics__tabs" role="tablist" aria-label="Areas" id="metric-tabs" data-keep-scroll="metric-tabs" data-overflow-x>${tiles.map((t, i) => `<button type="button" class="ds-mtab" role="tab" aria-selected="${i === st.tile}" tabindex="${i === st.tile ? 0 : -1}" data-act="tile" data-arg="${i}"><span class="ds-mtab__name">${icon(t.icon)}${esc(t.name)}</span><span class="ds-meta">${esc(t.label)}</span><span class="ds-mtab__num"${i === 0 ? ' data-count="calls"' : ''}>${esc(t.num)}</span></button>`).join('')}</div>
         <div class="ds-metrics__fade"><button type="button" aria-label="Scroll metrics" data-act="scroll-tiles">${icon('caret-right')}</button></div></div>
       <div class="ds-metrics__panel" role="tabpanel" aria-label="${esc(d.name)}">
         <div class="ds-metrics__head"><div class="ds-card__title"><h2>${esc(d.title)}</h2><span class="ds-meta">${esc(d.sub)}</span></div>

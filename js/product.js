@@ -507,9 +507,9 @@
       else if (a.dataset.palIndex) key = `[data-pal-index="${a.dataset.palIndex}"]`;
       if ('selectionStart' in a) try { sel = [a.selectionStart, a.selectionEnd]; } catch (_) {}
     }
-    const scrolls = {}; document.querySelectorAll('[data-keep-scroll]').forEach(el => { scrolls[el.dataset.keepScroll] = el.scrollTop; });
+    const scrolls = {}; document.querySelectorAll('[data-keep-scroll]').forEach(el => { scrolls[el.dataset.keepScroll] = [el.scrollTop, el.scrollLeft]; });
     fn();
-    document.querySelectorAll('[data-keep-scroll]').forEach(el => { if (el.dataset.keepScroll in scrolls) el.scrollTop = scrolls[el.dataset.keepScroll]; });
+    document.querySelectorAll('[data-keep-scroll]').forEach(el => { const k = scrolls[el.dataset.keepScroll]; if (k) { el.style.scrollBehavior = 'auto'; [el.scrollTop, el.scrollLeft] = k; el.style.scrollBehavior = ''; } });
     if (V.scrollChat) { document.querySelectorAll('#brain-chat,#page-chat').forEach(el => { el.scrollTop = el.scrollHeight; }); V.scrollChat = false; }
     if (key) { const el = document.querySelector(key); if (el && el !== document.activeElement) { el.focus({ preventScroll: true }); if (sel && 'setSelectionRange' in el) try { el.setSelectionRange(sel[0], sel[1]); } catch (_) {} } }
   }
@@ -533,7 +533,12 @@
     settleAnims();
     runExits(snap.exits); runFlips(snap.flips); runTicks(snap.ticks); runGrows(); runCounts();
     firstPaint = false;
+    markOverflow();
     if (sc.after) sc.after();
+  }
+  /* Scroll strips show their scroll affordance only when the content is wider than the strip. */
+  function markOverflow() {
+    document.querySelectorAll('[data-overflow-x]').forEach(el => { const box = el.closest('[data-overflow-host]') || el; box.toggleAttribute('data-overflowing', el.scrollWidth > el.clientWidth + 1); });
   }
   function renderBrainOnly() {
     const snap = snapMotion();
@@ -631,7 +636,7 @@
     }
   });
   let railWas = null;
-  addEventListener('resize', () => { const r = layoutKey(); if (railWas !== null && r !== railWas) { if (!isPhone()) V.drawer = false; render(); } railWas = r; });
+  addEventListener('resize', () => { markOverflow(); const r = layoutKey(); if (railWas !== null && r !== railWas) { if (!isPhone()) V.drawer = false; render(); } railWas = r; });
 
   /* ───────── Boot ───────── */
   const startScreen = () => {

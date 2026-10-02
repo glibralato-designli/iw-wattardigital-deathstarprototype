@@ -28,7 +28,7 @@ This document is the source of truth for the Death Star design system. CSS imple
 **Deviations from the concept**
 - `--fg-subtle` is `#5b6b82` instead of slate-500 (`#64748b`): slate-500 is 4.34:1 on the slate-100 surface, below AA. The difference is barely visible.
 - Icons are Phosphor regular instead of Hugeicons stroke (the template's icon library). Each concept icon maps to its closest Phosphor equivalent.
-- Form text is 13px (the concept) instead of the template's 16px on desktop and tablet; on phones (under 768) fields switch to 16px so iOS never zooms on focus.
+- Form text is 14px (raised from the concept's 13px for readability) instead of the template's 16px on desktop and tablet; on phones (under 768) fields switch to 16px so iOS never zooms on focus.
 - The prototype guide's "Check the why now" flow is a state set of the case file on the portal (a portal flow needs its own screen).
 - The case file's Home step reads "Call Ruth Adler back" (the concept said "Samuel Adler"; the contact is Ruth Adler).
 - Every Dashboard tab carries one Brain nudge line under the tabs (IA §4.2); the concept had none drawn.
@@ -143,14 +143,14 @@ Primitive palette values feed semantic roles. Components use semantic colours. S
   --cal-tour:var(--status-success-light); --cal-tour-bg:var(--status-success-light-bg);
   --cal-marketing:var(--status-warning-light); --cal-marketing-bg:var(--status-warning-light-bg);
   --cal-now:#dc2626;
-  /* Type: Inter, one family. 13px is the default UI size. */
+  /* Type: Inter, one family. 14px is the default UI size. */
   --font-body:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif; --font-display:var(--font-body); --font-mono:ui-monospace,monospace;
-  --text-2xs:.625rem; --text-xs:.75rem; --text-sm:.8125rem; --text-md:.875rem;
-  --text-body-lg:1rem; --text-lg:1.125rem; --text-xl:1.25rem;
-  --text-2xl:1.5rem; --text-3xl:1.75rem; --text-4xl:2rem;
+  --text-2xs:.6875rem; --text-xs:.8125rem; --text-sm:.875rem; --text-md:.9375rem;
+  --text-body-lg:1.0625rem; --text-lg:1.25rem; --text-xl:1.375rem;
+  --text-2xl:1.625rem; --text-3xl:1.875rem; --text-4xl:2.125rem;
   --text-5xl:3rem; --text-6xl:3.75rem; --text-7xl:4.5rem; --text-8xl:6rem;
-  --line-height-2xs:.875rem; --line-height-xs:1rem; --line-height-sm:1.25rem; --line-height-md:1.375rem;
-  --line-height-body-lg:1.5rem; --line-height-lg:1.625rem; --line-height-xl:1.75rem; --line-height-2xl:2rem; --line-height-4xl:2.5rem;
+  --line-height-2xs:1rem; --line-height-xs:1.125rem; --line-height-sm:1.375rem; --line-height-md:1.5rem;
+  --line-height-body-lg:1.625rem; --line-height-lg:1.75rem; --line-height-xl:1.875rem; --line-height-2xl:2.125rem; --line-height-4xl:2.625rem;
   --line-height-tight:1.1; --line-height-snug:1.25;
   --line-height-normal:1.5; --line-height-relaxed:1.75;
   --line-height:var(--line-height-sm); --letter-spacing:0; --letter-spacing-tight:-.01em; --letter-spacing-tighter:-.02em;
@@ -262,23 +262,23 @@ Primitive palette values feed semantic roles. Components use semantic colours. S
 - Checked pairs (`tools/check_colors.py`): all text roles on all surfaces, brand text on tints, on-colours on fills, status on status backgrounds, link and focus on surfaces, and the shell pairs (labels, muted, disabled and Ask Brain on navy), in light and dark.
 
 ## Typography and layout
-Inter is the only family (Google Fonts, system fallback), with `cv11` and `ss01` on. The scale is compact and fixed (no fluid type):
+Inter is the only family (Google Fonts, system fallback), with `cv11` and `ss01` on. The scale is compact and fixed (no fluid type). It was raised one step on 2026-10-02 (default UI 13 → 14px) for readability; every role kept its token:
 
 | Token | Size / line | Use |
 |---|---|---|
-| `--text-2xs` | 10 / 14 | Notification count, calendar hours |
-| `--text-xs` | 12 / 16 | Metadata, captions, chart labels, kbd, section labels |
-| `--text-sm` | 13 / 20 | **Default UI**: nav, buttons, rows, links, body |
-| `--text-md` | 14 / 22 | Card titles (600), Brain messages |
-| `--text-body-lg` | 16 / 24 | The why-now sentence |
-| `--text-lg` | 18 / 26 | Stat and tile numbers (600) |
-| `--text-xl` | 20 / 28 | Page title, greeting, record name (600, −0.01em) |
-| `--text-2xl` | 24 / 32 | Dialog title input, emphasised stat |
-| `--text-3xl` | 28 / 32 | Pulse numbers |
-| `--text-4xl` | 32 / 40 | Predictive score (700) |
+| `--text-2xs` | 11 / 16 | Notification count, calendar hours |
+| `--text-xs` | 13 / 18 | Metadata, captions, chart labels, kbd, section labels |
+| `--text-sm` | 14 / 22 | **Default UI**: nav, buttons, rows, links, body |
+| `--text-md` | 15 / 24 | Card titles (600), Brain messages |
+| `--text-body-lg` | 17 / 26 | The why-now sentence |
+| `--text-lg` | 20 / 28 | Stat and tile numbers (600) |
+| `--text-xl` | 22 / 30 | Page title, greeting, record name (600, −0.01em) |
+| `--text-2xl` | 26 / 34 | Dialog title input, emphasised stat |
+| `--text-3xl` | 30 / 34 | Pulse numbers |
+| `--text-4xl` | 34 / 42 | Predictive score (700) |
 | `--text-5xl`–`--text-8xl` | 48–96 | Review hub display only |
 
-Weights: 400 regular, 500 medium (labels, controls, row titles), 600 semibold (headings, numbers), 700 only for the predictive score and confidence percentages. Line heights are paired tokens (`--line-height-xs` … `--line-height-4xl`) plus the unitless tight/snug/normal/relaxed options. Letter spacing: 0, `--letter-spacing-tight` (−0.01em, titles and stats), `--letter-spacing-tighter` (−0.02em, large numbers). Semantic defaults: `h1` 20/28 semibold; `h2` 14/20 semibold; `h3` 12/16 medium muted (section labels in sentence case).
+Weights: 400 regular, 500 medium (labels, controls, row titles), 600 semibold (headings, numbers), 700 only for the predictive score and confidence percentages. Line heights are paired tokens (`--line-height-xs` … `--line-height-4xl`) plus the unitless tight/snug/normal/relaxed options. Letter spacing: 0, `--letter-spacing-tight` (−0.01em, titles and stats), `--letter-spacing-tighter` (−0.02em, large numbers). Semantic defaults: `h1` 22/30 semibold; `h2` 15/22 semibold; `h3` 13/18 medium muted (section labels in sentence case).
 
 Layout: the main panel pads 28 top / 32 sides / 32 bottom; sections are 24 apart; cards 16 apart. Records use a main column plus a 300 rail; Dashboard tabs use main + a 300 right column. Breakpoints: 1360 (Brain overlays), 1180 (sidebar rail default), 1024 (tablet: stack rails and right columns, icon-only search and Links), 768 (phone: drawer, full-screen Brain, peek and dialogs, one column, 16px fields). See the responsive block at the end of `css/product.css`.
 
@@ -287,7 +287,7 @@ Layout: the main panel pads 28 top / 32 sides / 32 bottom; sections are 24 apart
 | Family | API and defaults | This direction |
 |---|---|---|
 | Button | `.button`, `data-size="xs|sm|md|lg"` (24/28/32/36), `data-variant="solid|outline|subtle|ghost|danger"`, `data-shape="pill"`, `.button--icon` | Navy solid; outline is white with a slate-200 border; subtle is the pale-blue pill; 8px radius; press scales to 0.98; disabled is colour only |
-| Field | `.field`, `__label`, `__control`, `__help`, `__error` | 32px, 13px, slate-200 border, navy focus with a pale halo; labels 12px medium muted |
+| Field | `.field`, `__label`, `__control`, `__help`, `__error` | 32px, 14px, slate-200 border, navy focus with a pale halo; labels 13px medium muted |
 | Checkbox | Native in `.choice` | Navy accent; product rows use `.ds-box` / `.ds-check` |
 | Radio group | Native in a fieldset | Outcome choices use `.ds-opt` (role radio) |
 | Switch | `.switch` | 32 × 18 navy track; product toggles use `.ds-tog` |

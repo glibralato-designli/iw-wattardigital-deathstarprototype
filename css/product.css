@@ -249,15 +249,18 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-metrics{border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;flex:none}
 .ds-metrics__strip{position:relative;background:var(--bg-subtle)}
 .ds-metrics__tabs{display:flex;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth}
-.ds-metrics__tabs::after{content:'';min-width:4rem;flex:none}
-.ds-mtab{min-width:8rem;flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-0-5);padding:var(--space-3-5) var(--space-4);border:0;background:var(--bg-subtle);text-align:left;color:var(--fg-muted)}
+.ds-metrics__strip[data-overflowing] .ds-metrics__tabs::after{content:'';min-width:3.5rem;flex:none}
+.ds-mtab{flex:1 0 auto;min-width:8rem;display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-0-5);padding:var(--space-3-5) var(--space-4);border:0;box-shadow:inset -1px 0 0 var(--border-subtle);background:var(--bg-subtle);text-align:left;color:var(--fg-muted)}
+.ds-mtab:last-child{box-shadow:none}
+.ds-mtab .ds-meta{white-space:nowrap}
 .ds-mtab:hover{background:var(--bg-muted)}
 .ds-mtab[aria-selected="true"]{background:var(--bg);color:var(--fg)}
 .ds-mtab__name{display:flex;align-items:center;gap:var(--space-1-5);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);white-space:nowrap}
 .ds-mtab__name svg{width:.875rem;height:.875rem}
 .ds-mtab__num{font-size:var(--text-lg);line-height:var(--line-height-lg);letter-spacing:var(--letter-spacing-tight);font-variant-numeric:tabular-nums;font-weight:var(--weight-medium);color:var(--fg-secondary)}
 .ds-mtab[aria-selected="true"] .ds-mtab__num{font-weight:var(--weight-semibold);color:var(--brand-primary-text)}
-.ds-metrics__fade{position:absolute;right:0;top:0;bottom:0;width:4.5rem;display:flex;align-items:center;justify-content:flex-end;padding-right:var(--space-2-5);pointer-events:none;background:linear-gradient(90deg,transparent,var(--bg-subtle) 70%)}
+.ds-metrics__fade{display:none;position:absolute;right:0;top:0;bottom:0;width:4.5rem;align-items:center;justify-content:flex-end;padding-right:var(--space-2-5);pointer-events:none;background:linear-gradient(90deg,transparent,var(--bg-subtle) 70%)}
+.ds-metrics__strip[data-overflowing] .ds-metrics__fade{display:flex}
 .ds-metrics__fade button{pointer-events:auto;width:var(--control-sm);height:var(--control-sm);display:grid;place-items:center;padding:0;border:var(--border-width) solid var(--border);border-radius:var(--radius-full);background:var(--bg);color:var(--fg-secondary)}
 .ds-metrics__fade button:hover{background:var(--bg-muted)}
 .ds-metrics__fade svg{width:1rem;height:1rem}

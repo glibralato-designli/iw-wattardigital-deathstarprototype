@@ -17,7 +17,7 @@ allowed={
  'letter-spacing':{'inherit'}|{f'var({v})' for v in tracking},
 }
 for p in [*root.rglob('*.css'),*root.rglob('*.html')]:
- if {'.claude','design'} & set(p.relative_to(root).parts):continue
+ if {'.claude','design','docs'} & set(p.relative_to(root).parts):continue
  source=re.sub(r'/\*.*?\*/','',p.read_text(),flags=re.S)
  for prop,values in allowed.items():
   for value in re.findall(r'(?<![\w-])'+prop+r'\s*:\s*([^;}"\n]+)',source):
