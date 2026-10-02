@@ -156,32 +156,73 @@
   const hoods = [['Lower East Side', 184], ['East Village', 136]];
   const customLists = ['Class A sellers', 'LES debt 2026', 'Estate watch', 'Q4 mail merge', 'Air rights', 'Callbacks this week'];
 
-  /* Display-only Dashboard tabs. */
+  /* Display-only Dashboard tabs. Content mirrors the client's portal tabs; drill-downs and logging are drawn but off. */
   const outreachPerf = {
-    outreach: [['Calls', '6', 'Previous day 33 · Week 112', 'phone'], ['Emails', '38', 'Previous day 41 · Week 186', 'envelope-simple'], ['Texts', '5', 'Previous day 22 · Week 64', 'chat-text'], ['Conversations', '2', 'Previous day 1 · Week 9', 'chat-text', true], ['LinkedIn connections', '412', '14% of the database', 'linkedin-logo'], ['Weekly marketing blasts', '2', 'Q3 market report, LES digest', 'megaphone']],
-    efficiency: [['Hit rate', 38, 'Right number reached'], ['Call efficacy', 12, 'Produced a conversation']],
-    business: [['First meetings', '4', '30 days · +33%', 'prev period 3'], ['Proposals delivered', '2', '45 days · 0%', 'prev period 2'], ['Listings', '1', '90 days · −50%', 'prev period 2'], ['Deals in contract', '0', '90 days', 'prev period 1'], ['Deals closed', '1', '90 days · 0%', 'prev period 1']],
-    efficacy: [['Communication efficacy', '24%', '30 days · replies or conversations per touch'], ['Prediction model accuracy', '7 of 9', 'trades were flagged in advance · 180 days']],
+    // [label, icon, today, previous day, this week]; counted automatically.
+    activity: [['Calls', 'phone', 6, 33, 112], ['Emails', 'envelope-simple', 38, 41, 186], ['Texts', 'chat-text', 5, 22, 64], ['Conversations', 'phone-call', 2, 1, 9]],
+    efficiency: { hit: 38, efficacy: 12, conversations: 9, confirmed: 42, calls: 112 },
+    linkedin: { pct: 14, connected: 412, total: 2940 },
+    blasts: { n: 2, sub: 'Q3 market report, LES digest' },
+    // [label, current, change %, window, previous]; logged by hand. Pipeline order.
+    business: [['First meetings', 4, 33, '30 days', 3], ['Proposals delivered', 2, 0, '45 days', 2], ['Listings', 1, -50, '90 days', 2], ['Deals in contract', 0, -100, '90 days', 1], ['Deals closed', 1, 0, '90 days', 1]],
+    communication: { cur: '24%', change: 6, window: '30 days', sub: 'replies or conversations per touch' },
+    prediction: { pct: 78, flagged: 7, total: 9, window: '180 days' },
     trades: [['Class A', 4], ['Class B', 2], ['Class C', 1], ['Class D', 0], ['Likely holder', 0], ['Unclassified', 2]],
   };
   const reporting = {
-    zips: [['10002', 14, 184], ['10003', 9, 96], ['10009', 6, 136], ['10012', 11, 74], ['10013', 4, 58], ['10014', 7, 82], ['10038', 3, 41], ['10016', 5, 63], ['10011', 8, 77], ['10010', 2, 39]],
-    clicked: [['41 Ludlow St OM', 61], ['Q3 report PDF', 44], ['Book a call', 23], ['Listings page', 15]],
-    outreach: [['Sent', '2,400'], ['Delivered', '2,316'], ['Open rate', '44%'], ['Click rate', '6%'], ['Bounced', '84'], ['Unsubscribed', '0']],
-    funnel: [['Sent', 2400], ['Delivered', 2316], ['Opened', 1019], ['Clicked', 143]],
-    engagement: [['Cold email', 'Smartlead', '17 replies', '1,240 sent · 1.4% reply rate'], ['Digest', 'Constant Contact', '36% open rate', '1,180 subscribers · 3 unsubscribes'], ['Inbox', 'Replies and direct mail', '9 to answer', '5 email replies · 4 mail responses']],
+    // [zip, owners touched, reachable owners, warm]
+    zips: [['10002', 26, 184, 4], ['10003', 9, 96, 2], ['10009', 8, 136, 1], ['10012', 8, 74, 2], ['10013', 2, 58, 0], ['10014', 6, 82, 1], ['10038', 1, 41, 0], ['10016', 3, 63, 0], ['10011', 6, 77, 1], ['10010', 2, 39, 0]],
+    engaged: 6,
+    channels: ['All outreach', 'Calls', 'Mail merge', 'Constant Contact', 'Texts'],
+    emailChannels: ['All email', 'Constant Contact', 'Mail merge', 'Calling', 'Texts'],
+    funnel: { sent: 2400, delivered: 2316, opened: 1056, clicked: 144, bounced: 84, unsub: 3 },
+    clicked: [['41 Ludlow St OM', 61], ['Q3 report PDF', 44], ['Book a call', 23], ['Listings page', 15], ['88 Orchard St OM', 9]],
+    engagement: [
+      { t: 'Cold email', v: 'Smartlead', head: '312 opens', rows: [['Sent', '1,240'], ['Clicked', '38'], ['Replies', '17'], ['Bounced', '22']], foot: 'Last 7 days: 64 opens · 5 replies' },
+      { t: 'Digest', v: 'Constant Contact', head: '425 opened', rows: [['Recipients', '1,180'], ['Delivered', '1,164'], ['Bounced', '16'], ['Unsubscribed', '3']], foot: '36% of delivered opened' },
+      { t: 'Inbox', v: 'Replies and direct mail', head: '41 captured', rows: [['Email replies', '29'], ['Mail responses', '12'], ['Unread', '9']], foot: 'In the Death Star inbox' },
+    ],
   };
   const listings = [
-    { addr: '41 Ludlow St', sub: 'Lower East Side · 24 units · $14.5M', status: 'Active', counts: [['Website views', '612'], ['Blast views', '1,019'], ['LinkedIn post views', '1,420'], ['Tours', '6'], ['Written offers', '1']] },
-    { addr: '88 Orchard St', sub: 'Lower East Side · 12 units · $6.9M', status: 'In contract', counts: [['Website views', '205'], ['Blast views', '488'], ['LinkedIn post views', '310'], ['Tours', '4'], ['Written offers', '2']] },
+    { addr: '41 Ludlow St', sub: 'Lower East Side · 24 units · 18,600 SF · $14.5M', status: 'Active',
+      counts: [['Website views', 612, true], ['Blast views', 1019, true], ['LinkedIn post views', 1420, false], ['Tours', 6, false], ['Written offers', 1, false]],
+      viewers: [['adler', 4, 'Sep 29'], ['okafor', 3, 'Sep 28'], ['greene', 2, 'Sep 27'], ['shah', 1, 'Sep 25'], ['chen', 1, 'Sep 22'], ['feld', 1, 'Sep 21'], ['morales', 1, 'Sep 19'], ['baum', 1, 'Sep 12']] },
+    { addr: '88 Orchard St', sub: 'Lower East Side · 12 units · 9,200 SF · $6.9M', status: 'In contract',
+      counts: [['Website views', 205, true], ['Blast views', 488, true], ['LinkedIn post views', 310, false], ['Tours', 4, false], ['Written offers', 2, false]],
+      viewers: [['rivera', 2, 'Sep 26'], ['kowalski', 1, 'Sep 24']] },
   ];
-  const viewers = [['adler', '41 Ludlow St · 4 views'], ['okafor', '41 Ludlow St · 3 views'], ['rivera', '88 Orchard St · 2 views'], ['greene', '41 Ludlow St · 2 views'], ['shah', '41 Ludlow St · 1 view'], ['kowalski', '88 Orchard St · 1 view']];
-  const inquiries = [['Priya Venkataraman', '41 Ludlow St · asked for the rent roll', 'Sep 29', true], ['Jonah Weiss', '41 Ludlow St · tour request', 'Sep 28', false], ['Leah Kim', '88 Orchard St · offer deadline', 'Sep 26', false]];
-  const inbound = { buyers: [['Tomas Ruiz', 'Multifamily, LES, up to $12M', 'Sep 28'], ['Halcyon Capital', '1031 buyer, walk-ups', 'Sep 24']], bov: [['Grace Okafor', '90 Clinton St', 'Sent Sep 30'], ['Ruth Adler', '64 Essex St', 'Draft · due Fri']], bookings: [['Jonah Weiss', 'Tour · 41 Ludlow St', 'Oct 2, 11:00 AM'], ['Priya Venkataraman', 'Call · 30 min', 'Oct 1, 4:00 PM'], ['Leah Kim', 'Tour · 88 Orchard St', 'Oct 3, 10:00 AM']] };
+  // [name, form, email or phone, about, message, date, in database, new]
+  const inquiries = [
+    ['Priya Venkataraman', 'Contact form', 'priya.v@example.com', '41 Ludlow St', 'Could you send the rent roll and the last two years of expenses?', 'Sep 29, 4:12 PM', true, true],
+    ['Jonah Weiss', 'Buyer registration', '(212) 555-0188', '41 Ludlow St', 'Would like to tour this week, any morning works.', 'Sep 28, 9:40 AM', false, true],
+    ['Leah Kim', 'Contact form', 'leah.kim@example.com', '88 Orchard St', 'When is the offer deadline?', 'Sep 26, 2:05 PM', false, false],
+  ];
+  const inbound = {
+    buyers: [['Tomas Ruiz', 'Multifamily, LES, up to $12M', 'Sep 28'], ['Halcyon Capital', '1031 buyer, walk-ups', 'Sep 24']],
+    bov: [['90 Clinton St', 'Grace Okafor · Sent', 'Sep 30'], ['64 Essex St', 'Ruth Adler · Draft, due Fri', 'Sep 27']],
+    bookings: [['Tour · 41 Ludlow St', 'Jonah Weiss', 'Oct 2, 11:00 AM'], ['Call · 30 min', 'Priya Venkataraman', 'Oct 1, 4:00 PM'], ['Tour · 88 Orchard St', 'Leah Kim', 'Oct 3, 10:00 AM']],
+    events: { name: 'Q3 luncheon promo', v7: 84, v30: 312, rsvps: 18, rsvps7: 5, refs: [['Constant Contact', 141], ['Direct', 96], ['LinkedIn', 52]] },
+  };
   const web = {
-    stats: [['Visitors', '4,912', '30 days · +18%'], ['Page views', '11,380', '30 days · +12%'], ['Inquiries', '15', '30 days · +4'], ['Average time', '1m 52s', '30 days · +9s']],
+    site: 'stewartgroup.example', now: 3,
+    audience: [['Visitors', '4,912', '+18% on last month'], ['Sessions', '6,580', '1.3 per visitor'], ['Page views', '11,380', '+12% on last month'], ['Engaged time', '1m 52s', 'per session, tab in view'], ['Bounce rate', '41%', 'one page, under 10s']],
+    outcomes: [['Inquiries', '15', 'website forms'], ['Downloads', '64', 'OMs and documents'], ['Known contacts', '9', 'from tracked email links']],
     weeks: [['Aug 18', 880], ['Aug 25', 940], ['Sep 1', 1020], ['Sep 8', 990], ['Sep 15', 1110], ['Sep 22', 1190], ['This wk', 1284]],
-    insights: ['Visitors are up 18% on last month, led by the 41 Ludlow St listing page (612 views).', 'Inquiries rose by 4. Most came from the listing page, not the home page.', 'People stay about two minutes. The rent roll download is the most clicked link.'],
+    insights: ['Email is carrying the site. Constant Contact and Smartlead visitors convert at about three times the rate of search.', 'The OM pages hold attention for over a minute, but the listings page loses half its visitors before the first scroll.', 'One listing page is slow on phones (largest paint over 4 seconds). Its photo is the likely cause.'],
+    // [channel, sessions, engaged, conversions]
+    channels: [['Direct', 2040, '1m 08s', 5], ['Organic search', 1777, '52s', 3], ['Email · Constant Contact', 1053, '2m 20s', 4], ['Email · Smartlead', 592, '2m 05s', 3], ['Referral', 526, '44s', 0], ['Social · LinkedIn', 395, '38s', 0], ['Paid', 197, '29s', 0]],
+    campaigns: [['les-sept', 'Smartlead', 210, 3], ['redigest-w39', 'Constant Contact', 105, 2], ['redigest-w38', 'Constant Contact', 70, 1], ['tribeca-longhold', 'Smartlead', 52, 0], ['q3-report', 'LinkedIn', 42, 0]],
+    // [contact id, views, pages, last visit, channel]
+    contacts: [['adler', 6, '41 Ludlow St, Listings', 'Sep 29', 'Constant Contact'], ['okafor', 4, '41 Ludlow St', 'Sep 28', 'Smartlead'], ['greene', 3, 'Listings, Market reports', 'Sep 27', 'Constant Contact'], ['shah', 2, '41 Ludlow St', 'Sep 25', 'Smartlead'], ['rivera', 2, '88 Orchard St', 'Sep 24', 'Constant Contact']],
+    realtime: [['/listings', 2], ['/', 1]],
+    // [path, views, people, engaged, scroll]
+    pages: [['/', 3420, 2210, '48s', '52%'], ['/listings', 2080, 1460, '1m 05s', '38%'], ['/listings/41-ludlow-st', 1270, 612, '1m 42s', '71%'], ['/listings/88-orchard-st', 640, 205, '1m 18s', '64%'], ['/market-reports', 590, 410, '2m 10s', '58%'], ['/sell-your-building', 380, 290, '1m 30s', '66%']],
+    documents: [['41 Ludlow St OM', 'om-41-ludlow-st.pdf', 26, 18], ['88 Orchard St OM', 'om-88-orchard-st.pdf', 14, 10], ['Q3 market report', 'q3-manhattan-multifamily-report.pdf', 24, 19]],
+    forms: [['Contact form', 12, 5, 5], ['Property evaluation', 7, 3, 3], ['Buyer registration', 6, 3, 3], ['Email updates', 18, 8, 0], ['Event RSVP', 4, 4, 4]],
+    clicks: [['Call', '(212) 555-0100', 8], ['Email', 'info@example.com', 4], ['Button', 'Request a valuation', 3], ['Outbound', 'linkedin.com', 2]],
+    // [metric label, value, short code, rating]
+    vitals: [['Largest paint', '2.1s', 'LCP', 'good'], ['Response to taps', '168ms', 'INP', 'good'], ['Layout shift', '0.062', 'CLS', 'good'], ['Server response', '612ms', 'TTFB', 'good']],
+    vitalPages: [['/', '1.8s', '120ms', '0.02'], ['/listings', '2.4s', '180ms', '0.08'], ['/listings/41-ludlow-st', '3.1s', '240ms', '0.14'], ['/listings/88-orchard-st', '4.4s', '520ms', '0.31']],
   };
   const nudges = {
     'attack-plan': '22 Class A owners have no logged call yet and 3 loans mature inside 12 months. Start the call block with the maturities.',
@@ -239,5 +280,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { TODAY, addD, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, viewers, inquiries, inbound, web, nudges };
+  window.DS_DATA = { TODAY, addD, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

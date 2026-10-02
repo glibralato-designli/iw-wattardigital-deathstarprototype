@@ -72,13 +72,13 @@ window.PROJECT = {
           states: { Empty: 'week=1', PreviousWeek: 'week=-1', NewConversation: 'dialog=new' },
           waivers: { Loading: LOCAL, Error: LOCAL } },
         { id: 'outreach-performance', name: '10 Dashboard · Outreach performance', path: 'pages/outreach-performance.html', flow: 'plan-week', kind: 'info',
-          description: 'Display-only: Outreach, Business generation and Workflow efficacy. Conversations carry the emphasis.' },
+          description: 'Display-only, from the portal tab: Outreach (today vs previous day vs week, calling efficiency, LinkedIn, blasts), Business generation with deltas, Workflow efficacy. Drill-downs and logging are off.' },
         { id: 'reporting', name: '11 Dashboard · Reporting', path: 'pages/reporting.html', flow: 'plan-week', kind: 'info',
-          description: 'Display-only: coverage by ZIP on the navy ramp, outreach, the marketing funnel and engagement.' },
+          description: 'Display-only: coverage by ZIP weakest first, one email funnel with its rates beside Clicked what, engagement by channel. Channel filters are off.' },
         { id: 'listings', name: '12 Dashboard · Listings', path: 'pages/listings.html', flow: 'plan-week', kind: 'info', primaryAction: 'Open a viewer',
-          description: 'Listing cards with five counters, who viewed them (rows open the contact), inquiries and inbound requests.' },
+          description: 'Listing cards with Auto and logged counts and their own viewers (rows open the contact), website inquiries awaiting follow-up first, other requests and the events page.' },
         { id: 'web-analytics', name: '13 Dashboard · Web analytics', path: 'pages/web-analytics.html', flow: 'plan-week', kind: 'info',
-          description: 'Display-only: four numbers, visitors per week, and what the numbers say.' }
+          description: 'Display-only: audience and outcomes, traffic with its summary, channels and campaigns, known contacts (open the contact), content tables, and collapsed site speed and tracking notes.' }
       ]
     }
   }
