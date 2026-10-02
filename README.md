@@ -3,6 +3,9 @@
 A proof-of-concept redesign of the Stewart Group's prospecting portal (Wattar Digital × Designli), direction **5b · Navy shell**. Plain HTML, CSS and vanilla JavaScript; no installation or build.
 
 ## Open it
+Live: https://glibralato-designli.github.io/iw-wattardigital-deathstarprototype/ (GitHub Pages from `main`; the product starts at `prototype.html`). Every push to `main` republishes it.
+
+Locally:
 ```sh
 python3 tools/preview.py
 ```
