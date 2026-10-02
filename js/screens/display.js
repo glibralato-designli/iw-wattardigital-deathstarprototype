@@ -4,7 +4,7 @@
   const page = document.body.dataset.page;
   const LABEL = { 'outreach-performance': 'Outreach performance', reporting: 'Reporting', listings: 'Listings', 'web-analytics': 'Web analytics' };
   const rangeOff = () => `<div class="segmented" role="group" aria-label="Date range">${['7 days', '30 days', '90 days'].map((l, i) => `<button type="button" class="segmented__item" aria-pressed="${i === 1}" aria-disabled="true" data-tip="${DS.OFF}">${l}</button>`).join('')}</div>`;
-  const section = (title, sub, body, end = '') => `<section class="ds-stack" data-gap="3"><div class="ds-section-h"><h2>${esc(title)}</h2>${sub ? `<span class="ds-meta">${esc(sub)}</span>` : ''}${end}</div>${body}</section>`;
+  const section = (title, sub, body, end = '') => `<section class="ds-stack" data-section><div class="ds-section-h"><h2>${esc(title)}</h2>${sub ? `<span class="ds-meta">${esc(sub)}</span>` : ''}${end}</div>${body}</section>`;
   const stat = (l, v, sub, o = {}) => `<div class="ds-stat"${o.emph ? ' data-emph' : ''}${/^0(%|$)/.test(String(v)) ? ' data-zero' : ''}><span class="ds-meta font-medium" style="display:flex;align-items:center;gap:var(--space-1-5);color:var(--fg-muted)">${o.ic ? icon(o.ic) : ''}${esc(l)}</span><b>${esc(v)}</b>${sub ? `<span class="ds-meta">${esc(sub)}</span>` : ''}</div>`;
 
   const outreach = () => {

@@ -105,7 +105,7 @@
   /* Spacing: 4px base. */
   --space-0-5:.125rem; --space-1:.25rem; --space-1-5:.375rem; --space-2:.5rem; --space-2-5:.625rem; --space-3:.75rem; --space-3-5:.875rem; --space-4:1rem; --space-5:1.25rem;
   --space-6:1.5rem; --space-7:1.75rem; --space-8:2rem; --space-9:2.25rem; --space-10:2.5rem; --space-12:3rem; --space-16:4rem; --space-20:5rem;
-  --page-pad-x:var(--space-8); --page-pad-top:var(--space-7); --section-gap:var(--space-6); --card-gap:var(--space-4);
+  --page-pad-x:var(--space-8); --page-pad-top:var(--space-7); --section-gap:var(--space-7); --card-gap:var(--space-5);
   --radius-xs:.25rem; --radius-sm:.375rem; --radius-md:.5rem; --radius-lg:.625rem; --radius-xl:.75rem; --radius-2xl:1rem; --radius-full:999px;
   --border-width:1px; --focus-width:2px; --focus-offset:2px;
   --shadow-sm:0 1px 2px #0f172a14; --shadow-md:0 8px 24px #0f172a14,0 2px 6px #0f172a0a; --shadow-lg:0 20px 48px #0f172a29;

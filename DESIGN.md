@@ -158,7 +158,7 @@ Primitive palette values feed semantic roles. Components use semantic colours. S
   /* Spacing: 4px base. */
   --space-0-5:.125rem; --space-1:.25rem; --space-1-5:.375rem; --space-2:.5rem; --space-2-5:.625rem; --space-3:.75rem; --space-3-5:.875rem; --space-4:1rem; --space-5:1.25rem;
   --space-6:1.5rem; --space-7:1.75rem; --space-8:2rem; --space-9:2.25rem; --space-10:2.5rem; --space-12:3rem; --space-16:4rem; --space-20:5rem;
-  --page-pad-x:var(--space-8); --page-pad-top:var(--space-7); --section-gap:var(--space-6); --card-gap:var(--space-4);
+  --page-pad-x:var(--space-8); --page-pad-top:var(--space-7); --section-gap:var(--space-7); --card-gap:var(--space-5);
   --radius-xs:.25rem; --radius-sm:.375rem; --radius-md:.5rem; --radius-lg:.625rem; --radius-xl:.75rem; --radius-2xl:1rem; --radius-full:999px;
   --border-width:1px; --focus-width:2px; --focus-offset:2px;
   --shadow-sm:0 1px 2px #0f172a14; --shadow-md:0 8px 24px #0f172a14,0 2px 6px #0f172a0a; --shadow-lg:0 20px 48px #0f172a29;
@@ -280,7 +280,7 @@ Inter is the only family (Google Fonts, system fallback), with `cv11` and `ss01`
 
 Weights: 400 regular, 500 medium (labels, controls, row titles), 600 semibold (headings, numbers), 700 only for the predictive score and confidence percentages. Line heights are paired tokens (`--line-height-xs` … `--line-height-4xl`) plus the unitless tight/snug/normal/relaxed options. Letter spacing: 0, `--letter-spacing-tight` (−0.01em, titles and stats), `--letter-spacing-tighter` (−0.02em, large numbers). Semantic defaults: `h1` 22/30 semibold; `h2` 15/22 semibold; `h3` 13/18 medium muted (section labels in sentence case).
 
-Layout: the main panel pads 28 top / 32 sides / 32 bottom; sections are 24 apart; cards 16 apart. Rows breathe (designer request, Oct 2): table rows are at least 68 tall with 12 vertical padding (heads 40); list rows (`.ds-row`) pad 14 vertically (dense 10), call rows and to-dos 12, evidence rows 14, ownership rows 16; two-line row bodies keep 2 between title and subline. Records use a main column plus a 300 rail; Dashboard tabs use main + a 300 right column. Breakpoints: 1360 (Brain overlays), 1180 (sidebar rail default), 1024 (tablet: stack rails and right columns, icon-only search and Links), 768 (phone: drawer, full-screen Brain, peek and dialogs, one column, 16px fields). See the responsive block at the end of `css/product.css`.
+Layout: the main panel pads 28 top / 32 sides / 32 bottom; sections are 28 apart; cards 20 apart; display-tab section headings sit 16 above their content. Rows breathe (designer request, Oct 2): sidebar items are 36 tall with group labels 16 above, list-rail and Brain history rows 36, menu and palette rows 36; cards pad 16 / 12 / 12 (`data-pad="all"` 16, `lg` 20) with 12 under the head, rail cards 16 with 16 between; key/value and timeline rows pad 12 (compact rail rows 10); goal rows 10; listing count tiles wrap to fill rows; wrapped toolbars keep 12 between lines; table rows are at least 68 tall with 12 vertical padding (heads 40); list rows (`.ds-row`) pad 14 vertically (dense 10), call rows and to-dos 12, evidence rows 14, ownership rows 16; two-line row bodies keep 2 between title and subline. Records use a main column plus a 300 rail; Dashboard tabs use main + a 300 right column. Breakpoints: 1360 (Brain overlays), 1180 (sidebar rail default), 1024 (tablet: stack rails and right columns, icon-only search and Links), 768 (phone: drawer, full-screen Brain, peek and dialogs, one column, 16px fields). See the responsive block at the end of `css/product.css`.
 
 ## Mandatory shared families (13)
 
@@ -298,7 +298,7 @@ Layout: the main panel pads 28 top / 32 sides / 32 bottom; sections are 24 apart
 | Dialog | Native `dialog.dialog` (system); product dialogs use the same recipe in an overlay | 12–16px radius, slate scrim |
 | Avatar | `.avatar`, `data-size`, `data-shape="square"` | 28px tinted initials |
 | Search field | `.field` + `.search` | Icon inset 10px |
-| Dropdown menu | `.menu`, `.menu__item`, `.menu__label`, `.menu__divider` | 30px rows, 10px radius, `--shadow-md` |
+| Dropdown menu | `.menu`, `.menu__item`, `.menu__label`, `.menu__divider` | 36px rows, 10px radius, `--shadow-md` |
 
 Added core recipes for clear unmet needs: `.tooltip` (one pattern for every disabled control and icon-only button, 300ms delay), `.toast` (bottom centre, announced through a polite live region), `kbd`, `.segmented`.
 
