@@ -918,6 +918,12 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
   .ds-callrow{grid-template-columns:1.375rem minmax(0,1fr) auto var(--control-md)}
   .ds-callrow>:nth-child(3){display:none}
   .ds-card__head,.ds-metrics__head{flex-wrap:wrap}
+  /* Attack Plan head on phones: title + caret, then count + full progress bar, then the link. */
+  .ds-plan__head{row-gap:var(--space-2)}
+  .ds-plan__head .ds-card__title{flex:1 1 calc(100% - var(--control-md) - var(--space-3))}
+  .ds-plan__head > .ds-meta-strong{order:2}
+  .ds-plan__head > .ds-progress{order:3;flex:1 1 auto;width:auto}
+  .ds-plan__head > a:not(.button){order:4;flex-basis:100%}
   .ds-week{grid-template-columns:repeat(5,minmax(9rem,1fr));overflow-x:auto}
   .ds-board__col{min-width:15rem}
   .ds-listing__counts{grid-template-columns:repeat(3,minmax(0,1fr))}

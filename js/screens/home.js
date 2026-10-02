@@ -14,7 +14,7 @@
       { done: false, t: 'Tour 41 Ludlow St at 9:30 AM', m: 'With Priya Venkataraman', link: href('calendar') },
     ];
     return `<section class="ds-card" aria-label="Today’s Attack Plan">
-      <div class="ds-card__head"><div class="ds-card__title"><h2>Today’s Attack Plan</h2><span class="ds-meta">LES maturities · from the Dashboard</span></div>
+      <div class="ds-card__head ds-plan__head"><div class="ds-card__title"><h2>Today’s Attack Plan</h2><span class="ds-meta">LES maturities · from the Dashboard</span></div>
         <span class="ds-meta-strong num"><span data-count="calls">${done}</span> of 40 calls</span>${ui.progress(done / 40, 'Calls today', { key: 'calls' })}
         <a href="${href('attack-plan')}">See more on Dashboard</a>
         ${ui.iconBtn({ ic: st.planOpen ? 'caret-up' : 'caret-down', aria: st.planOpen ? 'Minimize Attack Plan' : 'Expand Attack Plan', act: 'toggle-plan', expanded: st.planOpen })}</div>
