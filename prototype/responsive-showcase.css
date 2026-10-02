@@ -1,0 +1,7 @@
+.canvas__scroll{overflow:auto;padding:var(--space-2) var(--space-2) var(--space-6);border-radius:var(--radius-md);background-image:radial-gradient(var(--border-strong) .6px,transparent .6px);background-size:16px 16px;min-height:350px}
+.canvas__content{display:flex;flex-direction:column;gap:var(--space-12);width:max-content;min-width:100%;padding:var(--space-5)}.canvas__content[data-mode="mobile"]{flex-direction:row;align-items:flex-start}
+.canvas__row{display:flex;gap:var(--space-8);align-items:flex-start}.canvas__screen h2{font-size:var(--text-lg);margin-bottom:var(--space-2)}.canvas__screen>p{font-size:var(--text-sm);color:var(--fg-muted);margin-bottom:var(--space-4);max-width:65ch}.canvas__frame{margin:0}.canvas__frame figcaption{display:flex;justify-content:space-between;gap:var(--space-4);font:var(--text-xs)/var(--line-height) var(--font-body);margin-bottom:var(--space-3);color:var(--fg-muted)}.canvas__viewport{width:calc(var(--vw)*var(--scale));height:calc(var(--vh)*var(--scale));overflow:hidden;background:var(--bg);box-shadow:0 0 0 1px var(--border-strong),var(--shadow-sm);border-radius:4px}.canvas__viewport iframe{width:var(--vw);height:var(--vh);border:0;display:block;transform:scale(var(--scale));transform-origin:top left;background:var(--bg)}
+
+/* Canvas controls are inside the shared review menu. */
+.review[data-review="canvas"] .review__main{width:100%;padding:var(--review-menu-space) var(--space-4) var(--space-4)}
+.canvas__scroll{min-height:calc(100dvh - var(--review-menu-space) - var(--space-4))}

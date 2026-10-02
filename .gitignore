@@ -1,0 +1,12 @@
+__pycache__/
+.DS_Store
+*.log
+# designli-design plugin build output and local MCP config
+design/**/bundle/
+design/**/.seed/
+design/**/.review/
+.mcp.local.json
+
+# Local only: the Claude Design handoff copy (client brief and uploads) and personal Claude settings
+.claude/handoff/
+.claude/settings.local.json

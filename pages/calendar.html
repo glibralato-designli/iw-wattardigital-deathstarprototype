@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calendar — Death Star</title>
+  <meta name="theme-color" content="#012756">
+  <link rel="icon" href="../assets/favicon.svg">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/product.css">
+  <script src="../js/navigation.js" defer></script>
+  <script src="../js/phosphor.js" defer></script>
+  <script src="../js/product-data.js" defer></script>
+  <script src="../js/product.js" defer></script>
+  <script src="../js/screens/calendar.js" defer></script>
+</head>
+<body class="ds-body" data-page="calendar">
+  <a class="skip-link" href="#ds-main">Skip to content</a>
+  <nav hidden data-routes aria-hidden="true">
+    <a data-route="home" href="home.html">Home</a>
+    <a data-route="attack-plan" href="attack-plan.html">Open Attack Plan</a>
+    <a data-route="calendar" href="calendar.html">Open calendar</a>
+    <a data-route="conversations" href="conversations.html">Conversations</a>
+    <a data-route="outreach-performance" href="outreach-performance.html">Outreach performance</a>
+    <a data-route="reporting" href="reporting.html">Reporting</a>
+    <a data-route="listings" href="listings.html">Listings</a>
+    <a data-route="web-analytics" href="web-analytics.html">Web analytics</a>
+    <a data-route="contacts" href="contacts.html">Database</a>
+    <a data-route="properties" href="properties.html">Properties</a>
+    <a data-route="contact" href="contact.html">Open record</a>
+    <a data-route="property" href="property.html">Open property</a>
+    <a data-route="brain" href="brain.html">Open in Brain</a>
+  </nav>
+  <div class="ds-app">
+    <nav class="ds-sidebar" id="ds-sidebar" aria-label="Main"></nav>
+    <div class="ds-col">
+      <header class="ds-topbar" id="ds-topbar"></header>
+      <div class="ds-stage">
+        <main class="ds-main" id="ds-main" tabindex="-1"></main>
+        <div id="ds-brain-slot" class="ds-slot"></div>
+      </div>
+    </div>
+  </div>
+  <div id="ds-overlays"></div>
+  <div id="ds-toast"></div>
+  <div class="sr-only" aria-live="polite" id="ds-announce"></div>
+  <noscript><p class="ds-noscript">This prototype needs JavaScript.</p></noscript>
+</body>
+</html>

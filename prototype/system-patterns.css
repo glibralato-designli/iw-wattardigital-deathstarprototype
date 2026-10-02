@@ -1,0 +1,18 @@
+/* Review only: small scaffolding for the system showcase's foundation and pattern samples. */
+.sys-frame{display:flex;gap:var(--space-2);height:13rem;padding:0 var(--space-2) var(--space-2) 0;border-radius:var(--radius-xl);background:var(--shell);overflow:hidden}
+.sys-frame__side{width:8.5rem;flex:none;display:flex;flex-direction:column;gap:var(--space-1-5);padding:var(--space-3) var(--space-2);color:var(--shell-fg-strong);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-semibold)}
+.sys-frame__side i{display:block;height:var(--space-4);border-radius:var(--radius-sm);background:var(--shell-hover)}
+.sys-frame__side i[data-on]{background:var(--shell-active);box-shadow:inset 0 0 0 1px var(--shell-active-border)}
+.sys-frame__body{flex:1;display:flex;flex-direction:column;gap:var(--space-2)}
+.sys-frame__top{height:var(--space-8)}
+.sys-frame__panels{flex:1;display:flex;gap:var(--space-2)}
+.sys-frame__main,.sys-frame__brain{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-3);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-xl);font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-muted)}
+.sys-frame__main{flex:1}.sys-frame__brain{width:8rem}
+.sys-frame__main b,.sys-frame__brain b{color:var(--fg);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.sys-space{display:flex;align-items:center;gap:var(--space-3)}.sys-space span{height:var(--space-3);background:var(--chart-primary);border-radius:var(--radius-xs)}
+.sys-radius{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-3);min-height:5rem;border:1px solid var(--border-strong);background:var(--bg-subtle)}
+.sys-depth{display:grid;place-items:center;min-height:5rem;padding:var(--space-3);border-radius:var(--radius-xl);background:var(--bg);font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-muted);text-align:center}
+.sys-shellbar,.sys-shellnav{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3);border-radius:var(--radius-xl);background:var(--shell);color:var(--shell-fg)}
+.sys-shellbar .ds-crumbs{flex:1;min-width:10rem}
+.sys-shellnav{margin-top:var(--space-2);align-items:stretch;flex-direction:column;width:15rem}
+.sys-shellnav .ds-nav-group{margin-top:var(--space-2)}

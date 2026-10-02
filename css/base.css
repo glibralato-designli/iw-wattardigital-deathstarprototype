@@ -1,0 +1,35 @@
+/* Inter is the single UI family; pages remain usable offline with the system fallback. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box}
+html{font-family:var(--font-body);font-size:100%;line-height:var(--line-height-sm);letter-spacing:var(--letter-spacing);font-weight:var(--weight-regular);font-feature-settings:"cv11","ss01";color:var(--fg);background:var(--bg);-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{margin:0;font-size:var(--text-sm);line-height:var(--line-height-sm)} h1,h2,h3,h4,h5,h6,p,figure{margin:0} h1,h2,h3,h4,h5,h6{font-weight:var(--weight-semibold);overflow-wrap:anywhere}
+h1{font-size:var(--text-xl);line-height:var(--line-height-xl);letter-spacing:var(--letter-spacing-tight)}h2{font-size:var(--text-md);line-height:var(--line-height-sm)}h3{font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);color:var(--fg-muted)}h4{font-size:var(--text-sm);line-height:var(--line-height-sm)}
+a{color:var(--link);text-decoration:none;text-underline-offset:.2em}a:hover{color:var(--link-hover);text-decoration:underline}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}
+img,svg{max-width:100%;vertical-align:middle}img{height:auto}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+::selection{background:var(--brand-primary-muted);color:var(--fg)}
+input,textarea{caret-color:var(--focus)}
+*{scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent}
+:focus-visible{outline:var(--focus-width) solid var(--focus);outline-offset:var(--focus-offset)}
+[hidden]{display:none!important}button svg,.icon{width:1.25rem;height:1.25rem;flex:none}svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.muted{color:var(--fg-muted)}.small{font-size:var(--text-xs);line-height:var(--line-height-xs)}.num{font-variant-numeric:tabular-nums}
+/* Labels stay sentence case: no capitals, no letter spacing (brief rule). */
+.text-label,.eyebrow{font-family:var(--font-body);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);letter-spacing:var(--letter-spacing)}.eyebrow{color:var(--fg-muted)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.skip-link{position:fixed;top:var(--space-2);left:var(--space-2);z-index:100;background:var(--bg);color:var(--brand-primary-text);font-weight:var(--weight-medium);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);transform:translateY(-200%)}.skip-link:focus{transform:none}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Shared text styles. Each size carries its own line height; the product scale is compact (13px UI). */
+.text-2xs{font-size:var(--text-2xs);line-height:var(--line-height-2xs)}.text-xs{font-size:var(--text-xs);line-height:var(--line-height-xs)}.text-sm{font-size:var(--text-sm);line-height:var(--line-height-sm)}.text-md{font-size:var(--text-md);line-height:var(--line-height-md)}
+.text-body-lg{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg)}.text-lg{font-size:var(--text-lg);line-height:var(--line-height-lg);letter-spacing:var(--letter-spacing-tight)}.text-xl{font-size:var(--text-xl);line-height:var(--line-height-xl);letter-spacing:var(--letter-spacing-tight)}
+.text-2xl{font-size:var(--text-2xl);line-height:var(--line-height-2xl);letter-spacing:var(--letter-spacing-tight)}.text-3xl{font-size:var(--text-3xl);line-height:var(--line-height-2xl);letter-spacing:var(--letter-spacing-tighter)}.text-4xl{font-size:var(--text-4xl);line-height:var(--line-height-4xl);letter-spacing:var(--letter-spacing-tighter)}
+.text-5xl,.text-6xl,.text-7xl,.text-8xl{line-height:var(--line-height-tight);letter-spacing:var(--letter-spacing-tighter)}
+.text-5xl{font-size:var(--text-5xl)}.text-6xl{font-size:var(--text-6xl)}.text-7xl{font-size:var(--text-7xl)}.text-8xl{font-size:var(--text-8xl)}
+.font-regular{font-weight:var(--weight-regular)}.font-medium{font-weight:var(--weight-medium)}.font-semibold{font-weight:var(--weight-semibold)}.font-bold,strong,b{font-weight:var(--weight-semibold)}
+code,kbd,samp,pre{font-family:var(--font-mono);font-size:inherit}
+
+/* Leading utilities allow deliberate overrides of a text style's default. */
+.leading-tight{line-height:var(--line-height-tight)}.leading-snug{line-height:var(--line-height-snug)}.leading-normal{line-height:var(--line-height-normal)}.leading-relaxed{line-height:var(--line-height-relaxed)}
+
+/* Phosphor SVGs use filled paths, including regular outlines and duotone layers. */
+svg.ph-icon{fill:currentColor;stroke:none}

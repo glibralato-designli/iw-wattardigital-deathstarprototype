@@ -1,0 +1,24 @@
+/* Presentation belongs to the parent document. The iframe loads only product CSS. */
+.player{background:var(--bg-subtle);margin:0}.player__status-bar,.player__home-area{display:none}
+.player__stage{min-height:100dvh;display:flex;justify-content:center;padding-top:var(--review-menu-space)}.player__device{width:100%;height:calc(100dvh - var(--review-menu-space));overflow:hidden;background:var(--bg)}.player__device iframe{border:0;width:100%;height:100%;display:block;background:var(--bg)}
+@media(min-width:700px){
+ .player__stage{align-items:center;padding:80px 24px 48px;min-height:100dvh}
+ .player__device{position:relative;width:var(--preview-width,390px);height:var(--preview-height,844px);flex:none;border-radius:38px;box-shadow:0 0 0 1px var(--border-strong),0 0 0 7px var(--bg),0 0 0 8px var(--border),var(--shadow-lg)}
+ /* Transparent chrome overlays the full product viewport. */
+ .player__device iframe{height:100%;flex:none;min-height:0}
+ .player__status-bar{display:flex;align-items:center;justify-content:space-between;position:absolute;top:0;left:0;right:0;height:44px;z-index:1;padding:0 28px;color:var(--fg);background:transparent;user-select:none;pointer-events:none}
+ .player__time{font:var(--weight-medium) var(--text-sm)/var(--line-height) var(--font-body);font-variant-numeric:tabular-nums;}
+ .player__status-icons{display:flex;align-items:center;gap:6px}
+ .player__status-icons svg{height:14px;flex:none}
+ .player__signal{width:20px;fill:currentColor;stroke:none}
+ .player__wifi{width:18px;stroke-width:1.8}.player__wifi circle{fill:currentColor;stroke:none}
+ .player__battery{width:28px;stroke-width:1}.player__battery>rect:first-child{opacity:.5}.player__battery-fill{fill:currentColor;stroke:none}.player__battery path{stroke-width:2.5;opacity:.5}
+ .player__home-area{display:flex;align-items:flex-end;justify-content:center;position:absolute;bottom:0;left:0;right:0;height:28px;z-index:1;padding-bottom:8px;background:transparent;pointer-events:none}
+ .player__home-indicator{width:134px;height:5px;border-radius:var(--radius-full);background:var(--fg)}
+}
+
+/* Web review uses the full browser width; no device frame. */
+.player[data-project-mode="responsive-web"] .player__stage{padding:0;align-items:stretch}
+.player[data-project-mode="responsive-web"] .player__device{display:block;width:100%;height:100dvh;border-radius:0;box-shadow:none}
+.player[data-project-mode="responsive-web"] .player__device iframe{width:100%;height:100%;min-height:0}
+.player[data-project-mode="responsive-web"] .player__status-bar,.player[data-project-mode="responsive-web"] .player__home-area{display:none}

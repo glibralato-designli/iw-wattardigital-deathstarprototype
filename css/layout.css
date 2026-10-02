@@ -1,0 +1,10 @@
+/* Layout primitives compose freely; none imply a card. */
+.container{width:min(100% - var(--space-8),var(--content-lg));margin-inline:auto}
+.stack{display:flex;flex-direction:column;gap:var(--gap,var(--space-4))}
+.cluster{display:flex;flex-wrap:wrap;align-items:center;gap:var(--gap,var(--space-3))}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--column-min,16rem)),1fr));gap:var(--gap,var(--space-6))}
+.split{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)}
+.divider{width:100%;border:0;border-top:var(--border-width) solid var(--border);margin-block:var(--space-6)}
+.gap-2{--gap:var(--space-2)}.gap-6{--gap:var(--space-6)}.gap-8{--gap:var(--space-8)}
+.pad-4{padding:var(--space-4)}.pad-6{padding:var(--space-6)}.pad-8{padding:var(--space-8)}
+.full-width{width:100%}.measure{max-width:65ch}.grow{flex:1;min-width:0}
