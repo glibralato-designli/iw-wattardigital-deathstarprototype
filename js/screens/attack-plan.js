@@ -11,7 +11,7 @@
     const w = wk(), label = st.mode === 'week' ? (w.wkRel === 0 ? 'This week' : 'Week of ' + fmtMD(addD(w.wkOff))) : (st.sel === 0 ? 'Today' : fmtS(w.selD));
     const relL = st.mode === 'week' ? w.range : fmtL(w.selD) + (st.sel === -1 ? ' · Yesterday' : st.sel === 1 ? ' · Tomorrow' : '');
     const unit = st.mode === 'week' ? 'week' : 'day';
-    return `<div class="ds-toolbar" style="margin:calc(var(--space-1) * -1) 0 calc(var(--space-2) * -1)">
+    return `<div class="ds-toolbar ds-datebar">
       ${ui.btn({ ic: 'caret-left', aria: 'Previous ' + unit, tip: 'Previous ' + unit, variant: 'outline', act: 'step', arg: -1 })}${ui.btn({ ic: 'caret-right', aria: 'Next ' + unit, tip: 'Next ' + unit, variant: 'outline', act: 'step', arg: 1 })}
       <div class="ds-datepick"><button type="button" class="ds-datepick__btn" aria-haspopup="dialog" aria-expanded="${st.picker}" data-act="picker" aria-live="polite">${icon('calendar-blank')}<span class="font-semibold">${esc(label)}</span><span class="ds-meta">${esc(relL)}</span>${icon('caret-down')}</button>${st.picker ? picker() : ''}</div>
       ${st.sel !== 0 ? ui.btn({ label: 'Back to today', variant: 'outline', size: 'sm', act: 'today' }) : ''}
