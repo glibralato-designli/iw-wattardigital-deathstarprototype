@@ -3,7 +3,13 @@
   const { D, ui, esc, icon, href, params } = DS;
   const st = { brainNote: params.get('note') !== '0' };
 
-  const head = () => ({ title: 'Home', large: true, actions: `${ui.iconBtn({ ic: 'magnifying-glass', aria: 'Search contacts, properties, BBL', act: 'palette', arg: 'search' })}<span class="ds-icon-btn ds-abadge" role="button" tabindex="0" aria-disabled="true" aria-label="Notifications, 3 unread" data-tip="${DS.OFF}">${icon('bell')}<i>3</i></span><a class="ds-icon-btn" href="${href('more')}" aria-label="Account and settings"><span class="avatar">TW</span></a>` });
+  // The account leads (as in Revolut) so the centred title has room; search and notifications trail.
+  const head = () => {
+    const search = ui.iconBtn({ ic: 'magnifying-glass', aria: 'Search contacts, properties, BBL', act: 'palette', arg: 'search' });
+    const bell = `<span class="ds-icon-btn ds-abadge" role="button" tabindex="0" aria-disabled="true" aria-label="Notifications, 3 unread" data-tip="${DS.OFF}">${icon('bell')}<i>3</i></span>`;
+    const account = `<a class="ds-icon-btn" href="${href('more')}" aria-label="Account and settings"><span class="avatar">TW</span></a>`;
+    return { title: 'Home', large: true, lead: account, actions: search + bell };
+  };
 
   const plan = () => {
     const done = DS.callsDone(), S = DS.S();

@@ -116,7 +116,11 @@
       const current=config.screens.find(s=>new URL(s.path,location.href).pathname===path);
       if(current && current.id!==screen.id){screen=current;state='';markScreen(true);}
     };
-    frame.addEventListener('load',()=>{follow();try{frame.contentWindow.addEventListener('screenchange',follow);}catch(_){}});
+    // The device status bar follows the screen's theme-color, as on iOS: light glyphs over a dark top edge.
+    const bar=document.querySelector('.player__status-bar');let watch=null;
+    const ink=()=>{if(!bar)return;let dark=false;try{const m=frame.contentDocument.querySelector('meta[name="theme-color"]'),c=m&&m.getAttribute('content');const h=c&&/^#([0-9a-f]{6})$/i.exec(c.trim());if(h){const n=parseInt(h[1],16),l=(0.2126*(n>>16&255)+0.7152*(n>>8&255)+0.0722*(n&255))/255;dark=l<0.4;}}catch(_){}bar.toggleAttribute('data-ink-light',dark);};
+    const watchInk=()=>{if(watch)watch.disconnect();try{const m=frame.contentDocument.querySelector('meta[name="theme-color"]');if(m){watch=new MutationObserver(ink);watch.observe(m,{attributes:true,attributeFilter:['content']});}}catch(_){}ink();};
+    frame.addEventListener('load',()=>{follow();watchInk();try{frame.contentWindow.addEventListener('screenchange',()=>{follow();ink();});}catch(_){}});
     select.addEventListener('change',()=>{const [id,key='']=select.value.split('~');screen=config.screens.find(s=>s.id===id);state=key;markScreen(true);frame.src=themeUrl(statePath(screen,state));});
     document.querySelector('[data-restart]').addEventListener('click',()=>{screen=config.screens[0];state='';markScreen(true);frame.src=themeUrl(screen.path);});
     markScreen();frame.src=themeUrl(statePath(screen,state));

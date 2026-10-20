@@ -359,7 +359,7 @@
     const list = groups.map(g => `<div class="ds-palette__group"><span>${esc(g.h)}</span>${g.items.map(it => { const idx = n++; return `<a class="ds-palette__item" href="${palTarget(it, pal.mode === 'log')}" data-pal-index="${idx}" data-act="pal-pick" data-arg="${it.kind}:${it.id}"${idx === pal.active ? ' data-active' : ''}>${ui.cls(it.cls)}<span class="ds-row__body"><span class="font-medium">${esc(it.t)}</span><span class="ds-row__sub">${esc(it.s)}</span></span><span class="ds-meta">${it.k}</span></a>`; }).join('')}</div>`).join('');
     return `<div class="ds-overlay" data-act="close-palette" data-self data-key="palette-ov" data-anim="fade"><div class="ds-palette" role="dialog" aria-modal="true" aria-label="${pal.mode === 'log' ? 'Log a call' : 'Search'}" data-anim="pop" data-key="palette">
       ${pal.mode === 'log' ? '<div class="ds-meta font-medium" style="padding:var(--space-3) var(--space-4) 0">Log a call · pick a contact</div>' : ''}
-      <div class="ds-palette__input">${icon('magnifying-glass')}<input id="palette-input" aria-label="Search" placeholder="Search by name, phone, address or BBL" value="${esc(pal.q)}" data-input="palette" autocomplete="off"><kbd>Esc</kbd></div>
+      <div class="ds-palette__input">${icon('magnifying-glass')}<input id="palette-input" aria-label="Search" placeholder="${DS.app ? 'Name, phone, address or BBL' : 'Search by name, phone, address or BBL'}" value="${esc(pal.q)}" data-input="palette" autocomplete="off"><kbd>Esc</kbd><button type="button" class="ds-palette__cancel" data-act="close-palette">Cancel</button></div>
       <div class="ds-palette__list" id="palette-list">${list || (pal.q.trim() ? `<div class="ds-empty" style="padding:var(--space-6) var(--space-2)"><span class="muted">No matches for “${esc(pal.q)}”. Try a phone number or a BBL.</span></div>` : '')}</div>
       <div class="ds-palette__foot"><span>↵ to open · Shift ↵ to preview</span><span>↑↓ to move</span><span>Esc to close</span></div>
     </div></div>`;
@@ -736,7 +736,7 @@
   DS.boot = () => {
     if (!DS.screen) return;
     startScreen();
-    if (APP) { const main = document.getElementById('ds-main'), shell = document.querySelector('.ds-appshell'); const mark = () => shell && shell.toggleAttribute('data-scrolled', main.scrollTop > 36); main.addEventListener('scroll', mark, { passive: true }); addEventListener('screenchange', () => setTimeout(mark, 0)); }
+    if (APP) { const main = document.getElementById('ds-main'), shell = document.querySelector('.ds-appshell'); const mark = () => { if (!shell) return; shell.toggleAttribute('data-scrolled', main.scrollTop > 36); shell.toggleAttribute('data-past-hero', main.scrollTop > 132); const tc = document.querySelector('meta[name="theme-color"][data-scrolled]'); if (tc) { if (!tc.dataset.rest) tc.dataset.rest = tc.getAttribute('content'); const want = main.scrollTop > 132 ? tc.dataset.scrolled : tc.dataset.rest; if (tc.getAttribute('content') !== want) tc.setAttribute('content', want); } }; main.addEventListener('scroll', mark, { passive: true }); const preset = () => { if (params.get('scroll') === 'past') { main.scrollTop = 420; mark(); } }; setTimeout(preset, 0); addEventListener('screenchange', () => setTimeout(preset, 0)); addEventListener('screenchange', () => setTimeout(mark, 0)); }
     // Live-call timer: update the clock without re-rendering the page.
     setInterval(() => { if (!U.call) return; const s = Math.floor((Date.now() - U.call.t0) / 1000), txt = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); document.querySelectorAll('[data-calltime]').forEach(el => { el.textContent = txt; }); }, 1000);
   };
@@ -760,7 +760,7 @@
         const src = [...doc.querySelectorAll('script[src]')].map(x => new URL(x.getAttribute('src'), url).href).find(x => /\/js\/screens\//.test(x));
         if (!src) throw new Error('No screen script');
         if (!codes.has(src)) codes.set(src, text(src));
-        return codes.get(src).then(code => ({ title: doc.title, page: doc.body.dataset.page, routes: (doc.querySelector('nav[data-routes]') || {}).innerHTML, code, src }));
+        return codes.get(src).then(code => ({ title: doc.title, page: doc.body.dataset.page, theme: [...doc.querySelectorAll('meta[name="theme-color"]')].map(m => [m.getAttribute('content'), m.dataset.scrolled || '']), routes: (doc.querySelector('nav[data-routes]') || {}).innerHTML, code, src }));
       });
       job.catch(() => { pages.delete(key); });
       pages.set(key, job);
@@ -776,6 +776,8 @@
     Object.assign(V, freshV());
     document.title = pg.title;
     if (pg.page) document.body.dataset.page = pg.page; else delete document.body.dataset.page;
+    const tc = document.querySelector('meta[name="theme-color"]'), next = pg.theme && pg.theme[0];
+    if (tc && next) { tc.setAttribute('content', next[0]); tc.dataset.rest = next[0]; if (next[1]) tc.dataset.scrolled = next[1]; else delete tc.dataset.scrolled; }
     const routes = document.querySelector('nav[data-routes]'); if (routes && pg.routes != null) routes.innerHTML = pg.routes;
     hideTip();
     const had = document.activeElement && document.activeElement !== document.body;

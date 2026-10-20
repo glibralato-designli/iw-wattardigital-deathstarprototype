@@ -1087,8 +1087,9 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
    White screens with navy accents: a header bar that takes the title once the large title scrolls away,
    a five-tab bar (filled icon on the current tab), bordered cards, inset list rows and bottom sheets.
    Targets are 44 tall; device insets come from env(safe-area-*) or the review frame (--device-*). */
-.ds-body[data-shell="app"]{--app-pad:var(--space-4);background:var(--bg-subtle);font-size:var(--text-base);line-height:var(--line-height-md)}
-@media(min-width:25.875rem){.ds-body[data-shell="app"]{--app-pad:var(--space-5)}}
+[data-shell="app"]{--app-pad:var(--space-4)}
+@media(min-width:25.875rem){[data-shell="app"]{--app-pad:var(--space-5)}}
+.ds-body[data-shell="app"]{background:var(--bg-subtle);font-size:var(--text-base);line-height:var(--line-height-md)}
 .ds-appshell{height:100vh;height:100dvh;max-width:30rem;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
 .ds-apphead{flex:none;padding-top:max(env(safe-area-inset-top),var(--device-top));background:var(--bg);position:relative;z-index:var(--layer-sticky);transition:box-shadow var(--motion-fast) var(--ease)}
 .ds-appshell[data-scrolled] .ds-apphead{box-shadow:0 1px 0 var(--border)}
@@ -1287,11 +1288,112 @@ a.ds-atile:hover{background:var(--bg-subtle);color:var(--fg);text-decoration:non
 [data-shell="app"] .ds-page-head .tabs,[data-shell="app"] .ds-org{display:none}
 [data-shell="app"] .ds-card{border-radius:var(--radius-2xl)}
 [data-shell="app"] .ds-listing__photo{aspect-ratio:2 / 1}
-/* Reused web sections and cards follow the app scale: section heads 20, card and why-now titles 17. */
-[data-shell="app"] .ds-section-h h2{font-size:var(--text-lg);line-height:var(--line-height-lg);letter-spacing:var(--letter-spacing-tight)}
-[data-shell="app"] :is(.ds-card__title h2,.ds-card__title h3,.ds-why__head h2){font-size:var(--text-body-lg);line-height:var(--line-height-body-lg)}
+/* Reused web sections and cards follow the app scale: section heads are group labels (15 medium), card titles 16. */
+[data-shell="app"] .ds-section-h h2{font-size:var(--text-md);line-height:var(--line-height-md);font-weight:var(--weight-medium)}
+[data-shell="app"] :is(.ds-card__title h2,.ds-card__title h3,.ds-why__head h2){font-size:var(--text-base);line-height:var(--line-height-base)}
 [data-shell="app"] .ds-ask__dot{display:none}
 @media(min-width:30.0625rem){.ds-appshell{border-inline:var(--border-width) solid var(--border)}}
+
+/* ───────── App look (designer request, Oct 20; tried as concept B, then adopted) ─────────
+   Neo-style spacing, type and buttons; borderless white cards on a subtle slate gradient; a Public-style floating
+   pill tab bar; a header that floats over the content; and a Revolut-style navy hero behind Home's greeting. */
+[data-shell="app"]{--app-canvas-top:var(--bg-muted);--app-canvas-bottom:var(--border);--app-card:var(--bg);--app-tab-on:var(--bg-muted);--app-track:var(--bg-muted);--app-btn2:var(--bg-muted);--app-btn2-hover:var(--border);--app-seg:var(--border);--app-divider:var(--border-subtle);--app-hero:var(--shell);--app-hero-glow:var(--brand-primary-800);--app-bar-h:4rem;--app-bar-gap:max(var(--space-3),calc(max(env(safe-area-inset-bottom),var(--device-bottom)) - var(--space-1)))}
+:root[data-theme="dark"] [data-shell="app"]{--app-canvas-top:var(--bg);--app-canvas-bottom:var(--bg-subtle);--app-card:var(--bg-muted);--app-tab-on:var(--border);--app-track:var(--border);--app-btn2:var(--border);--app-btn2-hover:var(--border-strong);--app-seg:var(--bg-muted);--app-divider:var(--border)}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) [data-shell="app"]{--app-canvas-top:var(--bg);--app-canvas-bottom:var(--bg-subtle);--app-card:var(--bg-muted);--app-tab-on:var(--border);--app-track:var(--border);--app-btn2:var(--border);--app-btn2-hover:var(--border-strong);--app-seg:var(--bg-muted);--app-divider:var(--border)}}
+/* Canvas: a top-to-bottom slate gradient; content scrolls under a header that frosts once it has something under it. */
+[data-shell="app"] .ds-appshell{background:linear-gradient(180deg,var(--app-canvas-top),var(--app-canvas-bottom))}
+[data-shell="app"] .ds-apphead{position:absolute;inset:0 0 auto;background:transparent;transition:background var(--motion-fast) var(--ease),box-shadow var(--motion-fast) var(--ease),color var(--motion-fast) var(--ease)}
+[data-shell="app"] .ds-appshell[data-scrolled] .ds-apphead{background:color-mix(in srgb,var(--app-canvas-top) 86%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(16px);backdrop-filter:saturate(1.6) blur(16px)}
+[data-shell="app"] .ds-appmain{padding-top:calc(max(env(safe-area-inset-top),var(--device-top)) + 2.75rem);padding-bottom:calc(var(--app-bar-h) + var(--app-bar-gap) + var(--space-2))}
+[data-shell="app"] .ds-apphead__tools .ds-icon-btn,[data-shell="app"] .ds-apphead__lead .ds-icon-btn{background:var(--app-card);color:var(--fg)}
+/* Header chips: 40 round, 8 apart, the outer ones on the page margin; the hit area stays 44. */
+[data-shell="app"] .ds-apphead__bar{padding-inline:var(--app-pad);grid-template-columns:minmax(0,1fr) minmax(0,max-content) minmax(0,1fr);gap:var(--space-3)}
+[data-shell="app"] .ds-apphead__tools{gap:var(--space-2)}
+[data-shell="app"] :is(.ds-apphead__tools,.ds-apphead__lead) .ds-icon-btn{position:relative;width:2.5rem;height:2.5rem}
+[data-shell="app"] :is(.ds-apphead__tools,.ds-apphead__lead) .ds-icon-btn::before{content:'';position:absolute;inset:calc((var(--touch-target) - 2.5rem) / -2)}
+[data-shell="app"] :is(.ds-apphead__tools,.ds-apphead__lead) .ds-icon-btn svg{width:1.25rem;height:1.25rem}
+[data-shell="app"] .ds-apphead__tools .avatar{width:1.75rem;height:1.75rem}
+[data-shell="app"] .ds-abadge>i{top:.25rem;right:.25rem}
+/* Neo spacing and type: quieter group labels, roomier rows and tiles, borderless cards. */
+[data-shell="app"] .ds-apage{gap:var(--space-8);padding-top:var(--space-2)}
+[data-shell="app"] .ds-asec{gap:var(--space-2-5)}
+[data-shell="app"] .ds-ahead{min-height:0}
+[data-shell="app"] .ds-ahead h2{font-size:var(--text-base);line-height:var(--line-height-md);letter-spacing:var(--letter-spacing)}
+[data-shell="app"] .ds-acard__title h2{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg);letter-spacing:var(--letter-spacing)}
+[data-shell="app"] :is(.ds-alist,.ds-acard,.ds-atile,.ds-why,.ds-card,.ds-qact:not([data-primary])){border-color:transparent;background:var(--app-card)}
+[data-shell="app"] a.ds-atile:hover{background:var(--app-card)}
+/* Controls that sat on white keep their shape on the slate canvas: segmented tracks a step darker, search fields white. */
+[data-shell="app"] .segmented{background:var(--app-seg)}
+[data-shell="app"] .ds-asearch{background:var(--app-card)}
+/* Brain's composer floats on the canvas: the band behind it fades in so the conversation scrolls away under it. */
+[data-shell="app"] .ds-abrain-foot{background:linear-gradient(180deg,transparent,var(--app-canvas-bottom) var(--space-4))}
+[data-shell="app"] .ds-progress{background:var(--app-track)}
+[data-shell="app"] .ds-arow{min-height:4rem;padding:var(--space-3-5) var(--space-4);gap:var(--space-3-5)}
+[data-shell="app"] .ds-arow[data-lead]{--inset:calc(var(--space-4) + 2.5rem + var(--space-3-5))}
+[data-shell="app"] .ds-arow__lead{width:2.5rem;height:2.5rem;border-radius:var(--radius-xl)}
+[data-shell="app"] .ds-arow__lead svg{width:1.25rem;height:1.25rem}
+[data-shell="app"] .ds-arow__body{gap:var(--space-1)}
+[data-shell="app"] .ds-atiles{gap:var(--space-3)}
+[data-shell="app"] .ds-atile{padding:var(--space-4);gap:var(--space-2);border-radius:var(--radius-2xl)}
+[data-shell="app"] .ds-why{border-radius:var(--radius-2xl);padding:var(--space-5) var(--space-4)}
+[data-shell="app"] .ds-acard__head{padding:var(--space-5) var(--space-4) var(--space-3);gap:var(--space-3)}
+[data-shell="app"] .ds-acard__foot{padding:var(--space-3) var(--space-4) var(--space-5)}
+/* Floating pill tab bar (Public): icons with labels, the current tab in a soft inner pill. */
+[data-shell="app"] .ds-tabbar{position:absolute;left:var(--app-pad);right:var(--app-pad);bottom:var(--app-bar-gap);height:var(--app-bar-h);padding:var(--space-1-5);gap:var(--space-0-5);border:var(--border-width) solid var(--border-subtle);border-radius:var(--radius-full);background:color-mix(in srgb,var(--app-card) 90%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(20px);backdrop-filter:saturate(1.6) blur(20px);box-shadow:var(--shadow-md)}
+[data-shell="app"] .ds-tab{min-height:0;border-radius:var(--radius-full);gap:var(--space-0-5)}
+[data-shell="app"] .ds-tab[aria-current="page"]{background:var(--app-tab-on)}
+[data-shell="app"] .ds-callslot{position:absolute;left:0;right:0;padding-inline:var(--app-pad);bottom:calc(var(--app-bar-gap) + var(--app-bar-h) + var(--space-2));z-index:var(--layer-sticky)}
+[data-shell="app"] .ds-fab{bottom:calc(var(--app-bar-gap) + var(--app-bar-h) + var(--space-3))}
+[data-shell="app"] .toast{bottom:calc(var(--app-bar-gap) + var(--app-bar-h) + var(--space-4))}
+/* Home hero (Revolut): navy behind the greeting, a soft blue glow top right, fading into the canvas; it scrolls with the page. */
+[data-shell="app"][data-page="home"] .ds-appmain{background:radial-gradient(80% 50% at 90% 0%,color-mix(in srgb,var(--app-hero-glow) 60%,transparent),transparent 70%) top / 100% 26rem no-repeat local,linear-gradient(180deg,var(--app-hero) 0,var(--app-hero) 14rem,color-mix(in srgb,var(--app-hero) 0%,transparent) 26rem) top / 100% 26rem no-repeat local}
+[data-shell="app"][data-page="home"] .ds-appshell:not([data-past-hero]) .ds-apphead{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;color:var(--shell-fg-strong)}
+[data-shell="app"][data-page="home"] .ds-appshell:not([data-past-hero]) .ds-apphead__tools .ds-icon-btn{background:color-mix(in srgb,var(--white) 14%,transparent);color:var(--shell-fg-strong)}
+[data-shell="app"][data-page="home"] .ds-appshell:not([data-past-hero]) .ds-apphead__title{opacity:0}
+[data-shell="app"][data-page="home"] .ds-apage>.ds-large h1{color:var(--shell-fg-strong)}
+[data-shell="app"][data-page="home"] .ds-apage>.ds-large .ds-large__sub,[data-shell="app"][data-page="home"] .ds-apage>.ds-alede{color:var(--shell-fg)}
+[data-shell="app"][data-page="home"] .ds-apage{padding-top:var(--space-4)}
+[data-shell="app"][data-page="home"] .ds-apage>.ds-alede{margin-bottom:var(--space-2)}
+
+/* Neo type and buttons: a smaller large title, 15 medium group labels, 16 regular rows over
+   13 secondary lines, 14 body in cards; 48-tall buttons with 15 semibold labels, secondary filled light slate, compact 36. */
+[data-shell="app"] .ds-large h1{font-size:var(--text-2xl);line-height:var(--line-height-2xl)}
+[data-shell="app"] .ds-alede{font-size:var(--text-md);line-height:var(--line-height-md)}
+[data-shell="app"] .ds-apphead__title{font-size:var(--text-base);line-height:var(--line-height-md)}
+[data-shell="app"] .ds-ahead h2{font-size:var(--text-md);line-height:var(--line-height-md);font-weight:var(--weight-medium)}
+[data-shell="app"] :is(.ds-ahead a,.ds-ahead .ds-link-btn){font-size:var(--text-sm)}
+[data-shell="app"] :is(.ds-acard__title h2,.ds-why__head h2){font-size:var(--text-base);line-height:var(--line-height-base);font-weight:var(--weight-semibold);letter-spacing:var(--letter-spacing)}
+[data-shell="app"] .ds-why>p{font-size:var(--text-sm);line-height:var(--line-height-sm)}
+[data-shell="app"] .ds-arow__title{font-weight:var(--weight-regular)}
+[data-shell="app"] .ds-arow__sub{font-size:var(--text-xs);line-height:var(--line-height-xs)}
+[data-shell="app"] .ds-arow__end{font-size:var(--text-base);color:var(--fg)}
+[data-shell="app"] .ds-arow__end>svg{color:var(--fg-subtle)}
+[data-shell="app"] .ds-atile__value b{font-size:var(--text-xl);line-height:var(--line-height-xl)}
+[data-shell="app"] .button{--control-height:3rem;padding-inline:var(--space-4);border-radius:var(--radius-lg);font-size:var(--text-md);font-weight:var(--weight-semibold)}
+[data-shell="app"] .button[data-size="sm"]{--control-height:var(--control-lg);padding-inline:var(--space-3-5);border-radius:var(--radius-md);font-size:var(--text-sm)}
+[data-shell="app"] .button[data-variant="outline"]{border-color:transparent;background:var(--app-btn2);color:var(--fg)}
+[data-shell="app"] .button[data-variant="outline"]:hover,[data-shell="app"] .button[data-variant="outline"]:active{background:var(--app-btn2-hover);color:var(--fg)}
+/* Disabled secondary buttons stay filled (faded), not outlined, so they match their enabled neighbours. */
+[data-shell="app"] .button[data-variant="outline"]:is(:disabled,[aria-disabled="true"]),[data-shell="app"] .button[data-variant="outline"]:is(:disabled,[aria-disabled="true"]):hover{border-color:transparent;background:var(--app-btn2);color:var(--fg-disabled)}
+/* The report date range is a white control on the canvas, as tall as a button. */
+[data-shell="app"] .ds-datepick__btn{height:var(--touch-target);padding-inline:var(--space-3-5);border-color:transparent;border-radius:var(--radius-lg);background:var(--app-card);font-size:var(--text-md)}
+/* Reused report blocks get the app's card treatment; their inner dividers stay visible in both themes. */
+[data-shell="app"] :is(.ds-metrics,.ds-statgrid,.ds-acc,.ds-statrow,.ds-month,.ds-calgrid){border-color:transparent;border-radius:var(--radius-2xl)}
+[data-shell="app"] :is(.ds-metrics,.ds-statgrid,.ds-acc){background:var(--app-card)}
+[data-shell="app"] .ds-statrow{background:var(--app-divider)}
+[data-shell="app"] .ds-stat:not([data-emph]){background:var(--app-card)}
+[data-shell="app"] .ds-acc>section+section{border-top-color:var(--app-divider)}
+/* To-do checks: the circle is a button, so it drops the native fill; dividers start at the text. */
+.ds-check-mini{background:transparent;padding:0}
+[data-shell="app"] .ds-task{--inset:calc(var(--space-4) + 1.5rem + var(--space-3-5))}
+/* An odd last tile takes the whole row instead of sitting alone. */
+[data-shell="app"] .ds-atiles>.ds-atile:last-child:nth-child(odd){grid-column:1 / -1}
+/* Search: a full-screen sheet with Cancel; keyboard hints are for desktop only. */
+.ds-palette__cancel{display:none}
+[data-shell="app"] .ds-palette__cancel{display:inline-flex;align-items:center;height:var(--touch-target);margin-right:calc(var(--space-1) * -1);padding:0 var(--space-1);border:0;background:transparent;color:var(--link);font-size:var(--text-body-lg)}
+[data-shell="app"] .ds-palette__input kbd,[data-shell="app"] .ds-palette__foot{display:none}
+[data-shell="app"] .ds-palette__input{height:3.5rem}
+[data-shell="app"] .ds-palette__item{min-height:3.5rem}
 
 /* Must stay last: an element already on screen never replays its entrance. */
 [data-anim][data-anim-done]{animation:none}

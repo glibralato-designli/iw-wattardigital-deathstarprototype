@@ -30,8 +30,8 @@ window.PROJECT = {
       ],
       screens: [
         { id: 'home', name: '01 Home', path: 'pages/app/home.html', flow: 'start-day', kind: 'data', primaryAction: 'Open Attack Plan',
-          description: 'Greeting, today’s Attack Plan with one full-width action, the pulse tiles, Brain’s note, Up next, meetings and the week’s calls.',
-          states: { Search: 'palette=search', LogCall: 'palette=log' },
+          description: 'A navy hero with the greeting, then today’s Attack Plan with one full-width action, the pulse tiles, Brain’s note, Up next, meetings and the week’s calls.',
+          states: { Scrolled: 'scroll=past', Search: 'palette=search', LogCall: 'palette=log' },
           waivers: { Loading: LOCAL, Error: LOCAL, Empty: 'Home always has today’s plan' } },
         { id: 'attack-plan', name: '02 Today', path: 'pages/app/attack-plan.html', flow: 'start-day', kind: 'data', primaryAction: 'Call Daniel Marchetti',
           description: 'The Attack Plan as a tab: a day strip, Call next with trust and call buttons, to-dos, goals and meetings.',
