@@ -1,0 +1,114 @@
+{
+  "schema": 2,
+  "slug": "start-day",
+  "title": "Start the day",
+  "goal": "Reach the first owner to call in two clicks, without scrolling.",
+  "order": 1,
+  "next": [
+    {
+      "flow": "live-call",
+      "on": "Call Daniel Marchetti"
+    }
+  ],
+  "entryPoints": [
+    {
+      "from": "Start",
+      "to": "01-Home"
+    }
+  ],
+  "devices": [
+    "desktop",
+    "mobile"
+  ],
+  "steps": [
+    {
+      "n": "01",
+      "id": "Home",
+      "kind": "data",
+      "title": "01 Home",
+      "states": {
+        "Default": {
+          "desktop": "01-Home-Default.html",
+          "mobile": "01-Home-Default-Mobile.html"
+        },
+        "Custom-ClassicLayout": {
+          "desktop": "01-Home-Custom-ClassicLayout.html",
+          "mobile": "01-Home-Custom-ClassicLayout-Mobile.html"
+        },
+        "Custom-UpNextFirst": {
+          "desktop": "01-Home-Custom-UpNextFirst.html",
+          "mobile": "01-Home-Custom-UpNextFirst-Mobile.html"
+        },
+        "Custom-SidebarCollapsed": {
+          "desktop": "01-Home-Custom-SidebarCollapsed.html",
+          "mobile": "01-Home-Custom-SidebarCollapsed-Mobile.html"
+        },
+        "Custom-BrainMinimized": {
+          "desktop": "01-Home-Custom-BrainMinimized.html",
+          "mobile": "01-Home-Custom-BrainMinimized-Mobile.html"
+        },
+        "Custom-BrainClosed": {
+          "desktop": "01-Home-Custom-BrainClosed.html",
+          "mobile": "01-Home-Custom-BrainClosed-Mobile.html"
+        },
+        "Custom-GuideFlows": {
+          "desktop": "01-Home-Custom-GuideFlows.html",
+          "mobile": "01-Home-Custom-GuideFlows-Mobile.html"
+        },
+        "Custom-GuideStructure": {
+          "desktop": "01-Home-Custom-GuideStructure.html",
+          "mobile": "01-Home-Custom-GuideStructure-Mobile.html"
+        },
+        "Custom-AccountMenu": {
+          "desktop": "01-Home-Custom-AccountMenu.html",
+          "mobile": "01-Home-Custom-AccountMenu-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched",
+        "Empty": "n/a: Home always has today\u2019s plan"
+      },
+      "purpose": "Greeting, today\u2019s Attack Plan, the pulse strip, metric tabs, Up next and meetings. Brain is open.",
+      "primaryAction": "Open Attack Plan"
+    },
+    {
+      "n": "02",
+      "id": "AttackPlan",
+      "kind": "data",
+      "title": "02 Dashboard \u00b7 Attack Plan",
+      "states": {
+        "Default": {
+          "desktop": "02-AttackPlan-Default.html",
+          "mobile": "02-AttackPlan-Default-Mobile.html"
+        },
+        "Empty": {
+          "desktop": "02-AttackPlan-Empty.html",
+          "mobile": "02-AttackPlan-Empty-Mobile.html"
+        },
+        "Custom-PastDay": {
+          "desktop": "02-AttackPlan-Custom-PastDay.html",
+          "mobile": "02-AttackPlan-Custom-PastDay-Mobile.html"
+        },
+        "Custom-FutureDay": {
+          "desktop": "02-AttackPlan-Custom-FutureDay.html",
+          "mobile": "02-AttackPlan-Custom-FutureDay-Mobile.html"
+        },
+        "Custom-Week": {
+          "desktop": "02-AttackPlan-Custom-Week.html",
+          "mobile": "02-AttackPlan-Custom-Week-Mobile.html"
+        },
+        "Custom-DatePicker": {
+          "desktop": "02-AttackPlan-Custom-DatePicker.html",
+          "mobile": "02-AttackPlan-Custom-DatePicker-Mobile.html"
+        },
+        "Custom-Resolved": {
+          "desktop": "02-AttackPlan-Custom-Resolved.html",
+          "mobile": "02-AttackPlan-Custom-Resolved-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched"
+      },
+      "purpose": "Today\u2019s plan with Call next, to-dos, the week strip, goals and meetings. Day and week stepper with a date picker.",
+      "primaryAction": "Call Daniel Marchetti"
+    }
+  ]
+}

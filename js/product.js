@@ -1,4 +1,4 @@
-/* Death Star product runtime: demo store, the navy shell, Brain, ⌘K, the peek drawer and shared UI.
+/* Death Star product runtime: demo store, the navy shell (web) or the app shell (mobile app), Brain, ⌘K, the peek drawer and shared UI.
    Screens register with DS.define() from js/screens/<page>.js. Every move between screens is a real
    link resolved through Nav.route(), so the portal export can rename screens. */
 (() => {
@@ -35,7 +35,7 @@
   let U = loadU();
   const save = () => { if (snapshot) return; write(localStorage, STORE, S); write(sessionStorage, UI, U); };
   // Per-screen view state; Brain's draft, thinking and streaming carry across screens.
-  const freshV = () => ({ menu: null, drawer: false, brainHere: false, pal: null, peek: null, peekDir: 0, acc: null, guideTab: 'flows', brainParam: params.get('brain') });
+  const freshV = () => ({ sheet: null, menu: null, drawer: false, chats: false, histQ: '', docsOpen: false, brainHere: false, pal: null, peek: null, peekDir: 0, acc: null, guideTab: 'flows', brainParam: params.get('brain') });
   const V = { toast: null, draft: '', thinking: false, thinkSteps: [], thinkI: 0, stream: null, ...freshV() };
 
   /* ───────── Shared UI helpers ───────── */
@@ -295,6 +295,20 @@
     const list = page ? (U.msgs || []) : msgsOf();
     return list.map((m, i) => messageHTML(m, i, page)).join('') + thinkHTML(page);
   };
+  /* Chat history: the Brain page's left column on desktop and tablet, collapsible; a left drawer ("Chats")
+     on a phone and in the app. One list either way: new chat, search, grouped chats, folders and stored documents. */
+  DS.chatHistory = drawer => {
+    const q = V.histQ.toLowerCase().trim(), groups = ['Pinned', 'Today', 'Previous 7 days', 'Older'].map(g => ({ g, items: D.chats.filter(c => c.g === g && (!q || c.t.toLowerCase().includes(q))) })).filter(g => g.items.length);
+    return `<div class="ds-history__top"><div class="ds-history__row">${ui.btn({ label: 'New chat', ic: 'note-pencil', variant: 'outline', act: 'new-chat', cls: 'ds-newchat' })}${ui.iconBtn({ ic: 'sidebar-simple', aria: drawer ? 'Close chats' : 'Hide chats', act: 'close-chats', tip: drawer ? null : 'Hide chats' })}</div><label class="ds-input-icon">${icon('magnifying-glass')}<input id="${drawer ? 'chats-q' : 'hist-q'}" aria-label="Search chats" placeholder="Search chats" value="${esc(V.histQ)}" data-input="histQ" autocomplete="off"></label></div>
+      <div class="ds-history__list">${groups.map(({ g, items }) => `<div class="ds-history__group"><span>${esc(g)}</span>${items.map(c => `<button type="button" class="ds-hitem"${U.chatId === c.id ? ' aria-current="true"' : ''} data-act="open-chat" data-arg="${c.id}">${c.pin ? icon('push-pin') : ''}<span>${esc(c.t)}</span></button>`).join('')}</div>`).join('')}${groups.length ? '' : `<span class="ds-meta" style="padding:var(--space-2)">No chats match “${esc(V.histQ)}”.</span>`}
+        <div class="ds-history__group">${[['Folders', 'folders'], ['Archived', 'archive']].map(([l, ic]) => `<span class="ds-hitem" role="button" tabindex="0" aria-disabled="true" data-tip="${DS.OFF}"${drawer ? '' : ' data-tip-side="right"'}>${icon(ic)}<span>${l}</span></span>`).join('')}</div></div>
+      <div class="ds-history__docs"><button type="button" class="ds-hitem font-medium" aria-expanded="${V.docsOpen}" data-act="docs">${icon('folder')}<span>Stored documents</span><span class="ds-meta" style="flex:none">3</span>${icon(V.docsOpen ? 'caret-down' : 'caret-right')}</button>
+        ${V.docsOpen ? D.docs.map(([n, s]) => `<div class="ds-doc" data-anim="expand" data-key="doc-${esc(n)}">${icon('file-text')}<span class="ds-row__body"><span class="ds-row__title" style="font-size:var(--text-xs);line-height:var(--line-height-xs)">${esc(n)}</span><span class="ds-row__sub">${esc(s)}</span></span></div>`).join('') : ''}</div>`;
+  };
+  // The drawer form. Screens put it in overlays(); on the web it only shows below 768.
+  ui.chatDrawer = () => V.chats ? `<div class="ds-chatdrawer" data-key="drawer-chats"><div class="ds-drawer-scrim" data-act="close-chats" data-anim="fade" data-key="drawer-chats-scrim"></div><aside class="ds-history" data-drawer role="dialog" aria-modal="true" aria-label="Chats" data-anim="drawer" data-key="drawer-chats-body">${DS.chatHistory(true)}</aside></div>` : '';
+  // The button that brings the list back: always on a phone and in the app, on wider screens only once hidden.
+  ui.chatsBtn = () => `<button type="button" class="ds-icon-btn ds-chats-btn"${U.histHidden ? ' data-collapsed' : ''} aria-label="Chats" aria-expanded="${!!V.chats}" data-act="open-chats">${icon('sidebar-simple')}</button>`;
   DS.composer = (page, opts = {}) => `<div class="ds-composer"${page ? ' data-page' : ''}>${page ? `<textarea id="${opts.id || 'brain-page-input'}" aria-label="Message Brain" rows="${opts.rows || 1}" placeholder="${esc(opts.ph || 'Reply to Brain')}" data-input="draft" data-enter="send">${esc(V.draft)}</textarea>` : `<input id="brain-input" aria-label="Message Brain" placeholder="Ask about a contact, property or list" value="${esc(V.draft)}" data-input="draft" data-enter="send" autocomplete="off">`}<div class="ds-composer__tools">${icon('paperclip')}<b>@</b><b>/</b><span class="ds-composer__mode"><span>Ask</span><span>Act</span></span><span class="ds-composer__learn">${icon('book-open')}Learning</span><button type="button" class="ds-send" aria-label="Send" data-act="send">${icon('arrow-up')}</button></div></div>`;
   const scopeLabel = () => 'Scoped to ' + (DS.screen.scope ? DS.screen.scope() : 'Home');
   function brainPanel() {
@@ -430,7 +444,7 @@
     const flips = {}, ticks = {};
     document.querySelectorAll('[data-flip]').forEach(el => { flips[el.dataset.flip] = { r: el.getBoundingClientRect(), f: flipFrame(el).getBoundingClientRect(), bg: getComputedStyle(el).backgroundColor }; });
     document.querySelectorAll('[data-tick]').forEach(el => { const [k, v] = el.dataset.tick.split('|'); ticks[k] = v; });
-    const exits = [...document.querySelectorAll('#ds-overlays > [data-key]:not([data-exiting]), #ds-brain-slot > [data-key]:not([data-exiting])')].map(el => ({ el, key: el.dataset.key, parent: el.parentNode }));
+    const exits = [...document.querySelectorAll('#ds-overlays > [data-key]:not([data-exiting]), #ds-brain-slot > [data-key]:not([data-exiting]), #ds-callslot > [data-key]:not([data-exiting])')].map(el => ({ el, key: el.dataset.key, parent: el.parentNode }));
     return { flips, ticks, exits };
   };
   const runFlips = prev => {
@@ -473,6 +487,8 @@
       if (key.startsWith('peek-')) { kf = el.dataset.mode === 'center' ? [{ opacity: 1, transform: 'translate(-50%,0) scale(1)' }, { opacity: 0, transform: 'translate(-50%,8px) scale(.98)' }] : [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(32px)' }]; d = 170; }
       if (key === 'brain-panel') { Object.assign(el.style, { position: 'absolute', top: '0', right: 'var(--gutter)', bottom: 'var(--gutter)' }); kf = [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(16px)' }]; d = 170; }
       if (key === 'brain-min') kf = [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(8px)' }];
+      if (key === 'drawer-chats') { const dr = el.querySelector('.ds-history'); if (dr) DS.play(dr, [{ transform: 'none' }, { transform: 'translateX(-100%)' }], { duration: 200, easing: EASE_IN, fill: 'forwards' }); d = 200; }
+      if (key.startsWith('sheet-')) { const sh = el.querySelector('.ds-sheet'); if (sh) DS.play(sh, [{ transform: 'none' }, { transform: 'translateY(100%)' }], { duration: 200, easing: EASE_IN, fill: 'forwards' }); d = 200; }
       parent.appendChild(el);
       const a = DS.play(el, kf, { duration: d, easing: EASE_IN, fill: 'forwards' });
       if (a) a.onfinish = () => el.remove(); else el.remove();
@@ -496,6 +512,46 @@
     });
     write(sessionStorage, SEEN, seen);
   };
+
+
+  /* ───────── App shell (mobile app mode) ─────────
+     Pages in pages/app/ set body[data-shell="app"]. A header bar, a five-tab bar and bottom sheets replace
+     the navy frame; Brain is a tab; a live call follows Thomas as a pill above the tab bar. Routes keep the
+     web names (home, contact, brain…), so shared helpers and reused screen scripts link inside the app. */
+  const APP = document.body.dataset.shell === 'app';
+  DS.app = APP;
+  const TABS = [['home', 'Home', 'house', 'home'], ['today', 'Today', 'sun', 'attack-plan'], ['brain', 'Brain', 'sparkle', 'brain'], ['database', 'Database', 'database', 'contacts'], ['more', 'More', 'dots-three-circle', 'more']];
+  const tabOf = sc => sc.tab || ({ home: 'home', brain: 'brain', database: 'database' }[sc.nav]) || 'more';
+  function tabbar() {
+    const cur = tabOf(DS.screen);
+    return TABS.map(([k, l, ic, page]) => `<a class="ds-tab" href="${href(page)}"${k === cur ? ' aria-current="page"' : ''}>${icon(ic, k === cur ? 'fill' : 'regular')}<span>${l}</span></a>`).join('');
+  }
+  // A screen describes its bar: { title, large, back: [label, page, query, 'history'?] or lead (a control), actions }.
+  // Large-title screens render ui.large() at the top of the page; the bar shows the title once it scrolls away.
+  function appHead() {
+    const sc = DS.screen, report = (D.dashboardTabs.find(x => x[0] === sc.id) || [])[1];
+    const h = sc.head ? sc.head() : { title: sc.title || report || '', large: true, back: report ? ['More', 'more'] : null };
+    const b = h.back;
+    const back = h.lead ? `<div class="ds-apphead__lead">${h.lead}</div>` : !b ? '' : b[3] === 'history'
+      ? `<button type="button" class="ds-apphead__back" data-act="app-back" data-arg="${esc(b[1])}">${icon('caret-left')}<span>${esc(b[0])}</span></button>`
+      : `<a class="ds-apphead__back" href="${href(b[1], b[2] || '')}">${icon('caret-left')}<span>${esc(b[0])}</span></a>`;
+    return `<div class="ds-apphead__bar"${h.large ? ' data-large' : ''}>${back}<span class="ds-apphead__title"${h.large ? ' aria-hidden="true"' : ''}>${esc(h.title)}</span><div class="ds-apphead__tools">${h.actions || ''}</div></div>`;
+  }
+  ui.large = (title, sub = '', extra = '') => `<div class="ds-large"><div class="ds-large__text">${sub ? `<span class="ds-large__sub">${esc(sub)}</span>` : ''}<h1>${esc(title)}</h1></div>${extra}</div>`;
+  // Bottom sheet: grabber, title and close, a scrolling body and an optional sticky footer.
+  ui.sheet = ({ key, title, body, foot = '', close = 'close-sheet', size }) => `<div class="ds-sheet-layer" data-key="sheet-${esc(key)}"><div class="ds-sheet-scrim" data-act="${close}" data-anim="fade" data-key="sheet-scrim-${esc(key)}"></div><section class="ds-sheet"${size ? ` data-size="${size}"` : ''} role="dialog" aria-modal="true" aria-label="${esc(title)}" data-anim="sheet" data-key="sheet-body-${esc(key)}"><span class="ds-sheet__grab" aria-hidden="true"></span><header class="ds-sheet__head"><h2>${esc(title)}</h2>${ui.iconBtn({ ic: 'x', aria: 'Close', act: close })}</header><div class="ds-sheet__body">${body}</div>${foot ? `<footer class="ds-sheet__foot">${foot}</footer>` : ''}</section></div>`;
+  const callClock = () => { if (!U.call) return '0:00'; const s = Math.floor((Date.now() - U.call.t0) / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  function callPill() {
+    if (!U.call || (DS.screen.id === 'contact' && params.get('id') === U.call.id)) return '';
+    const c = cById[U.call.id]; if (!c) return '';
+    return `<div class="ds-callpill" role="status" data-anim="rise" data-key="callpill"><a class="ds-callpill__go" href="${href('contact', 'id=' + c.id)}"><span class="ds-livebar__dot" aria-hidden="true"></span><span class="ds-callpill__name">${esc(c.name)}</span><span class="ds-callpill__time" data-calltime aria-label="Call length">${callClock()}</span></a><button type="button" class="ds-callpill__end" data-act="app-end-call" aria-label="End call">${icon('phone-disconnect')}</button></div>`;
+  }
+  if (APP) {
+    DS.ask = text => { DS.sendText(text); if (DS.screen.id !== 'brain') DS.navigate(href('brain')); };
+    DS.openBrain = () => { if (DS.screen.id !== 'brain') DS.navigate(href('brain')); };
+    // Reused web screens (the four reports) get a large title instead of the Dashboard heading and tabs.
+    ui.pageHead = (title, tabsHtml, extra = '') => { const t = (D.dashboardTabs.find(x => x[0] === (DS.screen && DS.screen.id)) || [])[1]; return ui.large(t || title, t ? 'Reports' : '') + extra; };
+  }
 
   /* ───────── Render loop ───────── */
   let animSeen = new Set();
@@ -522,6 +578,15 @@
     const sc = DS.screen; if (!sc || !document.getElementById('ds-main')) return;
     const snap = snapMotion();
     keepFocus(() => {
+      if (APP) {
+        document.getElementById('ds-apphead').innerHTML = appHead();
+        document.getElementById('ds-main').innerHTML = sc.render();
+        document.getElementById('ds-callslot').innerHTML = callPill();
+        document.getElementById('ds-fabslot').innerHTML = sc.fab ? sc.fab() : '';
+        document.getElementById('ds-tabbar').innerHTML = tabbar();
+        document.getElementById('ds-overlays').innerHTML = palette() + (sc.overlays ? sc.overlays() : '');
+        return;
+      }
       const side = document.getElementById('ds-sidebar');
       side.innerHTML = sidebar(); side.toggleAttribute('data-rail', isRail()); side.toggleAttribute('data-drawer', isPhone()); side.toggleAttribute('data-open', isPhone() && !!V.drawer);
       side.inert = isPhone() && !V.drawer;
@@ -559,6 +624,14 @@
     'toggle-more': () => { U.moreOpen = !U.moreOpen; save(); render(); },
     menu: (el, m) => { V.menu = V.menu === m ? null : m; render(); },
     'close-menu': () => { V.menu = null; render(); },
+    'close-sheet': () => { V.sheet = null; render(); if (DS.screen.onSheetClose) DS.screen.onSheetClose(); },
+    sheet: (el, k) => { V.sheet = k; render(); },
+    // Chats: a drawer on a phone and in the app; on wider web screens, show or hide the history column.
+    'open-chats': () => { if (APP || isPhone()) { V.chats = true; render(); const el = document.querySelector('.ds-chatdrawer .ds-hitem[aria-current]') || document.querySelector('.ds-chatdrawer [data-act="close-chats"]'); if (el) el.focus({ preventScroll: true }); } else { U.histHidden = false; save(); render(); } },
+    'close-chats': () => { if (V.chats) { V.chats = false; render(); const el = document.querySelector('.ds-chats-btn'); if (el) el.focus(); } else { U.histHidden = true; save(); render(); const el = document.querySelector('.ds-chats-btn'); if (el) el.focus(); } },
+    docs: () => { V.docsOpen = !V.docsOpen; render(); },
+    'app-back': (el, page) => { try { const r = new URL(DS.referrer || document.referrer); if (r.origin === location.origin && history.length > 1) { history.back(); return; } } catch (_) {} DS.navigate(href(page)); },
+    'app-end-call': () => { const id = U.call && U.call.id; if (!id) return; U.outcome = { id, dur: callClock(), choice: null, acts: {}, notes: '', follow: '' }; U.call = null; save(); DS.navigate(href('contact', 'id=' + id)); },
     'guide-tab': (el, k) => { V.guideTab = k; render(); },
     theme: (el, k) => { if (document.documentElement.dataset.theme === k) return; try { localStorage.setItem('design-project-theme', k); } catch (_) {} if (params.has('theme')) params.set('theme', k); DS.vt(() => { document.documentElement.dataset.theme = k; render(); }, 'theme'); },
     reset: () => { write(localStorage, STORE, fresh()); write(sessionStorage, UI, { navRail: U.navRail, navGrp: U.navGrp, moreOpen: U.moreOpen }); try { sessionStorage.setItem('ds-toast', 'Prototype data reset'); } catch (_) {} const u = new URL(location.href); ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'stage', 'choice'].forEach(k => u.searchParams.delete(k)); location.replace(u); },
@@ -601,6 +674,7 @@
     const el = ev.target, name = el.dataset && el.dataset.input; if (!name) return;
     if (name === 'draft') { V.draft = el.value; return; }
     if (name === 'palette') { V.pal.q = el.value; V.pal.active = 0; render(); return; }
+    if (name === 'histQ') { V.histQ = el.value; render(); return; }
     const fn = DS.screen.inputs && DS.screen.inputs[name]; if (fn) fn(el.value, el, ev);
   });
   document.addEventListener('change', ev => { const el = ev.target, name = el.dataset && el.dataset.change; if (!name) return; const fn = DS.screen.inputs && DS.screen.inputs[name]; if (fn) fn(el.value, el, ev); });
@@ -617,6 +691,8 @@
     if (ev.key === 'Escape') {
       if (DS.screen.onEscape && DS.screen.onEscape()) return;
       if (V.pal) { V.pal = null; render(); return; }
+      if (V.sheet) { A['close-sheet'](); return; }
+      if (V.chats) { A['close-chats'](); return; }
       if (V.menu) { V.menu = null; render(); return; }
       if (V.drawer) { A['close-drawer'](); return; }
       if (V.peek) { V.peek = null; render(); return; }
@@ -636,7 +712,7 @@
     }
   });
   let railWas = null;
-  addEventListener('resize', () => { markOverflow(); const r = layoutKey(); if (railWas !== null && r !== railWas) { if (!isPhone()) V.drawer = false; render(); } railWas = r; });
+  addEventListener('resize', () => { markOverflow(); const r = layoutKey(); if (railWas !== null && r !== railWas) { if (!isPhone()) { V.drawer = false; if (!APP) V.chats = false; } render(); } railWas = r; });
 
   /* ───────── Boot ───────── */
   const startScreen = () => {
@@ -648,6 +724,9 @@
     const pal = params.get('palette'); if (pal) V.pal = { mode: pal, q: params.get('pq') || '', active: 0 };
     if (params.get('guide')) { V.menu = 'guide'; V.guideTab = params.get('guide') === 'structure' ? 'structure' : 'flows'; }
     if (params.get('menu')) V.menu = params.get('menu');
+    if (params.get('sheet')) V.sheet = params.get('sheet');
+    if (params.get('chats') === 'open') V.chats = true;
+    if (params.get('chats') === 'hidden') U.histHidden = true;
     railWas = layoutKey();
     render();
     try { const t = sessionStorage.getItem('ds-toast'); if (t) { sessionStorage.removeItem('ds-toast'); DS.toast(t); } } catch (_) {}
@@ -657,6 +736,7 @@
   DS.boot = () => {
     if (!DS.screen) return;
     startScreen();
+    if (APP) { const main = document.getElementById('ds-main'), shell = document.querySelector('.ds-appshell'); const mark = () => shell && shell.toggleAttribute('data-scrolled', main.scrollTop > 36); main.addEventListener('scroll', mark, { passive: true }); addEventListener('screenchange', () => setTimeout(mark, 0)); }
     // Live-call timer: update the clock without re-rendering the page.
     setInterval(() => { if (!U.call) return; const s = Math.floor((Date.now() - U.call.t0) / 1000), txt = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); document.querySelectorAll('[data-calltime]').forEach(el => { el.textContent = txt; }); }, 1000);
   };

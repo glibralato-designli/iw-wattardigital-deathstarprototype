@@ -632,6 +632,23 @@ a.ds-hitem:hover,button.ds-hitem:hover{background:var(--bg-muted);color:var(--fg
 .ds-hitem[aria-current="true"]{background:var(--border);color:var(--fg);font-weight:var(--weight-medium)}
 .ds-hitem[aria-disabled="true"]{color:var(--fg-disabled);cursor:not-allowed}
 .ds-hitem[aria-disabled="true"] svg{color:var(--fg-disabled)}
+.ds-history__row{display:flex;align-items:center;gap:var(--space-1)}
+.ds-history__row .ds-newchat{flex:1;min-width:0}
+.ds-history__top>.ds-input-icon{flex:none}
+.ds-history[data-drawer] .ds-history__top>.ds-input-icon{height:var(--touch-target)}
+.ds-history__docs{padding:var(--space-2);display:flex;flex-direction:column;gap:var(--space-0-5)}
+/* Chats: the button that brings the history back (always on a phone and in the app; on wider screens once hidden) and the drawer form. */
+.ds-chats-btn{display:none;flex:none}
+.ds-chats-btn[data-collapsed]{display:grid}
+.ds-chatdrawer{position:fixed;inset:0;z-index:var(--layer-dialog)}
+.ds-chatdrawer>.ds-drawer-scrim{position:absolute;z-index:0}
+.ds-history[data-drawer]{display:flex;position:absolute;z-index:1;top:0;bottom:0;left:0;width:min(20rem,86%);border-radius:0 var(--radius-xl) var(--radius-xl) 0;box-shadow:var(--shadow-lg);padding-top:max(env(safe-area-inset-top),var(--device-top));padding-bottom:max(env(safe-area-inset-bottom),var(--device-bottom))}
+.ds-history[data-drawer] .ds-hitem,.ds-history[data-drawer] .ds-history__row>.ds-icon-btn{height:var(--touch-target)}
+.ds-history[data-drawer] .ds-history__row>.ds-icon-btn{width:var(--touch-target)}
+.ds-history[data-drawer] .ds-newchat{height:var(--touch-target)}
+[data-anim="drawer"]{animation:ds-drawer-in var(--motion-view) var(--ease-out) both}
+@keyframes ds-drawer-in{from{transform:translateX(-100%)}}
+@media(min-width:768px){.ds-body:not([data-shell="app"]) .ds-chatdrawer{display:none}}
 .ds-doc{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1-5) var(--space-2);border-radius:var(--radius-md);background:var(--bg)}
 .ds-doc svg{width:1rem;height:1rem;color:var(--fg-muted);flex:none}
 .ds-brainpage__main{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
@@ -1002,6 +1019,8 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
   .ds-week{grid-template-columns:repeat(5,minmax(9rem,1fr));overflow-x:auto}
   .ds-hbar{grid-template-columns:minmax(0,6.5rem) minmax(0,1fr) 3rem}
   .ds-history{display:none}
+  .ds-chats-btn{display:grid}
+  .ds-brainpage__tabs{padding:var(--space-2) var(--space-3) 0;gap:var(--space-2)}
   .ds-chat[data-page]{padding:var(--space-4)}
   .ds-brainpage__foot{padding:0 var(--space-3) var(--space-3)}
   .ds-overlay{padding:var(--space-4) var(--space-3)!important}
@@ -1060,6 +1079,208 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
   /* 16px fields on phones so iOS never zooms on focus. */
   .field__control,.ds-composer textarea,.ds-palette__input input,.ds-input-icon input{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg)}
 }
+
+/* ───────── App shell (mobile app mode, pages/app/) ─────────
+   White screens with navy accents: a header bar that takes the title once the large title scrolls away,
+   a five-tab bar (filled icon on the current tab), bordered cards, inset list rows and bottom sheets.
+   Targets are 44 tall; device insets come from env(safe-area-*) or the review frame (--device-*). */
+.ds-body[data-shell="app"]{background:var(--bg-subtle)}
+.ds-appshell{--app-pad:var(--space-4);height:100vh;height:100dvh;max-width:30rem;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
+.ds-apphead{flex:none;padding-top:max(env(safe-area-inset-top),var(--device-top));background:var(--bg);position:relative;z-index:var(--layer-sticky);transition:box-shadow var(--motion-fast) var(--ease)}
+.ds-appshell[data-scrolled] .ds-apphead{box-shadow:0 1px 0 var(--border)}
+.ds-apphead__bar{height:2.75rem;display:grid;grid-template-columns:minmax(5.75rem,1fr) minmax(0,max-content) minmax(5.75rem,1fr);align-items:center;gap:var(--space-2);padding:0 var(--space-2)}
+.ds-apphead__back{grid-column:1;justify-self:start;height:var(--touch-target);display:inline-flex;align-items:center;gap:var(--space-0-5);padding:0 var(--space-2) 0 0;border:0;background:transparent;color:var(--link);font-size:var(--text-md);line-height:var(--line-height-md);text-decoration:none;max-width:100%;overflow:hidden}
+.ds-apphead__back:hover{text-decoration:none;color:var(--link-hover)}
+.ds-apphead__back svg{width:1.375rem;height:1.375rem;flex:none}.ds-apphead__back span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-apphead__title{grid-column:2;min-width:0;font-size:var(--text-md);line-height:var(--line-height-md);font-weight:var(--weight-semibold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity var(--motion-fast) var(--ease)}
+.ds-apphead__bar[data-large] .ds-apphead__title{opacity:0}
+.ds-appshell[data-scrolled] .ds-apphead__bar[data-large] .ds-apphead__title{opacity:1}
+.ds-apphead__lead{grid-column:1;justify-self:start;display:flex;align-items:center}
+[data-shell="app"] .ds-chats-btn{display:grid}
+[data-shell="app"] .ds-chatdrawer{max-width:30rem;margin:0 auto}
+.ds-apphead__tools{grid-column:3;justify-self:end;display:flex;align-items:center;gap:var(--space-1)}
+.ds-apphead__tools .ds-icon-btn,.ds-apphead__lead .ds-icon-btn,.ds-abtn{width:var(--touch-target);height:var(--touch-target);border-radius:var(--radius-full);color:var(--fg-secondary)}
+.ds-apphead__tools .ds-icon-btn svg,.ds-apphead__lead .ds-icon-btn svg,.ds-abtn svg{width:1.375rem;height:1.375rem}
+.ds-apphead__tools .avatar{width:2rem;height:2rem;font-size:var(--text-xs)}
+.ds-abadge{position:relative}.ds-abadge>i{position:absolute;top:.5rem;right:.5rem;min-width:1rem;height:1rem;padding:0 .25rem;border-radius:var(--radius-full);background:var(--danger);color:var(--white);font-style:normal;font-size:var(--text-2xs);line-height:var(--line-height-2xs);font-weight:var(--weight-semibold);text-align:center;box-shadow:0 0 0 2px var(--bg)}
+.ds-appmain{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;outline:none;-webkit-overflow-scrolling:touch}
+.ds-tabbar{flex:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:var(--space-1) var(--space-1) max(var(--space-2),max(env(safe-area-inset-bottom),var(--device-bottom)));border-top:var(--border-width) solid var(--border);background:var(--bg);z-index:var(--layer-sticky)}
+.ds-tab{min-height:3rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:var(--radius-md);color:var(--fg-subtle);font-size:var(--text-2xs);line-height:var(--line-height-2xs);font-weight:var(--weight-medium);text-decoration:none}
+.ds-tab svg{width:1.5rem;height:1.5rem}
+.ds-tab:hover{color:var(--fg);text-decoration:none}
+.ds-tab[aria-current="page"]{color:var(--brand-primary)}
+.ds-tab:active svg{transform:scale(.9)}.ds-tab svg{transition:transform 90ms var(--ease-out)}
+/* The page: one column, 16 from the edges, sections 24 apart. */
+.ds-apage{padding:var(--space-1) var(--app-pad) var(--space-10);display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.ds-apage[data-flush]{padding-inline:0}
+.ds-large{display:flex;align-items:flex-end;gap:var(--space-3);min-width:0}
+.ds-large__text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5)}
+.ds-large h1{font-size:var(--text-3xl);line-height:var(--line-height-2xl);font-weight:var(--weight-bold);letter-spacing:var(--letter-spacing-tighter);overflow-wrap:anywhere}
+.ds-large__sub{font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);color:var(--fg-subtle)}
+.ds-asec{display:flex;flex-direction:column;gap:var(--space-2-5);min-width:0}
+.ds-ahead{display:flex;align-items:baseline;gap:var(--space-3);min-height:var(--space-7)}
+.ds-ahead h2{flex:1;min-width:0;font-size:var(--text-body-lg);line-height:var(--line-height-body-lg);font-weight:var(--weight-semibold)}
+.ds-ahead a,.ds-ahead .ds-link-btn{font-size:var(--text-sm);font-weight:var(--weight-medium)}
+.ds-alede{color:var(--fg-muted)}
+/* Grouped list: rows on a bordered card, dividers inset past the leading element. */
+.ds-alist{border:var(--border-width) solid var(--border);border-radius:var(--radius-2xl);background:var(--bg);overflow:hidden}
+.ds-alist[data-plain]{border:0;border-radius:0;overflow:visible}
+.ds-arow{position:relative;display:flex;align-items:center;gap:var(--space-3);min-height:3.75rem;width:100%;padding:var(--space-3) var(--space-4);border:0;background:transparent;color:var(--fg);text-align:left;text-decoration:none;font:inherit}
+.ds-arow+.ds-arow::before{content:'';position:absolute;top:0;left:var(--inset,var(--space-4));right:0;border-top:var(--border-width) solid var(--border-subtle)}
+.ds-arow[data-lead]{--inset:calc(var(--space-4) + 2.25rem + var(--space-3))}
+a.ds-arow:hover,button.ds-arow:hover{background:var(--bg-subtle);color:var(--fg);text-decoration:none}
+a.ds-arow:active,button.ds-arow:active{background:var(--bg-muted)}
+.ds-arow__lead{width:2.25rem;height:2.25rem;flex:none;display:grid;place-items:center;border-radius:var(--radius-lg);background:var(--brand-primary-subtle);color:var(--brand-primary-text);font-weight:var(--weight-semibold);font-size:var(--text-xs)}
+.ds-arow__lead svg{width:1.125rem;height:1.125rem}
+.ds-arow__lead[data-tone="plain"]{background:var(--bg-muted);color:var(--fg-muted)}
+.ds-arow__body{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5)}
+.ds-arow__title{font-weight:var(--weight-medium);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-arow__sub{font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-subtle);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ds-arow__end{flex:none;display:flex;align-items:center;gap:var(--space-2);color:var(--fg-subtle);font-size:var(--text-xs);line-height:var(--line-height-xs);font-variant-numeric:tabular-nums}
+.ds-arow__end>svg{width:1rem;height:1rem;color:var(--fg-disabled)}
+.ds-arow[data-done] .ds-arow__title{color:var(--fg-subtle)}
+/* Filter chips scroll sideways under the header. */
+.ds-achips{display:flex;gap:var(--space-2);overflow-x:auto;scrollbar-width:none;margin-inline:calc(var(--app-pad) * -1);padding:var(--space-0-5) var(--app-pad)}
+.ds-achips::-webkit-scrollbar{display:none}
+.ds-fchip{height:2.25rem;flex:none;display:inline-flex;align-items:center;gap:var(--space-1-5);padding:0 var(--space-3-5);border:var(--border-width) solid var(--border);border-radius:var(--radius-full);background:var(--bg);color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm);font-weight:var(--weight-medium);white-space:nowrap}
+.ds-fchip svg{width:.875rem;height:.875rem}
+.ds-fchip[aria-pressed="true"]{border-color:transparent;background:var(--brand-primary-subtle);color:var(--brand-primary-text)}
+.ds-fchip[data-count]::after{content:attr(data-count);min-width:1.125rem;height:1.125rem;padding:0 .3rem;border-radius:var(--radius-full);background:var(--accent);color:var(--accent-fg);font-size:var(--text-2xs);line-height:var(--line-height-xs);text-align:center}
+/* Search field in a list header. */
+.ds-asearch{height:2.75rem;display:flex;align-items:center;gap:var(--space-2);padding:0 var(--space-3);border-radius:var(--radius-lg);background:var(--bg-muted);color:var(--fg-subtle)}
+.ds-asearch svg{width:1.125rem;height:1.125rem;flex:none}
+.ds-asearch input{flex:1;min-width:0;height:100%;border:0;outline:none;background:transparent;color:var(--fg);font-size:var(--text-body-lg)}
+.ds-asearch input::placeholder{color:var(--fg-placeholder)}
+.ds-asearch:focus-within{box-shadow:0 0 0 2px var(--focus)}
+button.ds-asearch{width:100%;border:0;text-align:left;font-size:var(--text-body-lg)}
+/* Quick actions: square tiles with an icon and a label (call, text, email, more). */
+.ds-qacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2)}
+.ds-qact{min-height:4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-1);padding:var(--space-2);border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg);color:var(--fg-secondary);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);text-decoration:none}
+.ds-qact svg{width:1.375rem;height:1.375rem;color:var(--brand-primary-text)}
+.ds-qact:hover{background:var(--bg-subtle);color:var(--fg);text-decoration:none}
+.ds-qact[data-primary]{border-color:transparent;background:var(--accent);color:var(--accent-fg)}.ds-qact[data-primary] svg{color:var(--accent-fg)}
+.ds-qact[data-primary]:hover{background:var(--accent-hover);color:var(--accent-fg)}
+.ds-qact[aria-disabled="true"]{color:var(--fg-disabled)}.ds-qact[aria-disabled="true"] svg{color:var(--fg-disabled)}
+/* Record identity: avatar, name, class and chips, centred. */
+.ds-aid{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);text-align:center;padding-top:var(--space-2)}
+.ds-aid__av{width:4.5rem;height:4.5rem;display:grid;place-items:center;border-radius:var(--radius-full);background:var(--brand-primary-subtle);color:var(--brand-primary-text);font-size:var(--text-xl);font-weight:var(--weight-semibold)}
+.ds-aid__av[data-shape="square"]{border-radius:var(--radius-2xl)}.ds-aid__av svg{width:2rem;height:2rem}
+.ds-aid h1{font-size:var(--text-2xl);line-height:var(--line-height-2xl);font-weight:var(--weight-bold);letter-spacing:var(--letter-spacing-tight)}
+.ds-aid__meta{color:var(--fg-muted);font-size:var(--text-sm)}
+.ds-aid__chips{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-1-5)}
+/* Segmented control stretched across the page. */
+a.segmented__item{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}a.segmented__item:hover{color:var(--fg);text-decoration:none}
+a.segmented__item[aria-current="page"]{background:var(--bg);color:var(--fg);font-weight:var(--weight-medium);box-shadow:var(--shadow-sm)}
+.ds-apage .segmented[data-fill]{display:flex;width:100%}.ds-apage .segmented[data-fill] .segmented__item{flex:1;min-height:2.25rem}
+/* Two-up stat tiles (Home pulse, Today goals). */
+.ds-atiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2-5)}
+.ds-atile{display:flex;flex-direction:column;gap:var(--space-1-5);padding:var(--space-3-5);border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg);color:var(--fg);text-decoration:none;min-width:0}
+a.ds-atile:hover{background:var(--bg-subtle);color:var(--fg);text-decoration:none}
+.ds-atile__label{display:flex;align-items:center;gap:var(--space-1-5);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);color:var(--fg-muted)}
+.ds-atile__label svg{width:.875rem;height:.875rem;color:var(--brand-primary-text)}
+.ds-atile__value{display:flex;align-items:baseline;gap:var(--space-1);flex-wrap:wrap}
+.ds-atile__value b{font-size:var(--text-2xl);line-height:var(--line-height-2xl);font-weight:var(--weight-semibold);letter-spacing:var(--letter-spacing-tighter);font-variant-numeric:tabular-nums}
+.ds-atile .ds-progress{width:100%}
+.ds-atile__foot{font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-muted);display:flex;align-items:center;gap:var(--space-1)}
+.ds-atile__foot svg{width:.75rem;height:.75rem}
+.ds-atile__foot[data-tone="up"]{color:var(--success)}.ds-atile__foot[data-tone="warn"]{color:var(--warning)}
+/* The plan card on Home and Today: a head with progress, rows, and one full-width action. */
+.ds-acard{border:var(--border-width) solid var(--border);border-radius:var(--radius-2xl);background:var(--bg);overflow:hidden;min-width:0}
+.ds-acard__head{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4) var(--space-4) var(--space-2)}
+.ds-acard__title{display:flex;align-items:baseline;gap:var(--space-2)}.ds-acard__title h2{flex:1;min-width:0;font-size:var(--text-body-lg);line-height:var(--line-height-body-lg);font-weight:var(--weight-semibold)}
+.ds-acard__prog{display:flex;align-items:center;gap:var(--space-2-5)}.ds-acard__prog .ds-progress{flex:1;width:auto}
+.ds-acard__foot{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-2) var(--space-4) var(--space-4)}
+.ds-acard__foot>.ds-two-btn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.ds-acard .ds-arow{padding-inline:var(--space-4)}
+.ds-check-mini{width:1.375rem;height:1.375rem;flex:none;display:grid;place-items:center;border:1.5px solid var(--border-strong);border-radius:var(--radius-full);color:transparent}
+.ds-check-mini[data-on]{border-color:transparent;background:var(--brand-primary);color:var(--brand-primary-on)}.ds-check-mini svg{width:.75rem;height:.75rem}
+/* Day strip (Today, Calendar): seven days, today circled in navy. */
+.ds-daystrip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-1)}
+.ds-daystrip__d{min-height:3.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-0-5);border:0;border-radius:var(--radius-lg);background:transparent;color:var(--fg);font-variant-numeric:tabular-nums}
+.ds-daystrip__d>span:first-child{font-size:var(--text-2xs);line-height:var(--line-height-2xs);font-weight:var(--weight-medium);color:var(--fg-subtle)}
+.ds-daystrip__d>b{width:2.25rem;height:2.25rem;display:grid;place-items:center;border-radius:var(--radius-full);font-size:var(--text-md);font-weight:var(--weight-semibold)}
+.ds-daystrip__d[data-today]>span:first-child{color:var(--brand-primary-text)}
+.ds-daystrip__d[aria-pressed="true"]>b{background:var(--accent);color:var(--accent-fg)}
+.ds-daystrip__d[data-today]:not([aria-pressed="true"])>b{color:var(--brand-primary-text);box-shadow:inset 0 0 0 1.5px var(--brand-primary-text)}
+.ds-daystrip__d[data-weekend]>b{color:var(--fg-disabled)}
+.ds-daystrip__d[data-dots]::after{content:'';width:4px;height:4px;border-radius:var(--radius-full);background:var(--chart-primary)}
+/* Agenda (Calendar day): time, colour bar and title. */
+.ds-agenda{display:flex;flex-direction:column}
+.ds-agenda__row{display:grid;grid-template-columns:4.25rem minmax(0,1fr);gap:var(--space-3);align-items:stretch;padding:var(--space-1-5) 0;text-align:left;border:0;background:transparent;color:var(--fg);width:100%}
+.ds-agenda__t{padding-top:var(--space-2);font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ds-agenda__ev{display:flex;flex-direction:column;gap:var(--space-0-5);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--ev-bg);color:var(--fg);min-width:0;border:0;text-align:left;font:inherit}
+.ds-agenda__ev b{font-weight:var(--weight-semibold);color:var(--ev-fg);display:flex;align-items:center;gap:var(--space-1-5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-agenda__ev>span{font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-muted)}
+.ds-agenda__now{display:grid;grid-template-columns:4.25rem minmax(0,1fr);gap:var(--space-3);align-items:center;color:var(--cal-now);font-size:var(--text-2xs);font-weight:var(--weight-semibold)}
+.ds-agenda__now::after{content:'';height:2px;border-radius:var(--radius-full);background:var(--cal-now)}
+.ds-agenda__gap{display:grid;grid-template-columns:4.25rem minmax(0,1fr);gap:var(--space-3);padding:var(--space-1) 0;font-size:var(--text-xs);color:var(--fg-disabled)}
+[data-cal="mtg"]{--ev-fg:var(--cal-meeting);--ev-bg:var(--cal-meeting-bg)}[data-cal="call"]{--ev-fg:var(--cal-call);--ev-bg:var(--cal-call-bg)}[data-cal="tour"]{--ev-fg:var(--cal-tour);--ev-bg:var(--cal-tour-bg)}[data-cal="mkt"]{--ev-fg:var(--cal-marketing);--ev-bg:var(--cal-marketing-bg)}
+/* Floating add button, above the tab bar. */
+.ds-fab{position:absolute;right:var(--space-4);bottom:var(--space-4);z-index:var(--layer-sticky);width:3.5rem;height:3.5rem;display:grid;place-items:center;border:0;border-radius:var(--radius-full);background:var(--accent);color:var(--accent-fg);box-shadow:var(--shadow-md)}
+.ds-fab svg{width:1.5rem;height:1.5rem}.ds-fab:active{transform:scale(.94)}
+.ds-appbody{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.ds-appbody:has(.ds-fab) .ds-apage{padding-bottom:6.5rem}
+/* Live call: a navy pill above the tab bar on every other screen; the case file shows the full call card. */
+.ds-callslot{flex:none;padding:0 var(--space-3)}
+.ds-callslot:empty{display:none}
+.ds-callpill{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2);padding:var(--space-1) var(--space-1) var(--space-1) var(--space-3);border-radius:var(--radius-full);background:var(--shell);color:var(--shell-fg-strong);box-shadow:var(--shadow-md)}
+.ds-callpill__go{flex:1;min-width:0;min-height:2.5rem;display:flex;align-items:center;gap:var(--space-2-5);color:inherit;text-decoration:none}
+.ds-callpill__go:hover{color:inherit;text-decoration:none}
+.ds-callpill__name{flex:1;min-width:0;font-weight:var(--weight-medium);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-callpill__time{font-weight:var(--weight-semibold);font-variant-numeric:tabular-nums}
+.ds-callpill__end{width:2.5rem;height:2.5rem;flex:none;display:grid;place-items:center;border:0;border-radius:var(--radius-full);background:var(--status-danger-light);color:var(--white)}
+.ds-callpill__end svg{width:1.125rem;height:1.125rem}
+.ds-callcard{display:flex;flex-direction:column;align-items:center;gap:var(--space-3);padding:var(--space-5) var(--space-4);border-radius:var(--radius-2xl);background:var(--shell);color:var(--shell-fg-strong);text-align:center}
+.ds-callcard__time{font-size:var(--text-3xl);line-height:var(--line-height-2xl);font-weight:var(--weight-semibold);letter-spacing:var(--letter-spacing-tighter);font-variant-numeric:tabular-nums}
+.ds-callcard .ds-meta{color:var(--shell-fg)}
+.ds-callcard .button{background:var(--white);color:var(--status-danger-light);border-color:transparent;width:100%}
+.ds-callcard .button:hover{background:var(--status-danger-light-bg);color:var(--status-danger-light)}
+/* Choice rows in sheets (call outcome, filters): a label and a radio or check on the right. */
+.ds-opts{display:flex;flex-direction:column}
+.ds-optrow{position:relative;min-height:var(--touch-target);display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2-5) 0;border:0;background:transparent;color:var(--fg);text-align:left;font:inherit;width:100%}
+.ds-optrow+.ds-optrow{border-top:var(--border-width) solid var(--border-subtle)}
+.ds-optrow>span:first-child{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5)}
+.ds-optrow__mark{width:1.375rem;height:1.375rem;flex:none;display:grid;place-items:center;border:1.5px solid var(--border-strong);border-radius:var(--radius-full);color:transparent}
+.ds-optrow[data-kind="check"] .ds-optrow__mark{border-radius:var(--radius-sm)}
+.ds-optrow[aria-checked="true"] .ds-optrow__mark{border-color:transparent;background:var(--accent);color:var(--accent-fg)}
+.ds-optrow__mark svg{width:.75rem;height:.75rem}
+.ds-sheet-sec{display:flex;flex-direction:column;gap:var(--space-1);padding-top:var(--space-4)}
+.ds-sheet-sec>h3{color:var(--fg-muted)}
+/* Bottom sheet. */
+.ds-sheet-layer{position:fixed;inset:0;z-index:var(--layer-dialog);display:flex;flex-direction:column;justify-content:flex-end;max-width:30rem;margin:0 auto}
+.ds-sheet-scrim{position:absolute;inset:0;background:var(--scrim)}
+.ds-sheet{position:relative;max-height:calc(100% - max(env(safe-area-inset-top),var(--device-top)) - var(--space-3));display:flex;flex-direction:column;background:var(--bg);border-radius:1.25rem 1.25rem 0 0;box-shadow:var(--shadow-lg);padding-bottom:max(env(safe-area-inset-bottom),var(--device-bottom))}
+.ds-sheet[data-size="full"]{height:calc(100% - max(env(safe-area-inset-top),var(--device-top)) - var(--space-3))}
+.ds-sheet__grab{width:2.25rem;height:.3125rem;flex:none;margin:var(--space-2) auto 0;border-radius:var(--radius-full);background:var(--border-strong)}
+.ds-sheet__head{flex:none;display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-2) var(--space-1) var(--space-5)}
+.ds-sheet__head h2{flex:1;min-width:0;font-size:var(--text-body-lg);line-height:var(--line-height-body-lg);font-weight:var(--weight-semibold)}
+.ds-sheet__head .ds-icon-btn{width:var(--touch-target);height:var(--touch-target);border-radius:var(--radius-full)}
+.ds-sheet__head .ds-icon-btn svg{width:1.25rem;height:1.25rem}
+.ds-sheet__body{flex:1;min-height:0;overflow-y:auto;padding:0 var(--space-5) var(--space-4);overscroll-behavior:contain}
+.ds-sheet__foot{flex:none;display:flex;gap:var(--space-2);padding:var(--space-3) var(--space-5) var(--space-3);border-top:var(--border-width) solid var(--border-subtle)}
+.ds-sheet__foot .button{flex:1}
+[data-anim="sheet"]{animation:ds-sheet-in var(--motion-view) var(--ease-out) both}
+@keyframes ds-sheet-in{from{transform:translateY(100%)}}
+/* Brain tab: the conversation scrolls; the composer stays above the tab bar. */
+.ds-appmain:has(> .ds-abrain){display:flex;flex-direction:column}
+.ds-abrain{flex:1 0 auto}
+.ds-abrain-foot{position:sticky;bottom:0;z-index:1;display:flex;flex-direction:column;gap:var(--space-1-5);padding:var(--space-2) var(--space-3) var(--space-2);background:var(--bg)}
+.ds-abrain-foot .ds-disclaimer{text-align:center}
+/* App sizing: 44 targets, 16px fields, toasts above the tab bar, palette and dialogs full screen. */
+[data-shell="app"] .button{--control-height:var(--touch-target);padding-inline:var(--space-4);font-size:var(--text-md)}
+[data-shell="app"] .button[data-size="sm"]{--control-height:var(--control-lg);padding-inline:var(--space-3);font-size:var(--text-sm)}
+[data-shell="app"] .button[data-size="xs"]{--control-height:var(--control-md)}
+[data-shell="app"] .button[data-block]{width:100%}
+[data-shell="app"] .field__control,[data-shell="app"] .ds-composer textarea,[data-shell="app"] .ds-palette__input input,[data-shell="app"] .ds-input-icon input{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg)}
+[data-shell="app"] .field__control{min-height:var(--touch-target)}
+[data-shell="app"] .toast{bottom:calc(5rem + max(env(safe-area-inset-bottom),var(--device-bottom)));max-width:calc(100% - var(--space-8))}
+[data-shell="app"] .ds-overlay{padding:max(env(safe-area-inset-top),var(--device-top)) 0 0!important;align-items:stretch;max-width:30rem;margin:0 auto}
+[data-shell="app"] .ds-palette{width:100%;max-height:none;height:100%;border-radius:1.25rem 1.25rem 0 0}
+[data-shell="app"] .ds-page{padding:var(--space-1) var(--app-pad) var(--space-10);gap:var(--space-6)}
+[data-shell="app"] .ds-page-head .tabs,[data-shell="app"] .ds-org{display:none}
+[data-shell="app"] .ds-card{border-radius:var(--radius-2xl)}
+[data-shell="app"] .ds-ask__dot{display:none}
+@media(min-width:30.0625rem){.ds-appshell{border-inline:var(--border-width) solid var(--border)}}
 
 /* Must stay last: an element already on screen never replays its entrance. */
 [data-anim][data-anim-done]{animation:none}

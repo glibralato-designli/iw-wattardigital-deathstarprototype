@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "source": "static",
+  "dir": "design",
+  "components": "design/components",
+  "devices": {
+    "desktop": {
+      "w": 1440,
+      "h": 900
+    },
+    "mobile": {
+      "w": 390,
+      "h": 844
+    }
+  },
+  "product": {
+    "name": "Death Star",
+    "summary": "A calmer prospecting portal for Stewart Group: Home summarises the day, every owner carries one why now with its trust, and a call is logged in two clicks."
+  }
+}

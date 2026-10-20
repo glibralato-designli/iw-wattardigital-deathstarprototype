@@ -11,11 +11,11 @@ python3 tools/preview.py
 ```
 Open http://localhost:4173. The preview server disables caching and reloads on changes. Use `--port 4174` for another port. Every product page also works on its own (for example `pages/home.html`). Moving between screens never reloads the page: links are real links, but the runtime swaps the screen in place like an app, and back and forward work. Open a link in a new tab to load it on its own.
 
-- `index.html`: the hub. Responsive web is active; the mobile card stays greyed out.
+- `index.html`: the hub. Responsive web (default) and Mobile app are both active.
 - `prototype.html`: the player. Its hamburger menu holds Light/Dark, the screen and state list, and Restart.
 - `screens.html`: the canvas, every screen and declared state at 1440, 1024 and 390 (desktop, tablet and phone layouts).
 - `system.html`: foundations, the 13 core families, and the Death Star product patterns.
-- `pages/`: 13 product screens.
+- `pages/`: 13 web screens. `pages/app/`: 14 mobile app screens (concept), sharing the same data, Brain and call loop.
 
 ## The demo
 Start on Home. The core loop: **Home → Call Daniel Marchetti → Why this? → Call → End call → No answer → Save outcome → Next owner.** Logged calls, notes, flags, to-dos, events and conversations persist in this browser; **Reset prototype data** (account menu, bottom left) or `?reset=1` restores the seed. Light and Dark are in the same account menu.

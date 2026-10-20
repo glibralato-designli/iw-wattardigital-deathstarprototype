@@ -1,0 +1,147 @@
+{
+  "schema": 2,
+  "slug": "plan-week",
+  "title": "Plan the week",
+  "goal": "See the week, add an event, review conversations and the numbers.",
+  "order": 5,
+  "next": [],
+  "entryPoints": [
+    {
+      "from": "Start",
+      "to": "01-Calendar"
+    }
+  ],
+  "devices": [
+    "desktop",
+    "mobile"
+  ],
+  "steps": [
+    {
+      "n": "01",
+      "id": "Calendar",
+      "kind": "form",
+      "title": "08 Dashboard \u00b7 Calendar",
+      "states": {
+        "Default": {
+          "desktop": "01-Calendar-Default.html",
+          "mobile": "01-Calendar-Default-Mobile.html"
+        },
+        "Custom-Day": {
+          "desktop": "01-Calendar-Custom-Day.html",
+          "mobile": "01-Calendar-Custom-Day-Mobile.html"
+        },
+        "Custom-Month": {
+          "desktop": "01-Calendar-Custom-Month.html",
+          "mobile": "01-Calendar-Custom-Month-Mobile.html"
+        },
+        "Selected": {
+          "desktop": "01-Calendar-Selected.html",
+          "mobile": "01-Calendar-Selected-Mobile.html"
+        },
+        "Custom-Draft": {
+          "desktop": "01-Calendar-Custom-Draft.html",
+          "mobile": "01-Calendar-Custom-Draft-Mobile.html"
+        },
+        "Custom-NewEvent": {
+          "desktop": "01-Calendar-Custom-NewEvent.html",
+          "mobile": "01-Calendar-Custom-NewEvent-Mobile.html"
+        },
+        "Validation": {
+          "desktop": "01-Calendar-Validation.html",
+          "mobile": "01-Calendar-Validation-Mobile.html"
+        },
+        "Success": {
+          "desktop": "01-Calendar-Success.html",
+          "mobile": "01-Calendar-Success-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched",
+        "Empty": "n/a: the week always has events",
+        "Submitting": "n/a: saving an event is instant and confirmed by a toast (Success)"
+      },
+      "purpose": "Day, week and month. A click on a slot drops a draft with an inline card; New event opens the full dialog.",
+      "primaryAction": "New event"
+    },
+    {
+      "n": "02",
+      "id": "Conversations",
+      "kind": "data",
+      "title": "09 Dashboard \u00b7 Conversations",
+      "states": {
+        "Default": {
+          "desktop": "02-Conversations-Default.html",
+          "mobile": "02-Conversations-Default-Mobile.html"
+        },
+        "Empty": {
+          "desktop": "02-Conversations-Empty.html",
+          "mobile": "02-Conversations-Empty-Mobile.html"
+        },
+        "Custom-PreviousWeek": {
+          "desktop": "02-Conversations-Custom-PreviousWeek.html",
+          "mobile": "02-Conversations-Custom-PreviousWeek-Mobile.html"
+        },
+        "Custom-NewConversation": {
+          "desktop": "02-Conversations-Custom-NewConversation.html",
+          "mobile": "02-Conversations-Custom-NewConversation-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched"
+      },
+      "purpose": "A Monday to Friday board plus Proposals. Connected calls from the case file land on today.",
+      "primaryAction": "Conversation"
+    },
+    {
+      "n": "03",
+      "id": "OutreachPerformance",
+      "kind": "info",
+      "title": "10 Dashboard \u00b7 Outreach performance",
+      "states": {
+        "Default": {
+          "desktop": "03-OutreachPerformance-Default.html",
+          "mobile": "03-OutreachPerformance-Default-Mobile.html"
+        }
+      },
+      "purpose": "Display-only, from the portal tab: Outreach (today vs previous day vs week, calling efficiency, LinkedIn, blasts), Business generation with deltas, Workflow efficacy. Drill-downs and logging are off."
+    },
+    {
+      "n": "04",
+      "id": "Reporting",
+      "kind": "info",
+      "title": "11 Dashboard \u00b7 Reporting",
+      "states": {
+        "Default": {
+          "desktop": "04-Reporting-Default.html",
+          "mobile": "04-Reporting-Default-Mobile.html"
+        }
+      },
+      "purpose": "Display-only: coverage by ZIP weakest first, one email funnel with its rates beside Clicked what, engagement by channel. Channel filters are off."
+    },
+    {
+      "n": "05",
+      "id": "Listings",
+      "kind": "info",
+      "title": "12 Dashboard \u00b7 Listings",
+      "states": {
+        "Default": {
+          "desktop": "05-Listings-Default.html",
+          "mobile": "05-Listings-Default-Mobile.html"
+        }
+      },
+      "purpose": "Listing cards with Auto and logged counts and their own viewers (rows open the contact), website inquiries awaiting follow-up first, other requests and the events page.",
+      "primaryAction": "Open a viewer"
+    },
+    {
+      "n": "06",
+      "id": "WebAnalytics",
+      "kind": "info",
+      "title": "13 Dashboard \u00b7 Web analytics",
+      "states": {
+        "Default": {
+          "desktop": "06-WebAnalytics-Default.html",
+          "mobile": "06-WebAnalytics-Default-Mobile.html"
+        }
+      },
+      "purpose": "Display-only: audience and outcomes, traffic with its summary, channels and campaigns, known contacts (open the contact), content tables, and collapsed site speed and tracking notes."
+    }
+  ]
+}

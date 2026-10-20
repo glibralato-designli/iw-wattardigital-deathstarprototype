@@ -1,0 +1,72 @@
+{
+  "schema": 2,
+  "slug": "ask-brain",
+  "title": "Ask Brain",
+  "goal": "Explain a why now, build a list, or look up a property, with sources.",
+  "order": 3,
+  "next": [
+    {
+      "flow": "live-call",
+      "on": "Open record"
+    }
+  ],
+  "entryPoints": [
+    {
+      "from": "Start",
+      "to": "01-Brain"
+    }
+  ],
+  "devices": [
+    "desktop",
+    "mobile"
+  ],
+  "steps": [
+    {
+      "n": "01",
+      "id": "Brain",
+      "kind": "data",
+      "title": "04 Brain",
+      "states": {
+        "Default": {
+          "desktop": "01-Brain-Default.html",
+          "mobile": "01-Brain-Default-Mobile.html"
+        },
+        "Empty": {
+          "desktop": "01-Brain-Empty.html",
+          "mobile": "01-Brain-Empty-Mobile.html"
+        },
+        "Loading": {
+          "desktop": "01-Brain-Loading.html",
+          "mobile": "01-Brain-Loading-Mobile.html"
+        },
+        "Custom-Streaming": {
+          "desktop": "01-Brain-Custom-Streaming.html",
+          "mobile": "01-Brain-Custom-Streaming-Mobile.html"
+        },
+        "Custom-WhyNowAnswer": {
+          "desktop": "01-Brain-Custom-WhyNowAnswer.html",
+          "mobile": "01-Brain-Custom-WhyNowAnswer-Mobile.html"
+        },
+        "Custom-ListAnswer": {
+          "desktop": "01-Brain-Custom-ListAnswer.html",
+          "mobile": "01-Brain-Custom-ListAnswer-Mobile.html"
+        },
+        "Success": {
+          "desktop": "01-Brain-Success.html",
+          "mobile": "01-Brain-Success-Mobile.html"
+        },
+        "Custom-LookupAnswer": {
+          "desktop": "01-Brain-Custom-LookupAnswer.html",
+          "mobile": "01-Brain-Custom-LookupAnswer-Mobile.html"
+        },
+        "Custom-History": {
+          "desktop": "01-Brain-Custom-History.html",
+          "mobile": "01-Brain-Custom-History-Mobile.html"
+        },
+        "Error": "n/a: answers are scripted and always return"
+      },
+      "purpose": "History, the empty state with suggestions, and a centred conversation with why-now, list and lookup answers.",
+      "primaryAction": "Send"
+    }
+  ]
+}

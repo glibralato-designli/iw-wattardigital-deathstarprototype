@@ -1,0 +1,98 @@
+{
+  "schema": 2,
+  "slug": "live-call",
+  "title": "Live call",
+  "goal": "Judge the why now, call, log the outcome (no answer in two clicks) and move to the next owner.",
+  "order": 2,
+  "next": [],
+  "entryPoints": [
+    {
+      "from": "Start",
+      "to": "01-Contact"
+    }
+  ],
+  "devices": [
+    "desktop",
+    "mobile"
+  ],
+  "steps": [
+    {
+      "n": "01",
+      "id": "Contact",
+      "kind": "form",
+      "title": "03 Contact case file",
+      "states": {
+        "Default": {
+          "desktop": "01-Contact-Default.html",
+          "mobile": "01-Contact-Default-Mobile.html"
+        },
+        "Custom-WhyThis": {
+          "desktop": "01-Contact-Custom-WhyThis.html",
+          "mobile": "01-Contact-Custom-WhyThis-Mobile.html"
+        },
+        "Custom-LiveCall": {
+          "desktop": "01-Contact-Custom-LiveCall.html",
+          "mobile": "01-Contact-Custom-LiveCall-Mobile.html"
+        },
+        "Custom-Outcome": {
+          "desktop": "01-Contact-Custom-Outcome.html",
+          "mobile": "01-Contact-Custom-Outcome-Mobile.html"
+        },
+        "Selected": {
+          "desktop": "01-Contact-Selected.html",
+          "mobile": "01-Contact-Selected-Mobile.html"
+        },
+        "Submitting": {
+          "desktop": "01-Contact-Submitting.html",
+          "mobile": "01-Contact-Submitting-Mobile.html"
+        },
+        "Success": {
+          "desktop": "01-Contact-Success.html",
+          "mobile": "01-Contact-Success-Mobile.html"
+        },
+        "Custom-Disputed": {
+          "desktop": "01-Contact-Custom-Disputed.html",
+          "mobile": "01-Contact-Custom-Disputed-Mobile.html"
+        },
+        "Custom-Intelligence": {
+          "desktop": "01-Contact-Custom-Intelligence.html",
+          "mobile": "01-Contact-Custom-Intelligence-Mobile.html"
+        },
+        "Custom-Ownership": {
+          "desktop": "01-Contact-Custom-Ownership.html",
+          "mobile": "01-Contact-Custom-Ownership-Mobile.html"
+        },
+        "Custom-Activity": {
+          "desktop": "01-Contact-Custom-Activity.html",
+          "mobile": "01-Contact-Custom-Activity-Mobile.html"
+        },
+        "Custom-Details": {
+          "desktop": "01-Contact-Custom-Details.html",
+          "mobile": "01-Contact-Custom-Details-Mobile.html"
+        },
+        "Custom-History": {
+          "desktop": "01-Contact-Custom-History.html",
+          "mobile": "01-Contact-Custom-History-Mobile.html"
+        },
+        "Custom-NoteOpen": {
+          "desktop": "01-Contact-Custom-NoteOpen.html",
+          "mobile": "01-Contact-Custom-NoteOpen-Mobile.html"
+        },
+        "Custom-DoNotContact": {
+          "desktop": "01-Contact-Custom-DoNotContact.html",
+          "mobile": "01-Contact-Custom-DoNotContact-Mobile.html"
+        },
+        "Custom-PropertyPeek": {
+          "desktop": "01-Contact-Custom-PropertyPeek.html",
+          "mobile": "01-Contact-Custom-PropertyPeek-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched",
+        "Empty": "n/a: every contact has a why now",
+        "Validation": "n/a: the only required input is the outcome; Save stays disabled until one is picked (Outcome state)"
+      },
+      "purpose": "Daniel Marchetti\u2019s record: why now with trust, the live-call bar, the outcome bar, and the record tabs.",
+      "primaryAction": "Call"
+    }
+  ]
+}

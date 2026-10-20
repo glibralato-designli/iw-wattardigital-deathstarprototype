@@ -1,0 +1,158 @@
+{
+  "schema": 2,
+  "slug": "find",
+  "title": "Find anything",
+  "goal": "Find a contact or property by name, phone or BBL.",
+  "order": 4,
+  "next": [
+    {
+      "flow": "live-call",
+      "on": "Open record"
+    }
+  ],
+  "entryPoints": [
+    {
+      "from": "Start",
+      "to": "01-Contacts"
+    }
+  ],
+  "devices": [
+    "desktop",
+    "mobile"
+  ],
+  "steps": [
+    {
+      "n": "01",
+      "id": "Contacts",
+      "kind": "data",
+      "title": "05 Database \u00b7 Contacts",
+      "states": {
+        "Default": {
+          "desktop": "01-Contacts-Default.html",
+          "mobile": "01-Contacts-Default-Mobile.html"
+        },
+        "Loading": {
+          "desktop": "01-Contacts-Loading.html",
+          "mobile": "01-Contacts-Loading-Mobile.html"
+        },
+        "Error": {
+          "desktop": "01-Contacts-Error.html",
+          "mobile": "01-Contacts-Error-Mobile.html"
+        },
+        "Empty": {
+          "desktop": "01-Contacts-Empty.html",
+          "mobile": "01-Contacts-Empty-Mobile.html"
+        },
+        "Selected": {
+          "desktop": "01-Contacts-Selected.html",
+          "mobile": "01-Contacts-Selected-Mobile.html"
+        },
+        "Custom-PeekCenter": {
+          "desktop": "01-Contacts-Custom-PeekCenter.html",
+          "mobile": "01-Contacts-Custom-PeekCenter-Mobile.html"
+        },
+        "Custom-PeekProperty": {
+          "desktop": "01-Contacts-Custom-PeekProperty.html",
+          "mobile": "01-Contacts-Custom-PeekProperty-Mobile.html"
+        },
+        "Custom-ClassAList": {
+          "desktop": "01-Contacts-Custom-ClassAList.html",
+          "mobile": "01-Contacts-Custom-ClassAList-Mobile.html"
+        },
+        "Custom-Search": {
+          "desktop": "01-Contacts-Custom-Search.html",
+          "mobile": "01-Contacts-Custom-Search-Mobile.html"
+        },
+        "Custom-SearchResults": {
+          "desktop": "01-Contacts-Custom-SearchResults.html",
+          "mobile": "01-Contacts-Custom-SearchResults-Mobile.html"
+        },
+        "Custom-SearchNoMatch": {
+          "desktop": "01-Contacts-Custom-SearchNoMatch.html",
+          "mobile": "01-Contacts-Custom-SearchNoMatch-Mobile.html"
+        },
+        "Custom-LogCall": {
+          "desktop": "01-Contacts-Custom-LogCall.html",
+          "mobile": "01-Contacts-Custom-LogCall-Mobile.html"
+        }
+      },
+      "purpose": "Lists, filters and the contacts table. A row opens the peek; \u2318K finds anything.",
+      "primaryAction": "Open record"
+    },
+    {
+      "n": "02",
+      "id": "Properties",
+      "kind": "data",
+      "title": "06 Database \u00b7 Properties",
+      "states": {
+        "Default": {
+          "desktop": "02-Properties-Default.html",
+          "mobile": "02-Properties-Default-Mobile.html"
+        },
+        "Empty": {
+          "desktop": "02-Properties-Empty.html",
+          "mobile": "02-Properties-Empty-Mobile.html"
+        },
+        "Selected": {
+          "desktop": "02-Properties-Selected.html",
+          "mobile": "02-Properties-Selected-Mobile.html"
+        },
+        "Custom-PeekOwner": {
+          "desktop": "02-Properties-Custom-PeekOwner.html",
+          "mobile": "02-Properties-Custom-PeekOwner-Mobile.html"
+        },
+        "Loading": {
+          "desktop": "02-Properties-Loading.html",
+          "mobile": "02-Properties-Loading-Mobile.html"
+        },
+        "Error": {
+          "desktop": "02-Properties-Error.html",
+          "mobile": "02-Properties-Error-Mobile.html"
+        }
+      },
+      "purpose": "The properties table. A row opens the property peek.",
+      "primaryAction": "Open property"
+    },
+    {
+      "n": "03",
+      "id": "Property",
+      "kind": "data",
+      "title": "07 Property record",
+      "states": {
+        "Default": {
+          "desktop": "03-Property-Default.html",
+          "mobile": "03-Property-Default-Mobile.html"
+        },
+        "Custom-Evidence": {
+          "desktop": "03-Property-Custom-Evidence.html",
+          "mobile": "03-Property-Custom-Evidence-Mobile.html"
+        },
+        "Custom-Violations": {
+          "desktop": "03-Property-Custom-Violations.html",
+          "mobile": "03-Property-Custom-Violations-Mobile.html"
+        },
+        "Custom-Ownership": {
+          "desktop": "03-Property-Custom-Ownership.html",
+          "mobile": "03-Property-Custom-Ownership-Mobile.html"
+        },
+        "Custom-NoDeals": {
+          "desktop": "03-Property-Custom-NoDeals.html",
+          "mobile": "03-Property-Custom-NoDeals-Mobile.html"
+        },
+        "Custom-MixedUse": {
+          "desktop": "03-Property-Custom-MixedUse.html",
+          "mobile": "03-Property-Custom-MixedUse-Mobile.html"
+        },
+        "Custom-PortfolioProperty": {
+          "desktop": "03-Property-Custom-PortfolioProperty.html",
+          "mobile": "03-Property-Custom-PortfolioProperty-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched",
+        "Empty": "n/a: every property has an owner and facts"
+      },
+      "purpose": "118 Ludlow St: key facts, why now with distress signals, Overview (building, units, debt, sale, zoning), Violations, Ownership, Deals, Evidence, and the owner rail.",
+      "primaryAction": "Call owner"
+    }
+  ]
+}

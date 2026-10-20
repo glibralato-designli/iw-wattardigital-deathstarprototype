@@ -28,7 +28,9 @@ Plain, broker-to-broker. One real figure per sentence, no hype, no exclamation m
 ## Platform
 web
 
-Responsive web, designed at 1440 × 900 and fluid from 1920 down to a 390 phone. Desktop: labelled sidebar, Brain docked beside the page on Home. Below about 1360 Brain overlays the page (and starts minimized on Home); below about 1180 the sidebar is the icon rail. Tablet (under 1024): records and the Dashboard's right columns stack under the main column, the search and Links collapse to icons, tables scroll sideways inside their card. Phone (under 768): the sidebar is a drawer behind a menu button, the top bar shows the current page, Brain, the peek and dialogs take the whole screen, grids become one column, the calendar opens on Day, and fields use 16px text. Brain opened on a phone stays on that screen only.
+Responsive web, designed at 1440 × 900 and fluid from 1920 down to a 390 phone. Desktop: labelled sidebar, Brain docked beside the page on Home. Below about 1360 Brain overlays the page (and starts minimized on Home); below about 1180 the sidebar is the icon rail. Tablet (under 1024): records and the Dashboard's right columns stack under the main column, the search and Links collapse to icons, tables scroll sideways inside their card. Phone (under 768): the sidebar is a drawer behind a menu button, the top bar shows the current page, Brain, the peek and dialogs take the whole screen, grids become one column, the calendar opens on Day, and fields use 16px text. Brain opened on a phone stays on that screen only. On the Brain page the chat history is a column that can be hidden on wider screens, and a left drawer behind a Chats button on a phone.
+
+**Mobile app (concept exploration, designer request Oct 20).** The same product as a native app on a 390 × 844 phone, built in `pages/app/` with iOS patterns researched on Mobbin (Asana Home, Attio records and lists, Quo and OpenPhone contacts, ChatGPT and Perplexity sources, Outlook calendar). It shares the web's data, Brain and call loop: a five-tab bar (Home · Today · Brain · Database · More), large titles, inset list rows on bordered cards, filter chips and bottom sheets for every choice. Calling hands off to the phone; a navy call pill follows Thomas to other tabs until he ends the call, and the outcome is a sheet. Calendar, Conversations and the four reports live under More. The web direction stays the approved reference; the app's look is not approved yet.
 
 ## Navigation model
 - **Sidebar** (navy, labelled groups in Thomas's order): Home, Dashboard, Brain · Prospecting (Database, Map, Outreach) · Channels (Phone, Email, Texting, LinkedIn, Social) · Marketing (Marketing, Website) · More · System. Collapses to a 56px icon rail (`[`).
@@ -45,6 +47,8 @@ Responsive web, designed at 1440 × 900 and fluid from 1920 down to a 390 phone.
 | Ask Brain | Brain page (empty, thinking, streaming, answers) |
 | Find anything | Database › Contacts (peek, ⌘K), Database › Properties, Property record |
 | Plan the week | Dashboard › Calendar (draft, new event dialog), Conversations, Outreach performance, Reporting, Listings, Web analytics |
+
+Mobile app (`pages/app/`, 14 screens): Home, Today (the Attack Plan), Contact case file (live call card, call pill, outcome sheet, Why this? sheet), Brain (chat history in a left drawer), Database › Contacts and Properties (filter sheets), Property record, More, Calendar (agenda, week, month, new event sheet), Conversations, and the four reports. The flows are the same five; Plan the week starts from More.
 
 **Property record** carries everything the client's current property page shows, reorganised like the case file: a five-number key-facts strip (units, gross SF, last sale, debt, open violations); why now with the record's lines and the five distress signals (loan maturity, pre-2005 owner, lis pendens, high debt, unused FAR) as present or not; Overview accordions for Building, Units and rent, Debt and capital, Sale and taxes, Lot and zoning; Violations (DOB, ECB, HPD, HPD litigation, storefront registry with an Auto / Vacant / Occupied override, and the list); Ownership (linked contacts with role, phone, email, primary); Deals; Evidence (safe lines to copy, owner summary PDF later). The side column holds the primary contact, location (map and street view later), property notes, owner activity and the owner's portfolio. Map, comps, PDF, delete and linking contacts are drawn but disabled.
 
@@ -64,7 +68,7 @@ Demo presets (URL parameters): `home.html?layout=classic`, `?lead=upnext`, `?upn
 WCAG AA contrast in both themes; focus ring on every control (white ring on navy); landmarks and a skip link; `role="tablist"` with arrow keys; `aria-live` for toasts and streaming; keyboard ⌘K, ⌘J, `[`, Esc. Disabled controls change colour only (never opacity), stay focusable with the tooltip "Not in this proposal yet", and do nothing on click. Trust is never colour alone.
 
 ## Out of scope
-Detailed redesign of Outreach, Phone, Email, Texting, Marketing, LinkedIn, Social, Map, Website, More and System (drawn complete but disabled). Native mobile apps, roles, backend and data work. Customize sidebar, drag-to-reorder, calendar editing, bulk actions, exports. The 5-area IA from `UX_REDESIGN_PLAN.md`.
+Detailed redesign of Outreach, Phone, Email, Texting, Marketing, LinkedIn, Social, Map, Website, More and System (drawn complete but disabled). A shipped native app (the mobile app is an HTML concept), roles, backend and data work. Customize sidebar, drag-to-reorder, calendar editing, bulk actions, exports. The 5-area IA from `UX_REDESIGN_PLAN.md`.
 
 ## Open questions (for the client)
 - Should existing calendar events be editable in the final build, or stay read-only with a link to the source calendar?
@@ -73,4 +77,4 @@ Detailed redesign of Outreach, Phone, Email, Texting, Marketing, LinkedIn, Socia
 - Class thresholds in production, and whether Likely holder is a class.
 
 ## Review presentation
-The hub, player and canvas follow the template. Only the Responsive web card is active; the Mobile app card stays visible and greyed out. The player opens on Home.
+The hub, player and canvas follow the template. Both cards are active: Responsive web (the default, opens on Home at 1440) and Mobile app (opens on the app's Home in a 390 × 844 device frame).

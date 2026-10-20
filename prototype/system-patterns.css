@@ -16,3 +16,8 @@
 .sys-shellbar .ds-crumbs{flex:1;min-width:10rem}
 .sys-shellnav{margin-top:var(--space-2);align-items:stretch;flex-direction:column;width:15rem}
 .sys-shellnav .ds-nav-group{margin-top:var(--space-2)}
+
+/* App patterns: three phone-width columns rendered with the app shell recipes. */
+.sys-appgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,22.5rem),1fr));gap:var(--space-6);align-items:start}
+.sys-appframe{border:var(--border-width) solid var(--border);border-radius:1.5rem;overflow:hidden;background:var(--bg)}
+.sys-appframe .ds-appshell{max-width:none;border:0}
