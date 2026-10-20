@@ -12,7 +12,7 @@ window.PROJECT = {
   name: 'Death Star',
   description: 'A calmer prospecting portal for Stewart Group: Home summarises the day, every owner carries one why now with its trust, and a call is logged in two clicks.',
   type: 'responsive-web',
-  enabledModes: ['responsive-web', 'mobile'],
+  enabledModes: ['responsive-web'],
   status: 'POC · concept approved',
   systemVersion: '5b · Navy shell · Core 1.0',
   modes: {

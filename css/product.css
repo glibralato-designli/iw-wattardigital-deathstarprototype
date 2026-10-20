@@ -1294,7 +1294,7 @@ a.ds-atile:hover{background:var(--bg-subtle);color:var(--fg);text-decoration:non
 [data-shell="app"] .ds-ask__dot{display:none}
 @media(min-width:30.0625rem){.ds-appshell{border-inline:var(--border-width) solid var(--border)}}
 
-/* ───────── App look (designer request, Oct 20; tried as concept B, then adopted) ─────────
+/* ───────── App look (designer request, Oct 20) ─────────
    Neo-style spacing, type and buttons; borderless white cards on a subtle slate gradient; a Public-style floating
    pill tab bar; a header that floats over the content; and a Revolut-style navy hero behind Home's greeting. */
 [data-shell="app"]{--app-canvas-top:var(--bg-muted);--app-canvas-bottom:var(--border);--app-card:var(--bg);--app-tab-on:var(--bg-muted);--app-track:var(--bg-muted);--app-btn2:var(--bg-muted);--app-btn2-hover:var(--border);--app-seg:var(--border);--app-divider:var(--border-subtle);--app-hero:var(--shell);--app-hero-glow:var(--brand-primary-800);--app-bar-h:4rem;--app-bar-gap:max(var(--space-3),calc(max(env(safe-area-inset-bottom),var(--device-bottom)) - var(--space-1)))}
