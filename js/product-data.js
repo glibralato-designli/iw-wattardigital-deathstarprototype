@@ -184,10 +184,10 @@
     ],
   };
   const listings = [
-    { addr: '41 Ludlow St', sub: 'Lower East Side · 24 units · 18,600 SF · $14.5M', status: 'Active',
+    { addr: '41 Ludlow St', sub: 'Lower East Side · 24 units · 18,600 SF · $14.5M', status: 'Active', photo: 'assets/listings/41-ludlow-st.svg',
       counts: [['Website views', 612, true], ['Blast views', 1019, true], ['LinkedIn post views', 1420, false], ['Tours', 6, false], ['Written offers', 1, false]],
       viewers: [['adler', 4, 'Sep 29'], ['okafor', 3, 'Sep 28'], ['greene', 2, 'Sep 27'], ['shah', 1, 'Sep 25'], ['chen', 1, 'Sep 22'], ['feld', 1, 'Sep 21'], ['morales', 1, 'Sep 19'], ['baum', 1, 'Sep 12']] },
-    { addr: '88 Orchard St', sub: 'Lower East Side · 12 units · 9,200 SF · $6.9M', status: 'In contract',
+    { addr: '88 Orchard St', sub: 'Lower East Side · 12 units · 9,200 SF · $6.9M', status: 'In contract', photo: 'assets/listings/88-orchard-st.svg',
       counts: [['Website views', 205, true], ['Blast views', 488, true], ['LinkedIn post views', 310, false], ['Tours', 4, false], ['Written offers', 2, false]],
       viewers: [['rivera', 2, 'Sep 26'], ['kowalski', 1, 'Sep 24']] },
   ];

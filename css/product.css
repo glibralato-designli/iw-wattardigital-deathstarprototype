@@ -809,7 +809,9 @@ a.ds-hitem:hover,button.ds-hitem:hover{background:var(--bg-muted);color:var(--fg
 .ds-dtable__bar>span{display:block;height:100%;border-radius:var(--radius-full);background:var(--chart-primary)}
 .ds-live{display:inline;color:var(--success);font-weight:var(--weight-medium)}
 .ds-live::before{content:"";display:inline-block;vertical-align:middle;margin:-2px var(--space-1-5) 0 0;width:6px;height:6px;border-radius:var(--radius-full);background:currentColor}
-.ds-listing{display:flex;flex-direction:column;gap:var(--space-4)}
+.ds-listing{display:flex;flex-direction:column;gap:var(--space-4);overflow:hidden}
+/* Street view across the top of the card, edge to edge: a 12:5 strip on wide screens, 2:1 on phones and in the app. */
+.ds-listing__photo{display:block;width:calc(100% + var(--space-5) * 2);max-width:none;height:auto;aspect-ratio:12 / 5;object-fit:cover;margin:calc(var(--space-5) * -1) calc(var(--space-5) * -1) 0;background:var(--bg-subtle);border-bottom:var(--border-width) solid var(--border)}
 .ds-listing__counts{display:flex;flex-wrap:wrap;gap:var(--space-2-5)}
 .ds-listing__count{flex:1 1 9rem;display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-1);padding:var(--space-3);border-radius:var(--radius-md);background:var(--bg-subtle)}
 .ds-listing__count b{font-size:var(--text-md);line-height:var(--line-height-sm);font-weight:var(--weight-semibold);font-variant-numeric:tabular-nums}
@@ -1019,6 +1021,7 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
   .ds-week{grid-template-columns:repeat(5,minmax(9rem,1fr));overflow-x:auto}
   .ds-hbar{grid-template-columns:minmax(0,6.5rem) minmax(0,1fr) 3rem}
   .ds-history{display:none}
+  .ds-listing__photo{aspect-ratio:2 / 1}
   .ds-chats-btn{display:grid}
   .ds-brainpage__tabs{padding:var(--space-2) var(--space-3) 0;gap:var(--space-2)}
   .ds-chat[data-page]{padding:var(--space-4)}
@@ -1283,6 +1286,7 @@ a.ds-atile:hover{background:var(--bg-subtle);color:var(--fg);text-decoration:non
 [data-shell="app"] .ds-page{padding:var(--space-1) var(--app-pad) var(--space-10);gap:var(--space-8)}
 [data-shell="app"] .ds-page-head .tabs,[data-shell="app"] .ds-org{display:none}
 [data-shell="app"] .ds-card{border-radius:var(--radius-2xl)}
+[data-shell="app"] .ds-listing__photo{aspect-ratio:2 / 1}
 /* Reused web sections and cards follow the app scale: section heads 20, card and why-now titles 17. */
 [data-shell="app"] .ds-section-h h2{font-size:var(--text-lg);line-height:var(--line-height-lg);letter-spacing:var(--letter-spacing-tight)}
 [data-shell="app"] :is(.ds-card__title h2,.ds-card__title h3,.ds-why__head h2){font-size:var(--text-body-lg);line-height:var(--line-height-body-lg)}
