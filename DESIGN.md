@@ -145,11 +145,11 @@ Primitive palette values feed semantic roles. Components use semantic colours. S
   --cal-now:#dc2626;
   /* Type: Inter, one family. 14px is the default UI size. */
   --font-body:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif; --font-display:var(--font-body); --font-mono:ui-monospace,monospace;
-  --text-2xs:.6875rem; --text-xs:.8125rem; --text-sm:.875rem; --text-md:.9375rem;
+  --text-2xs:.6875rem; --text-xs:.8125rem; --text-sm:.875rem; --text-md:.9375rem; --text-base:1rem;
   --text-body-lg:1.0625rem; --text-lg:1.25rem; --text-xl:1.375rem;
   --text-2xl:1.625rem; --text-3xl:1.875rem; --text-4xl:2.125rem;
   --text-5xl:3rem; --text-6xl:3.75rem; --text-7xl:4.5rem; --text-8xl:6rem;
-  --line-height-2xs:1rem; --line-height-xs:1.125rem; --line-height-sm:1.375rem; --line-height-md:1.5rem;
+  --line-height-2xs:1rem; --line-height-xs:1.125rem; --line-height-sm:1.375rem; --line-height-md:1.5rem; --line-height-base:1.375rem;
   --line-height-body-lg:1.625rem; --line-height-lg:1.75rem; --line-height-xl:1.875rem; --line-height-2xl:2.125rem; --line-height-4xl:2.625rem;
   --line-height-tight:1.1; --line-height-snug:1.25;
   --line-height-normal:1.5; --line-height-relaxed:1.75;
@@ -270,7 +270,8 @@ Inter is the only family (Google Fonts, system fallback), with `cv11` and `ss01`
 | `--text-xs` | 13 / 18 | Metadata, captions, chart labels, kbd, section labels |
 | `--text-sm` | 14 / 22 | **Default UI**: nav, buttons, rows, links, body |
 | `--text-md` | 15 / 24 | Card titles (600), Brain messages |
-| `--text-body-lg` | 17 / 26 | The why-now sentence |
+| `--text-base` | 16 / 22 | Mobile app only: list row titles, choice rows, buttons, body (16 / 24 in paragraphs) |
+| `--text-body-lg` | 17 / 26 | The why-now sentence; in the app, bar, sheet and in-card titles |
 | `--text-lg` | 20 / 28 | Stat and tile numbers (600) |
 | `--text-xl` | 22 / 30 | Page title, greeting, record name (600, −0.01em) |
 | `--text-2xl` | 26 / 34 | Dialog title input, emphasised stat |
@@ -331,8 +332,10 @@ Both modes are enabled (`enabledModes: ['responsive-web', 'mobile']`); `responsi
 
 - **Structure.** Pages live in `pages/app/` with `body[data-shell="app"]`; `js/product.js` renders the app shell instead of the navy frame (`DS.app`). Routes keep the web names, so shared helpers and reused screen scripts link inside the app; the four reports reuse `js/screens/display.js`. Screens describe their header with `head()` and their floating button with `fab()`.
 - **Frame.** White screens, no navy frame. A 44-tall header bar (back as a blue text link with a chevron, trailing 44 icon buttons) shows the compact title once the large title scrolls under it, with a hairline when scrolled. A five-tab bar: Home · Today · Brain · Database · More; regular icons, a **filled** icon and navy label on the current tab. Device insets come from `env(safe-area-*)` or the review frame (`--device-top`, `--device-bottom`).
-- **Type.** Large titles 30/34 bold (700, −0.02em) with an optional 13px subline above; record names 26/34 bold; section heads 17 semibold; body 15 in buttons, 14 elsewhere; fields 17 so iOS never zooms. Bold is new for the app's titles (on the web 700 is only the predictive score).
+- **Type** (mapped to iOS text styles, designer request Oct 20). Large titles 30/34 bold (700, −0.02em) with an optional 13px subline above, kept one step under iOS's 34 so the greeting and report names fit on one line at 390; record names 26/34 bold; section heads and plan-card titles 20/28 semibold (title 3), including the reused reports' section heads; bar titles, back links, sheet titles and in-card titles 17 (headline); list rows, choice rows, buttons and running text 16 (`--text-base`; 16/24 in paragraphs); row secondary lines 14/18; metadata 13; tab labels and badges 11, the smallest size used. Fields stay 17 so iOS never zooms. Bold is new for the app's titles (on the web 700 is only the predictive score).
+- **Spacing.** Side margins 16, 20 from 414 wide (iOS layout margins on Plus and Max phones); sheets and the chats drawer use the same margins as the page (`--app-pad`, set on the body). Sections 32 apart, a heading 12 above its content, rows 12 × 16 inside with a 60 minimum.
 - **Recipes** (`css/product.css`, App shell section): `.ds-apage` (16 sides, 24 between sections), `ui.large`, `.ds-ahead`, `.ds-alist` + `.ds-arow` (inset dividers, 60 tall, optional lead tile), `.ds-acard` (plan cards), `.ds-atiles`/`.ds-atile` (two-up stats), `.ds-qacts`/`.ds-qact` (square quick actions; the call one is the filled primary), `.ds-aid` (centred identity), `.ds-achips` + `.ds-fchip` (scrolling filter chips; pressed is pale blue), `.ds-asearch`, `.ds-daystrip`, `.ds-agenda`, `.ds-fab` (56 round, bottom right), `a.segmented__item` (segmented links between pages), `ui.sheet` + `.ds-opts`/`.ds-optrow` (bottom sheets with radio or check rows, a grabber, a sticky footer; `sheet=<name>` opens one as a preset), `.ds-callpill` and `.ds-callcard`, and the web's chat drawer (`ui.chatDrawer`) for Brain's history, opened from a sidebar button at the leading edge of Brain's header.
+- **Targets.** Everything tappable is at least 44: icon buttons inside content and sheets (week steppers, call buttons) are 44 round; filter chips draw at 36 and extend their hit area to 44.
 - **Rules.** One filled primary per screen (the Call tile drops to outline once a call is logged and "Call the next owner" takes over). Buttons are 44 tall (sm 36). Choices that open lists use sheets, never dropdown menus; selects stay native inside sheets. The navy live call is the one dark surface inside content (as the web's live-call band is): a card on the record, a floating pill above the tab bar elsewhere. Shadows only on things that float (sheets, the pill, the floating button, toasts).
 - **Motion.** Sheets rise over `--motion-view` and drop on close; the chats drawer slides in from the left and back out; the call pill rises; tab icons press to 0.9. Everything else follows the web's motion rules.
 

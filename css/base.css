@@ -21,7 +21,7 @@ input,textarea{caret-color:var(--focus)}
 
 /* Shared text styles. Each size carries its own line height; the product scale is compact (13px UI). */
 .text-2xs{font-size:var(--text-2xs);line-height:var(--line-height-2xs)}.text-xs{font-size:var(--text-xs);line-height:var(--line-height-xs)}.text-sm{font-size:var(--text-sm);line-height:var(--line-height-sm)}.text-md{font-size:var(--text-md);line-height:var(--line-height-md)}
-.text-body-lg{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg)}.text-lg{font-size:var(--text-lg);line-height:var(--line-height-lg);letter-spacing:var(--letter-spacing-tight)}.text-xl{font-size:var(--text-xl);line-height:var(--line-height-xl);letter-spacing:var(--letter-spacing-tight)}
+.text-base{font-size:var(--text-base);line-height:var(--line-height-base)}.text-body-lg{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg)}.text-lg{font-size:var(--text-lg);line-height:var(--line-height-lg);letter-spacing:var(--letter-spacing-tight)}.text-xl{font-size:var(--text-xl);line-height:var(--line-height-xl);letter-spacing:var(--letter-spacing-tight)}
 .text-2xl{font-size:var(--text-2xl);line-height:var(--line-height-2xl);letter-spacing:var(--letter-spacing-tight)}.text-3xl{font-size:var(--text-3xl);line-height:var(--line-height-2xl);letter-spacing:var(--letter-spacing-tighter)}.text-4xl{font-size:var(--text-4xl);line-height:var(--line-height-4xl);letter-spacing:var(--letter-spacing-tighter)}
 .text-5xl,.text-6xl,.text-7xl,.text-8xl{line-height:var(--line-height-tight);letter-spacing:var(--letter-spacing-tighter)}
 .text-5xl{font-size:var(--text-5xl)}.text-6xl{font-size:var(--text-6xl)}.text-7xl{font-size:var(--text-7xl)}.text-8xl{font-size:var(--text-8xl)}
