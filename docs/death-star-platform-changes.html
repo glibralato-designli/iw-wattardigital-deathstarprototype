@@ -161,6 +161,17 @@ footer{margin-top:64px;padding-block:28px 48px;border-top:1px solid var(--line);
 .cmp td:first-child{font-weight:600;white-space:nowrap}
 .cmp td:nth-child(2){color:var(--muted)}
 
+
+.pts{margin-top:28px;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.pt{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1.3fr);gap:8px 28px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.pt:last-child{border-bottom:0}
+.pt.head{background:var(--bg);padding-block:11px;font-size:12px;font-weight:600;color:var(--faint)}
+.pt h3{font-size:15px;font-weight:600;line-height:1.35}
+.pt h3 a{display:block;margin-top:4px;font-size:12.5px;font-weight:500;text-decoration:none}
+.pt p{font-size:14.5px;color:var(--muted)}
+.pt .k{display:none;font-size:12px;font-weight:600;color:var(--faint);margin-bottom:2px}
+@media (max-width:860px){.pt{grid-template-columns:1fr;gap:10px}.pt.head{display:none}.pt .k{display:block}}
+
 /* lightbox */
 .lb{position:fixed;inset:0;z-index:100;background:rgba(2,8,20,.86);display:none;overflow:auto;padding:20px}
 .lb.on{display:block}
@@ -181,7 +192,7 @@ footer{margin-top:64px;padding-block:28px 48px;border-top:1px solid var(--line);
 </header>
 
 <nav class="index" aria-label="Sections"><div class="wrap">
-  <a href="#overview">Overview</a><a href="#home">Home</a><a href="#brain">Brain</a><a href="#dashboard">Dashboard</a><a href="#database">Database</a><a href="#contact">Contact</a><a href="#property">Property</a><a href="#calendar">Calendar</a><a href="#style">Visual style</a><a href="#sizes">Screen sizes</a><a href="#app">Mobile app</a><a href="#next">What stays</a>
+  <a href="#overview">Overview</a><a href="#points">Main points</a><a href="#home">Home</a><a href="#brain">Brain</a><a href="#dashboard">Dashboard</a><a href="#database">Database</a><a href="#contact">Contact</a><a href="#property">Property</a><a href="#calendar">Calendar</a><a href="#style">Visual style</a><a href="#sizes">Screen sizes</a><a href="#app">Mobile app</a><a href="#next">What stays</a>
 </div></nav>
 
 <main class="wrap">
@@ -217,6 +228,17 @@ footer{margin-top:64px;padding-block:28px 48px;border-top:1px solid var(--line);
       <tr><td>Calendar</td><td>A Google Calendar look-alike with booking pages and people search</td><td>A week planner for call blocks, tours and meetings, with overlap warnings</td></tr>
     </tbody>
   </table></div>
+</section>
+
+
+<section class="block" id="points">
+  <div class="eyebrow">Main points</div>
+  <h2>Twelve changes, and the reason behind each</h2>
+  <p class="sub">The short list. Each row says what changed, why it was needed and how it was done. Use "See the detail" to jump to the full comparison.</p>
+  <div class="pts">
+    <div class="pt head"><div>Change</div><div>Why it was made</div><div>How it was made</div></div>
+    <div class="pt"><div><h3>Home became a daily briefing<a href="#home">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>The old Home was a wall of tiles, so the first message was "here are all the tools". Thomas needs to know who to call first.</p></div><div><div class="k">How it was made</div><p>Greeting with a fact, today's plan, four numbers and Brain already open. The first owner is two clicks away.</p></div></div><div class="pt"><div><h3>One sidebar replaced 13 tabs and a launcher<a href="#overview">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>Three overlapping navigation layers, about 60 destinations. Thomas kept returning to Home to find his way.</p></div><div><div class="k">How it was made</div><p>Home, Dashboard and Brain on top, then labelled groups in his own order. Each destination appears once, and views are tabs inside a page.</p></div></div><div class="pt"><div><h3>Brain became one assistant, everywhere<a href="#brain">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>Thomas used Brain as a workaround to get a why now, and the portal had several assistants with different names.</p></div><div><div class="k">How it was made</div><p>Open on Home, minimized elsewhere, full page on request. It is scoped to what he is viewing, and actions need his approval.</p></div></div><div class="pt"><div><h3>One why now and one score<a href="#contact">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>The old owner page showed three differently worded why-now texts and two scores. He could not tell which to believe.</p></div><div><div class="k">How it was made</div><p>The same sentence and the same score on Home, Attack Plan, preview, case file and Brain.</p></div></div><div class="pt"><div><h3>Trust on every claim<a href="#contact">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>His main fear is saying something wrong to an owner. Confidence mostly lived on admin pages.</p></div><div><div class="k">How it was made</div><p>Verified, Single source, Stale or Disputed, always as color, word and icon. "Why this?" shows the evidence, and he can flag a fact as wrong.</p></div></div><div class="pt"><div><h3>The day starts from a ranked list<a href="#dashboard">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>Attack Plan opened on an empty task form, though the system already knows who to call.</p></div><div><div class="k">How it was made</div><p>Owners to call, each with a why-now line, trust badge and call button, plus goals and today's meetings.</p></div></div><div class="pt"><div><h3>Database opens on answers<a href="#database">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>The old table stayed empty until a list was chosen, and opened records piled up as tabs.</p></div><div><div class="k">How it was made</div><p>A ranked table with why now, last touch, trust and score, and a preview panel that keeps his place in the list.</p></div></div><div class="pt"><div><h3>Calling and logging live together<a href="#contact">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>Context, call and logging were on different surfaces, and the manual counters were not kept up to date.</p></div><div><div class="k">How it was made</div><p>A call band with a timer on the record, a no-answer logged in two clicks, then "Next owner". The Home counters update.</p></div></div><div class="pt"><div><h3>Calendar built for call blocks<a href="#calendar">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>The old calendar copied Google Calendar feature by feature, and double-booking is a common mistake.</p></div><div><div class="k">How it was made</div><p>Colors by calendar, a Brain line about the next call block, one-click drafts and an overlap warning before saving.</p></div></div><div class="pt"><div><h3>A calm navy look, one family of screens<a href="#style">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>The old portal mixed dark and light pages, orange accents and a different vendor look on each tab. Thomas asked for classic corporate, midnight blue, not data-dense.</p></div><div><div class="k">How it was made</div><p>Navy frame, white panels, one typeface at 14 pixels, quiet color and status that never relies on color alone.</p></div></div><div class="pt"><div><h3>Works on every screen size, plus a phone app concept<a href="#sizes">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>The old portal was built for a wide desktop window, and the client's proposal says the system must live on their phones.</p></div><div><div class="k">How it was made</div><p>The website adapts from laptop to phone. A separate app concept uses a tab bar, sheets and a call pill that follows him. The app look is not approved yet.</p></div></div><div class="pt"><div><h3>Thomas's vocabulary was kept<a href="#next">See the detail</a></h3></div><div><div class="k">Why it was made</div><p>A redesign that renames everything adds learning to a busy day.</p></div><div><div class="k">How it was made</div><p>The same labels, classes A to D, the seven Dashboard tabs and the sidebar order. The structure changed, the language did not.</p></div></div>
+  </div>
 </section>
 
 <section class="block" id="home">
