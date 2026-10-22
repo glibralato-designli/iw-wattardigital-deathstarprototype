@@ -96,7 +96,7 @@
   /* Home metric tiles: [name, icon, label, number] and the detail panel for each. */
   const D7 = ['Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Today'], W7 = ['Aug 18', 'Aug 25', 'Sep 1', 'Sep 8', 'Sep 15', 'Sep 22', 'This wk'];
   const tiles = [
-    { name: 'Activity', icon: 'pulse', label: 'Calls today', num: '6 / 40', title: 'Calls per day, last 7 days', sub: 'Activity · goal 40 a day', head: '112', headL: 'calls this week', go: 'Go to Outreach performance', to: 'outreach-performance', goal: 40, labels: D7, vals: [28, 31, 0, 0, 14, 33, 6], max: 40, zero: 'No calls' },
+    { name: 'Activity', icon: 'pulse', label: 'Calls today', num: '6 / 40', title: 'Calls per day, last 7 days', sub: 'Activity · goal 40 a day', head: '112', headL: 'calls this week', go: 'Go to Performance', to: 'outreach-performance', goal: 40, labels: D7, vals: [28, 31, 0, 0, 14, 33, 6], max: 40, zero: 'No calls' },
     { name: 'Database', icon: 'database', label: 'New Class A', num: '4', title: 'New signals per week', sub: 'Database · last 7 weeks', head: '26', headL: 'new signals this week', go: 'Go to Database', to: 'contacts', labels: W7, vals: [14, 18, 11, 22, 19, 24, 26] },
     { name: 'Outreach', icon: 'list-bullets', label: 'Queues ready', num: '3', title: 'Contacts queued per week', sub: 'Outreach · last 7 weeks', head: '1,480', headL: 'in 3 ready queues', go: 'Go to Outreach', labels: W7, vals: [900, 1100, 950, 1300, 1200, 1420, 1480], fmt: 'loc' },
     { name: 'Phone', icon: 'phone', label: 'Conversations', num: '2', title: 'Conversations per day', sub: 'Phone · last 7 days', head: '9', headL: 'conversations this week', go: 'Go to Phone', labels: D7, vals: [3, 2, 0, 0, 1, 1, 2] },
@@ -106,7 +106,7 @@
     { name: 'LinkedIn', icon: 'linkedin-logo', label: 'New connections', num: '12', title: 'New connections per week', sub: 'LinkedIn · last 7 weeks', head: '12', headL: 'new this week', go: 'Go to LinkedIn', labels: W7, vals: [6, 9, 4, 11, 8, 10, 12] },
     { name: 'Social', icon: 'users', label: 'Engagement', num: '230', title: 'Engagement per week', sub: 'Social · last 7 weeks', head: '230', headL: 'engagements this week', go: 'Go to Social', labels: W7, vals: [140, 165, 120, 190, 210, 175, 230] },
     { name: 'Map', icon: 'map-trifold', label: 'ZIP coverage', num: '8%', title: 'Owners called by ZIP', sub: 'Map · share called at least once', head: '8%', headL: 'territory coverage', go: 'Go to Map', labels: ['10002', '10003', '10009', '10012', '10013', '10028', '10038'], vals: [14, 9, 6, 11, 4, 9, 3], fmt: 'pct', flat: true },
-    { name: 'Web analytics', icon: 'globe', label: 'Visitors this week', num: '1,284', title: 'Visitors per week', sub: 'Website analytics · last 7 weeks', head: '1,284', headL: 'visitors this week', go: 'Go to Website analytics', to: 'web-analytics', labels: W7, vals: [880, 940, 1020, 990, 1110, 1190, 1284], fmt: 'loc' },
+    { name: 'Web analytics', icon: 'globe', label: 'Visitors this week', num: '1,284', title: 'Visitors per week', sub: 'Website · last 7 weeks', head: '1,284', headL: 'visitors this week', go: 'Go to Website', to: 'web-analytics', labels: W7, vals: [880, 940, 1020, 990, 1110, 1190, 1284], fmt: 'loc' },
   ];
 
   const meetings = [['9:30 AM', 'Tour · 41 Ludlow St', 'Priya Venkataraman'], ['12:00 PM', 'Lunch · Grace Okafor', 'Okafor family office'], ['3:00 PM', 'Pipeline review', 'Zoom · Mira W.'], ['5:30 PM', 'Lender update', 'Brookline Capital']];
@@ -128,7 +128,7 @@
   const weekAlt = [['Calls · Class A', 'Calls'], ['Mail merge · Market report', 'Blast'], ['Calls · Probate leads', 'Calls'], ['LinkedIn · Listings', 'Posts'], ['Constant Contact · Digest', 'Email']];
 
   /* Calendars: key → [label]. Events: [weekday 0–4, start hour, hours, calendar, title, with, contact]. */
-  /* Meetings, scheduled calls, BOV pitches and tours only (Thomas, P1 08:33). Posts, blasts and mail merges are planned in the Attack Plan's week strip. */
+  /* Meetings, scheduled calls, BOV pitches and tours only (Thomas, P1 08:33). Posts, blasts and mail merges are planned in Today's week strip. */
   const calendars = { mtg: 'Meetings', call: 'Call blocks', tour: 'Tours', bov: 'BOV pitches' };
   const events = [[0, 9, 2, 'call', 'Calls · Sourcing', 'Class A list'], [0, 14, 1, 'mtg', 'Lender coffee', 'Brookline Capital'], [1, 10, 1, 'call', 'Callbacks', 'Ruth Adler and 2 more'], [1, 15, 0.5, 'mtg', 'Adler callback', 'Ruth Adler', 'adler'],
     [2, 9.5, 1, 'tour', 'Tour · 41 Ludlow St', 'Priya Venkataraman'], [2, 12, 1, 'mtg', 'Lunch · Grace Okafor', 'Okafor family office', 'okafor'], [2, 13.5, 1.5, 'call', 'Calls · LES maturities', 'Daniel Marchetti first', 'marchetti'], [2, 15.5, 0.5, 'mtg', 'Pipeline review', 'Zoom · Mira W.'], [2, 17, 0.5, 'mtg', 'Lender update', 'Brookline Capital'],
@@ -158,12 +158,13 @@
     'Prospecting', ['Database', 'database', 'contacts'], ['Map', 'map-trifold'], ['Outreach', 'list-bullets'],
     'Channels', ['Phone', 'phone'], ['Email', 'envelope-simple', null, '4'], ['Texting', 'chat-text', null, '2'], ['LinkedIn', 'linkedin-logo'], ['Social', 'users'],
     'Marketing', ['Marketing', 'megaphone'], ['Website', 'globe']];
-  const more = [['Today', 'sun'], ['Field Mode', 'device-mobile'], ['Headlines', 'newspaper', 'headlines'], ['Market Data', 'chart-line'], ['Ledger', 'book'], ['Prediction Model', 'brain'], ['BOV & OM', 'file-text', 'bov'], ['Integrations', 'puzzle-piece']];
+  const more = [['Field Mode', 'device-mobile'], ['Headlines', 'newspaper', 'headlines'], ['Market Data', 'chart-line'], ['Ledger', 'book'], ['Prediction Model', 'brain'], ['BOV & OM', 'file-text', 'bov'], ['Integrations', 'puzzle-piece']];
   const links = [{ h: 'Research', items: ['PincusCo', 'UniCourt', 'LoopNet', 'Zillow', 'StreetEasy', 'Hunter', 'PropertyShark', 'Apollo', 'CoStar', 'NYC ACRIS', 'NYC Open Data'] }, { h: 'Media', items: ['The Real Deal', 'Bisnow', 'Commercial Observer', 'WSJ Real Estate', 'Crain’s New York', 'YIMBY NY', 'GlobeSt'] }];
 
   /* Page tabs. A null page is drawn but disabled. */
-  // Thomas's current tab names and order (Death Star portal, dashboard.js), in sentence case.
-  const dashboardTabs = [['attack-plan', 'Attack Plan'], ['conversations', 'Conversation tracker'], ['calendar', 'Calendar'], '|', ['outreach-performance', 'Outreach performance'], ['reporting', 'Reporting'], ['listings', 'Listing activity'], ['web-analytics', 'Website analytics']];
+  // Thomas's current tab names and order (his portal as shown in the Oct 22 video), in sentence case. Today is the Attack Plan,
+  // Activity the conversation tracker, Who to call the coverage and engagement report (every row turns into a call list).
+  const dashboardTabs = [['attack-plan', 'Today'], ['conversations', 'Activity'], ['reporting', 'Who to call'], ['calendar', 'Calendar'], '|', ['outreach-performance', 'Performance'], ['listings', 'Listings'], ['web-analytics', 'Website']];
   const databaseTabs = [['contacts', 'Contacts'], ['properties', 'Properties']];
 
   /* Database scale: about 40,000 contacts and 18,600 properties (Thomas, P3 25:14). The table shows the fictional demo rows. */
@@ -176,7 +177,7 @@
 
   /* ───────── Lists and the criteria builder ─────────
      Engagement per contact: what each owner received, opened, clicked, viewed or downloaded. Labels match the
-     Reporting, Listings and Web analytics rows, so "Turn into a list" on a row is the same chip in the builder. */
+     Who to call, Listings and Website rows, so "Turn into a list" on a row is the same chip in the builder. */
   const Q3 = ['Received Q3 market report', 'Delivered Q3 market report'];
   const engagement = {
     marchetti: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked Q3 report PDF', 'Downloaded Q3 market report'],
@@ -256,7 +257,7 @@
 
 
   /* ───────── Proactive Brain ─────────
-     Suggested lists on the Attack Plan: criteria plus a reason (the count in the reason is the live count). */
+     Suggested lists on Today: criteria plus a reason (the count in the reason is the live count). */
   const suggested = [
     { id: 'ludlow-om', name: 'Clicked the 41 Ludlow OM', tag: 'Class A', hint: 'Owners click a listing to price their own building.', crit: 'cls:A;eng:Clicked 41 Ludlow St OM', why: n => n + ' Class A owners clicked the 41 Ludlow St OM this month. Owners click a listing to price their own building.' },
     { id: 'q3-uncalled', name: 'Opened the Q3 report, never called', tag: 'LES · Class A', hint: 'Warm from the report, cold on the phone.', crit: 'cls:A;hood:Lower East Side;eng:Opened Q3 market report;touch:Never called', why: n => n + ' Class A owners on the Lower East Side opened the Q3 report and have never been called.' },

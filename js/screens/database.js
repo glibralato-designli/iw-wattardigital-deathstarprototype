@@ -10,7 +10,7 @@
      saved=1 (saved to Lists), push=phone|mail|cc (confirming), pushed=phone|mail|cc (queued). */
   const CR = DS.crit, S0 = DS.S();
   const LISTS = D.lists.map(([k, l, n]) => ({ k, l, n, crit: D.listCrit[k] }));
-  const FROM = { reporting: ['Reporting', 'reporting'], listings: ['Listing activity', 'listings'], 'web-analytics': ['Website analytics', 'web-analytics'], 'outreach-performance': ['Outreach performance', 'outreach-performance'], brain: ['Brain', 'brain'], 'attack-plan': ['Attack Plan', 'attack-plan'], headlines: ['Headlines', 'headlines'] };
+  const FROM = { reporting: ['Who to call', 'reporting'], listings: ['Listings', 'listings'], 'web-analytics': ['Website', 'web-analytics'], 'outreach-performance': ['Performance', 'outreach-performance'], brain: ['Brain', 'brain'], 'attack-plan': ['Today', 'attack-plan'], headlines: ['Headlines', 'headlines'] };
   const CH = { phone: ['Phone', 'Terrakotta', 'phone'], mail: ['Mail merge', 'Gmail', 'envelope-simple'], cc: ['Constant Contact', 'Constant Contact', 'megaphone'] };
   const listPreset = k => (LISTS.find(l => l.k === k) || {}).crit;
   b.crit = CR.parse(params.has('crit') ? params.get('crit') : params.has('list') ? listPreset(params.get('list')) || '' : st.terr ? 'terr:1' : '');

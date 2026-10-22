@@ -69,7 +69,7 @@
   DS.define({
     id: 'attack-plan', nav: 'dashboard', tab: 'today',
     head, scope: () => 'Today',
-    render: () => `<div class="ds-apage">${ui.large(st.mode === 'week' ? 'This week' : st.sel === 0 ? 'Today' : fmtS(addD(st.sel)), st.mode === 'week' ? 'Attack Plan' : fmtL(addD(st.sel)))}${strip()}${st.sel === 0 ? ui.nudge(D.nudges['attack-plan']) : ''}<div class="ds-stack" data-anim="slide" data-key="today-${st.mode}-${st.sel}" style="gap:var(--space-6)">${callNext()}${todos()}${goals()}${meetings()}</div></div>`,
+    render: () => `<div class="ds-apage">${ui.large(st.mode === 'week' ? 'This week' : st.sel === 0 ? 'Today' : fmtS(addD(st.sel)), st.mode === 'week' ? 'This week' : fmtL(addD(st.sel)))}${strip()}${st.sel === 0 ? ui.nudge(D.nudges['attack-plan']) : ''}<div class="ds-stack" data-anim="slide" data-key="today-${st.mode}-${st.sel}" style="gap:var(--space-6)">${callNext()}${todos()}${goals()}${meetings()}</div></div>`,
     overlays: addSheet,
     after: () => { if (st.focus) { st.focus = false; const el = document.getElementById('new-task'); if (el) el.focus(); } },
     acts: {

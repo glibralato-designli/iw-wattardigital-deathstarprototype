@@ -1,4 +1,4 @@
-/* 02 Dashboard › Attack Plan: the to-do view. Today's plan with Call next, to-dos, the week, goals and meetings. */
+/* 02 Dashboard › Today (the Attack Plan): the to-do view. Today's plan with Call next, to-dos, the week, goals and meetings. */
 (() => {
   const { D, ui, esc, icon, href, params, fmtL, fmtS, fmtMD } = DS;
   const st = { mode: params.get('range') === 'week' ? 'week' : 'day', sel: Number(params.get('day')) || 0, picker: params.get('picker') === '1', pickM: null, goalF: params.get('range') === 'week' ? 'Weekly' : 'Daily', resOpen: params.get('resolved') === '1', newTask: '', newCat: 'Follow up' };
@@ -128,7 +128,7 @@
 
   DS.define({
     id: 'attack-plan', nav: 'dashboard', brain: 'min',
-    crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: 'Attack Plan' }],
+    crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: 'Today' }],
     scope: () => 'Dashboard',
     render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, 'attack-plan', 'Dashboard'))}${ui.nudge(D.nudges['attack-plan'])}${toolbar()}
       <div class="ds-split" data-anim="slide" data-key="plan-${st.mode}-${st.sel}" style="--dir:${st.dir || 1}"><div class="ds-stack">${todayPlan()}${todos()}${week()}</div><div class="ds-stack">${suggested()}${goals()}${meetings()}</div></div></div>`,

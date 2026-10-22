@@ -34,8 +34,8 @@
   };
   DS.define({
     id: 'conversations', nav: 'dashboard', brain: 'min',
-    crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: 'Conversation tracker' }],
-    scope: () => 'Conversation tracker',
+    crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: 'Activity' }],
+    scope: () => 'Activity',
     render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, 'conversations', 'Dashboard'))}${ui.nudge(D.nudges.conversations)}<div class="ds-stack" data-gap="4">${head()}${summary()}<div data-anim="slide" data-key="board-${st.wk}" style="--dir:${st.dir || 1}">${board()}</div></div></div>`,
     overlays: dialog,
     acts: {

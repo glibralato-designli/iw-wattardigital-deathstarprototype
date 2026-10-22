@@ -1,4 +1,4 @@
-/* App 01 Home: the day at a glance. Greeting, today's Attack Plan, the pulse, Brain's note, the week's calls, Up next and meetings. */
+/* App 01 Home: the day at a glance. Greeting, today's plan, the pulse, Brain's note, the week's calls, Up next and meetings. */
 (() => {
   const { D, ui, esc, icon, href, params } = DS;
   const st = { brainNote: params.get('note') !== '0' };
@@ -18,11 +18,11 @@
       { done: !!S.done.marchetti, t: 'Call Daniel Marchetti', m: '$9.4M loan due in June · Verified', link: href('contact', 'id=marchetti') },
       { done: false, t: 'Tour 41 Ludlow St at 9:30 AM', m: 'With Priya Venkataraman', link: href('calendar') },
     ];
-    return `<section class="ds-acard" aria-label="Today’s Attack Plan">
-      <div class="ds-acard__head"><div class="ds-acard__title"><h2>Today’s Attack Plan</h2><span class="ds-meta">LES maturities</span></div>
+    return `<section class="ds-acard" aria-label="Today’s plan">
+      <div class="ds-acard__head"><div class="ds-acard__title"><h2>Today’s plan</h2><span class="ds-meta">LES maturities</span></div>
         <div class="ds-acard__prog">${ui.progress(done / 40, 'Calls today', { key: 'calls' })}<span class="ds-meta-strong num"><span data-count="calls">${done}</span> of 40 calls</span></div></div>
       <div>${steps.map((s, i) => `<a class="ds-arow" href="${s.link}"${s.done ? ' data-done' : ''}><span class="ds-check-mini"${s.done ? ' data-on' : ''} data-tick="step-${i}|${s.done ? 'on' : 'off'}">${icon('check')}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(s.t)}</span><span class="ds-arow__sub">${esc(s.m)}</span></span><span class="ds-arow__end">${icon('caret-right')}</span></a>`).join('')}</div>
-      <div class="ds-acard__foot">${ui.btn({ label: 'Open Attack Plan', ic: 'sun', link: href('attack-plan'), extra: { 'data-block': true } })}
+      <div class="ds-acard__foot">${ui.btn({ label: 'Open Today', ic: 'sun', link: href('attack-plan'), extra: { 'data-block': true } })}
         <div class="ds-two-btn">${ui.btn({ label: 'Log a call', ic: 'phone', variant: 'outline', act: 'palette', arg: 'log' })}${ui.btn({ label: 'Build a list', ic: 'list-bullets', variant: 'outline', act: 'build-list' })}</div></div>
     </section>`;
   };

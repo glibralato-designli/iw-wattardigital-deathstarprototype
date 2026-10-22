@@ -1,9 +1,9 @@
-/* 10–13 Dashboard display tabs: Outreach performance, Reporting, Listings, Web analytics.
+/* Dashboard display tabs: Performance (outreach-performance), Who to call (reporting), Listings, Website (web-analytics).
    Content follows the client's portal tabs. Summary first, then detail; drill-downs, logging and filters are drawn but off. */
 (() => {
   const { D, ui, esc, icon, href, loc } = DS;
   const page = document.body.dataset.page;
-  const LABEL = { 'outreach-performance': 'Outreach performance', reporting: 'Reporting', listings: 'Listing activity', 'web-analytics': 'Website analytics' };
+  const LABEL = { 'outreach-performance': 'Performance', reporting: 'Who to call', listings: 'Listings', 'web-analytics': 'Website' };
   const OFF = DS.OFF;
   // Listing activity: which listing is open (preset listing=<address slug>, e.g. 88-orchard-st).
   const lst = { sel: DS.params.get('listing') || '' };
@@ -41,7 +41,7 @@
       section('Workflow efficacy', 'How well the outreach and the model are working', efficacy);
   };
 
-  /* ── Reporting: who we haven't reached, how the emails did, then each channel ── */
+  /* ── Who to call (reporting): who we haven't reached, how the emails did, then each channel ── */
   const reporting = () => {
     const R = D.reporting, F = R.funnel;
     const zips = R.zips.map(([z, hit, reach, warm]) => ({ z, hit, reach, warm, p: hit / reach * 100 })).sort((a, b) => a.p - b.p);
@@ -55,8 +55,8 @@
     const clicked = `<div class="ds-card" data-pad="lg">${cardHead('Clicked what', 'Unique people per link', ui.toList('eng:Clicked Q3 market report email', { label: 'See who', q: 'from=reporting' }))}${ui.hbars(R.clicked, { tone: 'accent', tail: l => ui.toList('eng:Clicked ' + l, { icon: true, q: 'from=reporting', aria: 'Turn “' + l + '” into a list' }) })}</div>`;
     const channel = e => `<div class="ds-card" data-pad="lg">${cardHead(e.t, e.v)}<span class="ds-headline"><b>${esc(e.head)}</b></span>${ui.kv(e.rows, { compact: true })}<span class="ds-meta">${esc(e.foot)}</span></div>`;
     return range('Last 30 days', 'Sep 1 – Sep 30') +
-      section('Coverage by ZIP', 'Weakest first. Each owner list opens from its ZIP.', cov) +
-      section('Email campaigns', 'LinkedIn post numbers arrive here once LinkedIn is connected', `<div class="ds-two" data-ratio="wide">${funnel}${clicked}</div>`, offSeg(R.emailChannels, 0, 'Outreach channel')) +
+      section('Who we haven’t reached', 'Coverage by ZIP, weakest first. Each ZIP turns into a call list.', cov) +
+      section('Who engaged', 'The last campaign and what people clicked. Each stage and link turns into a call list.', `<div class="ds-two" data-ratio="wide">${funnel}${clicked}</div>`, offSeg(R.emailChannels, 0, 'Outreach channel')) +
       section('Engagement by channel', '', `<div class="ds-three">${R.engagement.map(channel).join('')}</div>`);
   };
 
@@ -82,7 +82,7 @@
     const I = D.inbound, Ev = I.events;
     const events = `<div class="ds-card" data-pad="lg">${cardHead('Events page', Ev.name)}<div class="ds-two" data-ratio="even"><div class="ds-statrow" data-compact>${stat({ l: 'Views · 7 days', v: Ev.v7 })}${stat({ l: 'Views · 30 days', v: Ev.v30 })}${stat({ l: 'RSVPs', v: Ev.rsvps, sub: Ev.rsvps7 + ' this week' })}</div><div class="ds-stack" data-gap="2"><span class="ds-meta">Traffic sources · 30 days</span>${ui.hbars(Ev.refs)}</div></div></div>`;
     return range('All time', 'Auto counts tracked engagement. Tours and offers are logged with a record.') +
-      section('Listing activity', `${D.listings.length} listings on the website · pick one for its viewers and offers`, `<div class="ds-lgrid" role="group" aria-label="Listings">${D.listings.map(card).join('')}</div>${detail(cur)}`) +
+      section('Listings', `${D.listings.length} listings on the website · pick one for its viewers and offers`, `<div class="ds-lgrid" role="group" aria-label="Listings">${D.listings.map(card).join('')}</div>${detail(cur)}`) +
       section('Website inquiries', `${waiting} awaiting follow-up · every form on stewartgroup.example`, inq, offIcon('arrow-clockwise', 'Refresh')) +
       section('Other website requests', '', `<div class="ds-three">${small('Buyer registrations', I.buyers)}${small('BOV requests', I.bov, 'Open auto-BOV', href('bov', 'id=p90c'))}${small('Bookings', I.bookings)}</div>${events}`);
   };

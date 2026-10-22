@@ -1,4 +1,4 @@
-/* 01 Home: the overview. Greeting, today's Attack Plan, the pulse strip, metric tabs, Up next and meetings. */
+/* 01 Home: the overview. Greeting, today's plan, the pulse strip, metric tabs, Up next and meetings. */
 (() => {
   const { D, ui, esc, icon, href, params } = DS;
   // Preset queued=1: a list was pushed to Phone from the Database (Home counts it under Outreach).
@@ -15,13 +15,13 @@
       { done: !!S.done.marchetti, t: 'Call Daniel Marchetti', m: '$9.4M loan due in June · Verified', link: href('contact', 'id=marchetti') },
       { done: false, t: 'Tour 41 Ludlow St at 9:30 AM', m: 'With Priya Venkataraman', link: href('calendar') },
     ];
-    return `<section class="ds-card" aria-label="Today’s Attack Plan">
-      <div class="ds-card__head ds-plan__head"><div class="ds-card__title"><h2>Today’s Attack Plan</h2><span class="ds-meta">LES maturities · from the Dashboard</span></div>
+    return `<section class="ds-card" aria-label="Today’s plan">
+      <div class="ds-card__head ds-plan__head"><div class="ds-card__title"><h2>Today’s plan</h2><span class="ds-meta">LES maturities · from the Dashboard</span></div>
         <span class="ds-meta-strong num"><span data-count="calls">${done}</span> of 40 calls</span>${ui.progress(done / 40, 'Calls today', { key: 'calls' })}
         <a href="${href('attack-plan')}">See more on Dashboard</a>
-        ${ui.iconBtn({ ic: st.planOpen ? 'caret-up' : 'caret-down', aria: st.planOpen ? 'Minimize Attack Plan' : 'Expand Attack Plan', act: 'toggle-plan', expanded: st.planOpen })}</div>
+        ${ui.iconBtn({ ic: st.planOpen ? 'caret-up' : 'caret-down', aria: st.planOpen ? 'Minimize today’s plan' : 'Expand today’s plan', act: 'toggle-plan', expanded: st.planOpen })}</div>
       ${st.planOpen ? `<div data-anim="grow" data-key="plan-body"><div class="ds-plan__steps">${steps.map((s, i) => `<a class="ds-row" href="${s.link}"><span class="ds-check"${s.done ? ' data-on' : ''} data-tick="step-${i}|${s.done ? 'on' : 'off'}">${s.done ? icon('check') : ''}</span><span class="ds-row__body"><span class="ds-row__title">${esc(s.t)}</span><span class="ds-row__sub">${esc(s.m)}</span></span><span class="ds-row__end">${icon('caret-right')}</span></a>`).join('')}</div>
-      <div class="ds-plan__actions">${ui.btn({ label: 'Open Attack Plan', ic: 'squares-four', link: href('attack-plan') })}${ui.btn({ label: 'Log a call', ic: 'phone', variant: 'outline', act: 'palette', arg: 'log' })}${ui.btn({ label: 'Build a list', ic: 'list-bullets', variant: 'outline', act: 'build-list' })}</div></div>` : ''}
+      <div class="ds-plan__actions">${ui.btn({ label: 'Open Today', ic: 'squares-four', link: href('attack-plan') })}${ui.btn({ label: 'Log a call', ic: 'phone', variant: 'outline', act: 'palette', arg: 'log' })}${ui.btn({ label: 'Build a list', ic: 'list-bullets', variant: 'outline', act: 'build-list' })}</div></div>` : ''}
     </section>`;
   };
 

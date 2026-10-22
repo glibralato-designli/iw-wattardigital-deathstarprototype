@@ -47,7 +47,7 @@
   /* ───────── Header ───────── */
   const backLabel = () => {
     let from = ''; try { const r = new URL(DS.referrer || document.referrer); if (r.origin === location.origin) from = r.pathname.split('/').pop().replace('.html', ''); } catch (_) {}
-    const L = { home: 'Home', 'attack-plan': 'Dashboard', calendar: 'Calendar', conversations: 'Conversation tracker', listings: 'Listing activity', brain: 'Brain', property: 'property', contact: 'previous contact' };
+    const L = { home: 'Home', 'attack-plan': 'Today', calendar: 'Calendar', conversations: 'Activity', listings: 'Listings', reporting: 'Who to call', brain: 'Brain', property: 'property', contact: 'previous contact' };
     return from && L[from] ? 'Back to ' + L[from] : 'Back to Database';
   };
   const header = () => {

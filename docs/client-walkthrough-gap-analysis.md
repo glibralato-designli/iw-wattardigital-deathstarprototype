@@ -123,7 +123,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 
   Decide before the client call.
 
-  **Update (Oct 22, designer request):** the seven tabs now use Thomas's current names and order (Attack Plan, Conversation tracker, Calendar, Outreach performance, Reporting, Listing activity, Website analytics), in sentence case. They are renamed, not consolidated; the consolidation question stays open.
+  **Update (Oct 22, designer request):** the seven tabs now use Thomas's current names and order from his walkthrough video: Today (the Attack Plan), Activity (conversations), Who to call (the Reporting screen: coverage and engagement as call lists), Calendar, Performance, Listings and Website, in sentence case. They are renamed, not consolidated; the consolidation question stays open.
 
 ### T7. Verified data and data trust. **Covered (P3 for the remainder).**
 - Trust statuses, evidence and flags cover the design side.
