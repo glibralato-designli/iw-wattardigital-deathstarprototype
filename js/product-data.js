@@ -16,6 +16,11 @@
     ['greene', 'Michael Greene', 'Rivington 19 LLC', 'C', 55, 'p19r', 'Nearby sale', 'Listed a nearby building last year', 'Michael Greene listed a nearby building last year and pulled it. He may be open to talking about 19 Rivington St.', 'stale', '5mo ago · Connected', '(212) 555-0156', 'Nurture', 11, 'Fund Exit', 'Falling', 'Domestic LLC · Investor', 0],
     ['morales', 'Elena Morales', 'Stanton 7 LLC', 'D', 34, 'p7s', 'Long hold', 'Long hold; few signals', 'Elena Morales has owned 7 Stanton St for 15 years. There are few signals right now, so keep her informed rather than calling.', 'single', 'Never called', '(212) 555-0149', 'New', 15, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
     ['baum', 'Harold Baum', 'Norfolk 120 Associates', 'LH', 14, 'p120n', 'Recent refinance', 'Refinanced in 2024 on a 10-year term', 'Harold Baum refinanced 120 Norfolk St in 2024 on a 10-year term. He’s likely to hold.', 'verified', '2mo ago · Not interested', '(212) 555-0187', 'Do not contact', 21, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
+    // Outside the Lower East Side: Upper East Side, Midtown and Chelsea are in the territory; Central Harlem (north of 100th St) is not.
+    ['lindqvist', 'Erik Lindqvist', 'East 82nd Street Associates LLC', 'A', 109, 'p311e', 'Loan maturity', '$7.8M loan due in March on 30 units', 'Erik Lindqvist’s $7.8M loan on 311 E 82nd St matures in March, and the building has had no refinance since 2015. Owners in this spot often test a sale before they refinance.', 'verified', '19d ago · Voicemail', '(212) 555-0131', 'Contacted', 17, 'Debt Clock', 'Rising', 'Domestic LLC · Family owner', 1],
+    ['osei', 'Kwame Osei', 'West 46th Holdings LLC', 'B', 86, 'p418w', 'Long hold', 'Held 28 years; owner in his late 60s', 'Kwame Osei has held 418 W 46th St for 28 years and is in his late 60s. Long holds in Midtown West tend to trade when the owner starts planning the estate.', 'verified', 'Never called', '(212) 555-0168', 'New', 28, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
+    ['brennan', 'Claire Brennan', 'Chelsea 22 Realty LLC', 'C', 58, 'p236w', 'Nearby sale', 'Two buildings on the block sold this year', 'Two walk-ups on Claire Brennan’s block of W 22nd St sold this year. Public records suggest she has been approached before. Worth a check-in with the comps.', 'single', '4mo ago · Connected', '(212) 555-0114', 'Nurture', 12, 'Fund Exit', 'Steady', 'Domestic LLC · Investor', 1],
+    ['dubois', 'Marc Dubois', 'Lenox 130 LLC', 'B', 79, 'p130w', 'Loan maturity', '$2.6M loan due in May', 'Marc Dubois has a $2.6M loan on 130 W 130th St due in May. The building is in Central Harlem, outside the territory.', 'single', 'Never called', '(212) 555-0172', 'New', 9, 'Debt Clock', 'Rising', 'Domestic LLC · Private owner', 0],
   ].map(([id, name, entity, cls, score, pid, signal, why, whyFull, trust, last, phone, status, years, narrative, momentum, meta, warm]) => ({ id, name, entity, cls, score, pid, signal, why, whyFull, trust, last, phone, status, years, narrative, momentum, meta, warm }));
 
   const P = [
@@ -32,7 +37,15 @@
     ['p19r', '19 Rivington St', 'Lower East Side', '10002', '1-00425-0036', 'greene', 10, 10, 0, 6400, 1925, '$1.1M', 'Jul 2031', 1],
     ['p7s', '7 Stanton St', 'Lower East Side', '10002', '1-00426-0003', 'morales', 8, 2, 6, 5100, 1910, 'Not on record', 'Not on record', 0],
     ['p120n', '120 Norfolk St', 'Lower East Side', '10002', '1-00354-0028', 'baum', 26, 14, 12, 16200, 1930, '$5.5M', 'May 2034', 0],
+    ['p311e', '311 E 82nd St', 'Upper East Side', '10028', '1-01545-0021', 'lindqvist', 30, 18, 12, 22600, 1920, '$7.8M', 'Mar 2027', 3],
+    ['p418w', '418 W 46th St', 'Midtown West', '10036', '1-01055-0034', 'osei', 20, 8, 12, 13200, 1910, '$1.6M', 'Sep 2030', 1],
+    ['p236w', '236 W 22nd St', 'Chelsea', '10011', '1-00773-0045', 'brennan', 14, 9, 5, 9900, 1900, 'Not on record', 'Not on record', 1],
+    ['p130w', '130 W 130th St', 'Central Harlem', '10027', '1-01914-0012', 'dubois', 16, 6, 10, 12100, 1905, '$2.6M', 'May 2027', 2],
   ].map(([id, addr, hood, zip, bbl, owner, units, fm, rs, sf, built, debt, mat, signals]) => ({ id, addr, hood, zip, bbl, owner, units, fm, rs, sf, built, debt, mat, signals }));
+
+  /* Thomas's territory: Main Body Manhattan, from 100th St to the southern tip. */
+  const TERRITORY = { name: 'Main Body Manhattan', sub: '100th St to the southern tip', outside: ['Central Harlem'] };
+  P.forEach(p => { p.terr = !TERRITORY.outside.includes(p.hood); });
 
   const cById = Object.fromEntries(C.map(c => [c.id, c]));
   const pById = Object.fromEntries(P.map(p => [p.id, p]));
@@ -85,14 +98,14 @@
   const tiles = [
     { name: 'Activity', icon: 'pulse', label: 'Calls today', num: '6 / 40', title: 'Calls per day, last 7 days', sub: 'Activity · goal 40 a day', head: '112', headL: 'calls this week', go: 'Go to Outreach performance', to: 'outreach-performance', goal: 40, labels: D7, vals: [28, 31, 0, 0, 14, 33, 6], max: 40, zero: 'No calls' },
     { name: 'Database', icon: 'database', label: 'New Class A', num: '4', title: 'New signals per week', sub: 'Database · last 7 weeks', head: '26', headL: 'new signals this week', go: 'Go to Database', to: 'contacts', labels: W7, vals: [14, 18, 11, 22, 19, 24, 26] },
-    { name: 'Outreach', icon: 'list-bullets', label: 'Queues ready', num: '3', title: 'Contacts queued per week', sub: 'Outreach · last 7 weeks', head: '148', headL: 'in 3 ready queues', go: 'Go to Outreach', labels: W7, vals: [90, 110, 95, 130, 120, 142, 148] },
+    { name: 'Outreach', icon: 'list-bullets', label: 'Queues ready', num: '3', title: 'Contacts queued per week', sub: 'Outreach · last 7 weeks', head: '1,480', headL: 'in 3 ready queues', go: 'Go to Outreach', labels: W7, vals: [900, 1100, 950, 1300, 1200, 1420, 1480], fmt: 'loc' },
     { name: 'Phone', icon: 'phone', label: 'Conversations', num: '2', title: 'Conversations per day', sub: 'Phone · last 7 days', head: '9', headL: 'conversations this week', go: 'Go to Phone', labels: D7, vals: [3, 2, 0, 0, 1, 1, 2] },
     { name: 'Email', icon: 'envelope-simple', label: 'Replies', num: '5', title: 'Replies per day', sub: 'Email · last 7 days', head: '17', headL: 'replies this week', go: 'Go to Email', labels: D7, vals: [3, 4, 0, 1, 2, 2, 5] },
     { name: 'Texting', icon: 'chat-text', label: 'Unread', num: '3', title: 'Texts sent per day', sub: 'Texting · last 7 days', head: '64', headL: 'texts sent this week', go: 'Go to Texting', labels: D7, vals: [12, 15, 0, 0, 9, 22, 6] },
-    { name: 'Marketing', icon: 'megaphone', label: 'Last open rate', num: '44%', title: 'Last campaign funnel', sub: 'Marketing · Q3 market report', head: '44%', headL: 'open rate', go: 'Go to Marketing', labels: ['Sent', 'Delivered', 'Opened', 'Clicked'], vals: [2400, 2316, 1019, 143], fmt: 'loc' },
+    { name: 'Marketing', icon: 'megaphone', label: 'Last open rate', num: '44%', title: 'Last campaign funnel', sub: 'Marketing · Q3 market report', head: '44%', headL: 'open rate', go: 'Go to Marketing', labels: ['Sent', 'Delivered', 'Opened', 'Clicked'], vals: [12400, 11980, 5270, 712], fmt: 'loc' },
     { name: 'LinkedIn', icon: 'linkedin-logo', label: 'New connections', num: '12', title: 'New connections per week', sub: 'LinkedIn · last 7 weeks', head: '12', headL: 'new this week', go: 'Go to LinkedIn', labels: W7, vals: [6, 9, 4, 11, 8, 10, 12] },
     { name: 'Social', icon: 'users', label: 'Engagement', num: '230', title: 'Engagement per week', sub: 'Social · last 7 weeks', head: '230', headL: 'engagements this week', go: 'Go to Social', labels: W7, vals: [140, 165, 120, 190, 210, 175, 230] },
-    { name: 'Map', icon: 'map-trifold', label: 'ZIP coverage', num: '8%', title: 'Owners called by ZIP', sub: 'Map · share called at least once', head: '8%', headL: 'territory coverage', go: 'Go to Map', labels: ['10002', '10003', '10009', '10012', '10013', '10014', '10038'], vals: [14, 9, 6, 11, 4, 7, 3], fmt: 'pct', flat: true },
+    { name: 'Map', icon: 'map-trifold', label: 'ZIP coverage', num: '8%', title: 'Owners called by ZIP', sub: 'Map · share called at least once', head: '8%', headL: 'territory coverage', go: 'Go to Map', labels: ['10002', '10003', '10009', '10012', '10013', '10028', '10038'], vals: [14, 9, 6, 11, 4, 9, 3], fmt: 'pct', flat: true },
     { name: 'Web analytics', icon: 'globe', label: 'Visitors this week', num: '1,284', title: 'Visitors per week', sub: 'Web analytics · last 7 weeks', head: '1,284', headL: 'visitors this week', go: 'Go to Web analytics', to: 'web-analytics', labels: W7, vals: [880, 940, 1020, 990, 1110, 1190, 1284], fmt: 'loc' },
   ];
 
@@ -115,10 +128,11 @@
   const weekAlt = [['Calls · Class A', 'Calls'], ['Mail merge · Market report', 'Blast'], ['Calls · Probate leads', 'Calls'], ['LinkedIn · Listings', 'Posts'], ['Constant Contact · Digest', 'Email']];
 
   /* Calendars: key → [label]. Events: [weekday 0–4, start hour, hours, calendar, title, with, contact]. */
-  const calendars = { mtg: 'Meetings', call: 'Call blocks', tour: 'Tours', mkt: 'Marketing' };
-  const events = [[0, 9, 2, 'call', 'Calls · Sourcing', 'Class A list'], [0, 14, 1, 'mtg', 'Lender coffee', 'Brookline Capital'], [1, 10, 1, 'mkt', 'Mail merge · Listings', 'LES owners'], [1, 15, 0.5, 'mtg', 'Adler callback', 'Ruth Adler', 'adler'],
+  /* Meetings, scheduled calls, BOV pitches and tours only (Thomas, P1 08:33). Posts, blasts and mail merges are planned in the Attack Plan's week strip. */
+  const calendars = { mtg: 'Meetings', call: 'Call blocks', tour: 'Tours', bov: 'BOV pitches' };
+  const events = [[0, 9, 2, 'call', 'Calls · Sourcing', 'Class A list'], [0, 14, 1, 'mtg', 'Lender coffee', 'Brookline Capital'], [1, 10, 1, 'call', 'Callbacks', 'Ruth Adler and 2 more'], [1, 15, 0.5, 'mtg', 'Adler callback', 'Ruth Adler', 'adler'],
     [2, 9.5, 1, 'tour', 'Tour · 41 Ludlow St', 'Priya Venkataraman'], [2, 12, 1, 'mtg', 'Lunch · Grace Okafor', 'Okafor family office', 'okafor'], [2, 13.5, 1.5, 'call', 'Calls · LES maturities', 'Daniel Marchetti first', 'marchetti'], [2, 15.5, 0.5, 'mtg', 'Pipeline review', 'Zoom · Mira W.'], [2, 17, 0.5, 'mtg', 'Lender update', 'Brookline Capital'],
-    [3, 11, 0.5, 'mkt', 'LinkedIn · Market note', 'Post'], [3, 14, 1, 'tour', 'Tour · 90 Clinton St', 'Grace Okafor', 'okafor'], [4, 10, 1, 'mtg', 'Team meeting', 'Stewart Group'], [4, 13, 1, 'mkt', 'Constant Contact · Listings', 'Weekly send']];
+    [3, 11, 1, 'bov', 'BOV pitch · 64 Essex St', 'Ruth Adler', 'adler'], [3, 14, 1, 'tour', 'Tour · 90 Clinton St', 'Grace Okafor', 'okafor'], [4, 10, 1, 'mtg', 'Team meeting', 'Stewart Group'], [4, 13, 1, 'call', 'Calls · Upper East Side', 'Erik Lindqvist first', 'lindqvist']];
 
   /* Conversations board for this week: [weekday or 'prop', contact, topic, outcome, next step]. */
   const conversations = {
@@ -151,9 +165,11 @@
   const dashboardTabs = [['attack-plan', 'Attack Plan'], ['calendar', 'Calendar'], ['conversations', 'Conversations'], '|', ['outreach-performance', 'Outreach performance'], ['reporting', 'Reporting'], ['listings', 'Listings'], ['web-analytics', 'Web analytics']];
   const databaseTabs = [['contacts', 'Contacts'], ['properties', 'Properties']];
 
-  const lists = [['all', 'All contacts', 320], ['A', 'Class A sellers', 22], ['B', 'Class B sellers', 41], ['C', 'Class C sellers', 88], ['D', 'Class D sellers', 120], ['LH', 'Likely holders', 64], ['warm', 'Warm contacts', 37], ['cold', 'Cold contacts', 210]];
-  const listsOff = [['Professional grade', 18], ['Portfolio sellers', 29], ['Active buyers', 46]];
-  const hoods = [['Lower East Side', 184], ['East Village', 136]];
+  /* Database scale: about 40,000 contacts and 18,600 properties (Thomas, P3 25:14). The table shows the fictional demo rows. */
+  const DB = { contacts: 40212, inTerritory: 36480, properties: 18640, propsInTerritory: 16910 };
+  const lists = [['all', 'All contacts', 40212], ['A', 'Class A sellers', 1140], ['B', 'Class B sellers', 3860], ['C', 'Class C sellers', 9420], ['D', 'Class D sellers', 14950], ['LH', 'Likely holders', 10842], ['warm', 'Warm contacts', 3310], ['cold', 'Cold contacts', 36902]];
+  const listsOff = [['Professional grade', 1260], ['Portfolio sellers', 2140], ['Active buyers', 3480]];
+  const hoods = [['Lower East Side', 4820], ['East Village', 3960], ['Upper East Side', 7140], ['Midtown West', 5310], ['Chelsea', 3220]];
   const customLists = ['Class A sellers', 'LES debt 2026', 'Estate watch', 'Q4 mail merge', 'Air rights', 'Callbacks this week'];
 
   /* Display-only Dashboard tabs. Content mirrors the client's portal tabs; drill-downs and logging are drawn but off. */
@@ -161,7 +177,7 @@
     // [label, icon, today, previous day, this week]; counted automatically.
     activity: [['Calls', 'phone', 6, 33, 112], ['Emails', 'envelope-simple', 38, 41, 186], ['Texts', 'chat-text', 5, 22, 64], ['Conversations', 'phone-call', 2, 1, 9]],
     efficiency: { hit: 38, efficacy: 12, conversations: 9, confirmed: 42, calls: 112 },
-    linkedin: { pct: 14, connected: 412, total: 2940 },
+    linkedin: { pct: 14, connected: 5630, total: 40212 },
     blasts: { n: 2, sub: 'Q3 market report, LES digest' },
     // [label, current, change %, window, previous]; logged by hand. Pipeline order.
     business: [['First meetings', 4, 33, '30 days', 3], ['Proposals delivered', 2, 0, '45 days', 2], ['Listings', 1, -50, '90 days', 2], ['Deals in contract', 0, -100, '90 days', 1], ['Deals closed', 1, 0, '90 days', 1]],
@@ -171,15 +187,15 @@
   };
   const reporting = {
     // [zip, owners touched, reachable owners, warm]
-    zips: [['10002', 26, 184, 4], ['10003', 9, 96, 2], ['10009', 8, 136, 1], ['10012', 8, 74, 2], ['10013', 2, 58, 0], ['10014', 6, 82, 1], ['10038', 1, 41, 0], ['10016', 3, 63, 0], ['10011', 6, 77, 1], ['10010', 2, 39, 0]],
-    engaged: 6,
+    zips: [['10002', 412, 2940, 61], ['10003', 141, 1530, 22], ['10009', 128, 2180, 14], ['10012', 126, 1180, 25], ['10013', 37, 930, 4], ['10028', 214, 2460, 31], ['10038', 19, 650, 2], ['10036', 74, 1640, 6], ['10011', 98, 1230, 13], ['10010', 31, 620, 3]],
+    engaged: 86,
     channels: ['All outreach', 'Calls', 'Mail merge', 'Constant Contact', 'Texts'],
     emailChannels: ['All email', 'Constant Contact', 'Mail merge', 'Calling', 'Texts'],
-    funnel: { sent: 2400, delivered: 2316, opened: 1056, clicked: 144, bounced: 84, unsub: 3 },
-    clicked: [['41 Ludlow St OM', 61], ['Q3 report PDF', 44], ['Book a call', 23], ['Listings page', 15], ['88 Orchard St OM', 9]],
+    funnel: { sent: 12400, delivered: 11980, opened: 5270, clicked: 712, bounced: 420, unsub: 18 },
+    clicked: [['41 Ludlow St OM', 268], ['Q3 report PDF', 196], ['Book a call', 104], ['Listings page', 86], ['88 Orchard St OM', 58]],
     engagement: [
       { t: 'Cold email', v: 'Smartlead', head: '312 opens', rows: [['Sent', '1,240'], ['Clicked', '38'], ['Replies', '17'], ['Bounced', '22']], foot: 'Last 7 days: 64 opens · 5 replies' },
-      { t: 'Digest', v: 'Constant Contact', head: '425 opened', rows: [['Recipients', '1,180'], ['Delivered', '1,164'], ['Bounced', '16'], ['Unsubscribed', '3']], foot: '36% of delivered opened' },
+      { t: 'Digest', v: 'Constant Contact', head: '4,190 opened', rows: [['Recipients', '11,800'], ['Delivered', '11,640'], ['Bounced', '160'], ['Unsubscribed', '21']], foot: '36% of delivered opened' },
       { t: 'Inbox', v: 'Replies and direct mail', head: '41 captured', rows: [['Email replies', '29'], ['Mail responses', '12'], ['Unread', '9']], foot: 'In the Death Star inbox' },
     ],
   };
@@ -280,5 +296,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { TODAY, addD, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { TODAY, addD, TERRITORY, DB, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

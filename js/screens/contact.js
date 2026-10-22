@@ -4,6 +4,7 @@
   const id = D.cById[params.get('id')] ? params.get('id') : 'marchetti';
   const c = D.cById[id], p = D.pById[c.pid];
   const S = DS.S(), U = DS.U();
+  const BLAST_UNTIL = 'Sep 30, 2027';
   const TABS = ['overview', 'intelligence', 'ownership', 'activity', 'details', 'history'];
   const st = { tab: TABS.includes(params.get('tab')) ? params.get('tab') : 'overview', whyOpen: params.get('why') === 'open', noteOpen: params.get('note') === '1', noteDraft: '', qNote: '', listPick: '', actF: 'All', othersOpen: false, saving: params.get('call') === 'saving' };
   const acc = (key, def) => { const a = DS.V.acc || {}; return key in a ? a[key] : def; };
@@ -11,10 +12,15 @@
   /* Presets: call=live|outcome|saving|logged|log, choice=<outcome>, flag=<evidence index>. */
   const call = params.get('call');
   if (call === 'live') { if (!U.call || U.call.id !== id) DS.setUI({ call: { id, t0: Date.now() - (params.has('choice') ? 0 : 74000) }, outcome: null }); }
-  if (call === 'outcome' || call === 'saving') DS.setUI({ call: null, outcome: { id, dur: '2:14', choice: params.get('choice') || (call === 'saving' ? 'No answer' : null), acts: {}, notes: '', follow: '' } });
+  if (call === 'outcome' || call === 'saving') DS.setUI({ call: null, outcome: { id, dur: '2:14', choice: params.get('choice') || (call === 'saving' ? 'No answer' : null), acts: params.get('choice') === 'Connected' ? { note: true, primary: true } : {}, notes: '', follow: '' } });
   if (call === 'log') DS.setUI({ call: null, outcome: { id, dur: null, choice: null, acts: {}, notes: '', follow: '' } });
   if (call === 'logged') { S.done[id] = true; S.calls += 1; S.last[id] = 'Just now · No answer'; DS.addTimeline(id, { k: 'Call', t: 'No answer · 0:42', d: 'Just now' }); }
   if (params.has('flag')) S.flags[id + ':' + params.get('flag')] = true;
+  /* Presets for a saved outcome's results: primary=<digits> (that number is primary), blasts=1 (excluded from blasts), dialed=<digits> (the number on the outcome tray). */
+  const byDigits = d => (D.contactPoints(c).find(x => x[0] === 'phone' && x[1].replace(/\D/g, '') === d) || [])[1];
+  if (params.has('primary') && byDigits(params.get('primary'))) S.primary[id] = byDigits(params.get('primary'));
+  if (params.get('blasts') === '1') S.blastOut[id] = BLAST_UNTIL;
+  if (params.has('dialed') && U.outcome && U.outcome.id === id && byDigits(params.get('dialed'))) DS.setUI({ outcome: { ...U.outcome, num: byDigits(params.get('dialed')) } });
   /* One-shot triggers from other screens (persisted, then removed from the address). */
   const trigger = params.get('act');
   if (trigger === 'call') DS.setUI({ call: { id, t0: Date.now() }, outcome: null });
@@ -30,7 +36,7 @@
   const portfolio = DS.portfolio(c);
   const first = c.name.split(' ')[0].toLowerCase(), lastN = c.name.split(' ')[1].toLowerCase();
   const nextCall = c.status === 'Engaged' ? 'Oct 2' : c.status === 'Do not contact' ? 'Not set' : (c.cls === 'A' || c.cls === 'B') ? 'Oct 6' : 'Not set';
-  const ICON = { Call: 'phone', Email: 'envelope-simple', Note: 'note', Flag: 'warning-diamond', Text: 'chat-text', Broadcast: 'megaphone' };
+  const ICON = { Call: 'phone', Email: 'envelope-simple', Note: 'note', Flag: 'warning-diamond', Text: 'chat-text', Broadcast: 'megaphone', Event: 'calendar-blank' };
 
   /* ───────── Header ───────── */
   const backLabel = () => {
@@ -56,8 +62,10 @@
     const oc = outcome(); if (!oc) return '';
     const OUTS = ['Connected', 'Callback', 'Voicemail', 'No answer', 'Not interested', 'Bad number'];
     const ACTS = [['note', 'Save note to record'], ['primary', 'Mark number primary'], ['bad', 'Mark number bad'], ['blasts', 'Remove from blasts for 1 year']];
+    const nums = DS.contactPointsOf(c).filter(x => x[0] === 'phone' && x[2] !== 'Bad').map(x => x[1]), num = oc.num || DS.bestPhone(c);
     return `<section class="ds-outcome" aria-label="Log the outcome" data-anim="grow" data-key="outcome-${oc.dur ? 'call' : 'hand'}">
-      <div style="display:flex;align-items:baseline;gap:var(--space-2)"><h2>Log the outcome</h2><span class="ds-meta">${esc((oc.dur ? 'Call lasted ' + oc.dur : 'Logged by hand') + ' · ' + DS.bestPhone(c))}</span></div>
+      <div style="display:flex;align-items:baseline;gap:var(--space-2)"><h2>Log the outcome</h2><span class="ds-meta">${esc((oc.dur ? 'Call lasted ' + oc.dur : 'Logged by hand') + ' · ' + num)}</span></div>
+      ${nums.length > 1 ? `<div class="ds-toolbar" style="gap:var(--space-1-5)" role="radiogroup" aria-label="Number reached"><span class="field__label" style="margin-right:var(--space-1)">Number reached</span>${nums.map(x => `<button type="button" class="ds-pill-btn num" role="radio" aria-checked="${x === num}" aria-pressed="${x === num}" data-act="pick-num" data-arg="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}
       <div class="ds-outcome__opts" role="radiogroup" aria-label="Outcome">${OUTS.map(o => `<button type="button" class="ds-opt" role="radio" aria-checked="${oc.choice === o}" data-tick="opt-${o}|${oc.choice === o ? 'on' : 'off'}" data-act="pick-outcome" data-arg="${o}">${o}</button>`).join('')}</div>
       <div class="ds-two"><div class="ds-stack" data-gap="2"><span class="field__label">Actions</span>${ACTS.map(([k, l]) => `<button type="button" class="ds-checkline" role="checkbox" aria-checked="${!!oc.acts[k]}" data-act="toggle-oact" data-arg="${k}"><span class="ds-box"${oc.acts[k] ? ' data-on' : ''} data-tick="oact-${k}|${oc.acts[k] ? 'on' : 'off'}">${oc.acts[k] ? icon('check') : ''}</span>${l}</button>`).join('')}</div>
         <div class="ds-stack" data-gap="3"><div class="field"><label class="field__label" for="out-follow">Follow-up date</label><input id="out-follow" class="field__control" type="date" value="${esc(oc.follow)}" data-change="follow"></div><div class="field"><label class="field__label" for="out-notes">Notes</label><textarea id="out-notes" class="field__control" rows="2" placeholder="Optional" data-input="outNotes" style="min-height:3.5rem">${esc(oc.notes)}</textarea></div></div></div>
@@ -83,16 +91,16 @@
     </section>`;
   };
   const reach = () => {
-    const phone = DS.bestPhone(c), spoke = /Connected|Callback/.test(c.last), domain = c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com';
+    const phone = DS.bestPhone(c), dead = DS.badOf(c).includes(phone), mine = S.primary[id] === phone, spoke = mine || /Connected|Callback/.test(c.last), domain = c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com';
     const tone = x => x >= 80 ? 'good' : x >= 60 ? 'ok' : x >= 45 ? 'warn' : 'bad';
     const LIFE = { 'Confirmed by us': 'good', Active: 'ok', Secondary: 'warn', Historical: 'muted', Unverified: 'muted', Rejected: 'bad' };
-    const best = [['Best phone', phone, 70 + (n % 26), spoke ? 'Confirmed by us' : 'Active', 'mobile · 3 sources', [spoke ? 'Answered by the owner on a logged call (' + c.last.split(' · ')[0] + ').' : 'Matches the mailing record on ACRIS.', '3 independent sources agree: ACRIS, Apollo, PropertyShark.', 'Tied to ' + c.entity + ' filings.']],
+    const best = [['Best phone', phone, dead ? 12 : 70 + (n % 26), dead ? 'Rejected' : spoke ? 'Confirmed by us' : 'Active', dead ? 'marked bad · no other number on record' : 'mobile · 3 sources', [dead ? 'Marked bad by Thomas W. on a logged call. Find a new number before the next call.' : mine ? 'Marked primary by Thomas W. after a logged call (' + DS.lastOf(c).split(' · ')[0] + ').' : spoke ? 'Answered by the owner on a logged call (' + c.last.split(' · ')[0] + ').' : 'Matches the mailing record on ACRIS.', '3 independent sources agree: ACRIS, Apollo, PropertyShark.', 'Tied to ' + c.entity + ' filings.']],
       ['Best personal email', first + '.' + lastN + '@example.com', 55 + (n % 30), 'Active', 'personal · 2 sources', ['Deliverable on the last send; no bounce on record.', '2 independent sources agree: Apollo, Hunter.']],
       ['Best business email', first[0] + lastN + '@' + domain, 45 + ((n >> 3) % 30), 'Secondary', 'business · 1 source', ['Domain matches the owning entity.', 'Single source: Hunter.']],
       ['LinkedIn', c.warm ? 'linkedin.com/in/' + first + '-' + lastN : null, 40 + ((n >> 5) % 30), 'Unverified', '1 source', ['Profile name and company match the owning entity.']]];
     const cps = DS.contactPointsOf(c), others = [...cps.filter(x => x[1] !== phone).map(x => [x[1], x[2] === 'Bad' ? 'Rejected' : x[2] === 'Verified' ? 'Secondary' : 'Historical']), ['(212) 555-0' + (100 + (n % 99)), 'Historical']];
     const [top, ...rest] = best;
-    const body = `<div class="ds-best"><span class="ds-best__icon">${icon('phone')}</span><span class="ds-row__body" style="min-width:10rem"><span class="ds-best__num">${esc(top[1])}</span><span class="ds-meta"><span class="ds-life" data-tone="${LIFE[top[3]]}">${top[3]}</span> · ${esc(top[4])}</span></span><span style="display:flex;flex-direction:column;align-items:flex-end"><span class="ds-conf" data-tone="${tone(top[2])}">${top[2]}%</span><span class="ds-meta">confidence</span></span></div>
+    const body = `<div class="ds-best"><span class="ds-best__icon">${icon('phone')}</span><span class="ds-row__body" style="min-width:10rem"><span style="display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap"><span class="ds-best__num">${esc(top[1])}</span>${dead ? '' : `<span class="ds-chip" data-tone="outline">${icon('check')}Primary</span>`}</span><span class="ds-meta"><span class="ds-life" data-tone="${LIFE[top[3]]}">${top[3]}</span> · ${esc(top[4])}</span></span><span style="display:flex;flex-direction:column;align-items:flex-end"><span class="ds-conf" data-tone="${tone(top[2])}">${top[2]}%</span><span class="ds-meta">confidence</span></span></div>
       <div style="border-top:var(--border-width) solid var(--border-subtle)">${rest.map(b => `<div class="ds-cp"><span class="ds-meta">${esc(b[0])}</span><span${b[1] ? '' : ' style="color:var(--fg-disabled);font-weight:var(--weight-regular)"'}>${esc(b[1] || 'None on record')}</span>${b[1] ? `<span class="ds-conf" data-tone="${tone(b[2])}" style="font-size:var(--text-sm);line-height:var(--line-height-sm)">${b[2]}%</span>` : ''}</div>`).join('')}</div>
       <button type="button" class="ds-mute-btn" style="align-self:flex-start" aria-expanded="${st.othersOpen}" data-act="toggle-others">${icon(st.othersOpen ? 'caret-down' : 'caret-right')}${st.othersOpen ? 'Hide details' : 'Why these, and ' + others.length + ' older numbers'}</button>
       ${st.othersOpen ? `<div class="ds-panel-sub" data-anim="grow" data-key="others">${best.filter(b => b[1]).map(b => `<div class="ds-stack" style="gap:var(--space-0-5)"><span class="ds-meta font-semibold" style="color:var(--fg)">${esc(b[0])}</span>${b[5].map(w => `<span style="color:var(--fg-secondary)">${esc(w)}</span>`).join('')}</div>`).join('')}
@@ -148,10 +156,11 @@
     const all = DS.timelineOf(c), tl = st.actF === 'All' ? all : all.filter(x => x.k + 's' === st.actF);
     const groups = []; tl.forEach(x => { const m = MON[(x.d || '').slice(0, 3)] ? MON[x.d.slice(0, 3)] + ' 2026' : 'September 2026'; let g = groups.find(y => y.m === m); if (!g) groups.push(g = { m, items: [] }); g.items.push(x); });
     const tone = t => /Connected|Callback|replied|opened/i.test(t) ? 'good' : /Voicemail|No answer/i.test(t) ? 'warn' : /Not interested|Bad/i.test(t) ? 'bad' : '';
-    const filters = ['All', 'Calls', 'Emails', 'Texts', 'Notes'].map(l => `<button type="button" class="ds-pill-btn" aria-pressed="${st.actF === l}" data-act="act-f" data-arg="${l}">${l}</button>`).join('');
-    return `${nextCall !== 'Not set' ? `<div class="ds-note--info ds-note">${icon('calendar-blank')}<span class="ds-row__body"><span class="ds-meta font-semibold" style="color:inherit">Upcoming and overdue</span><span>${esc(c.name)} · Follow-up call</span></span><b class="num">${nextCall}</b></div>` : ''}
+    const filters = ['All', 'Calls', 'Emails', 'Texts', 'Notes', 'Events'].map(l => `<button type="button" class="ds-pill-btn" aria-pressed="${st.actF === l}" data-act="act-f" data-arg="${l}">${l}</button>`).join('');
+    const upcoming = [...DS.eventsOf(c).filter(e => !e.past).map(e => [e.t + ' · ' + D.calendars[e.cal], e.when]), ...(nextCall !== 'Not set' ? [[c.name + ' · Follow-up call', nextCall]] : [])];
+    return `${upcoming.length ? `<div class="ds-note--info ds-note">${icon('calendar-blank')}<span class="ds-row__body"><span class="ds-meta font-semibold" style="color:inherit">Upcoming and overdue</span>${upcoming.map(([t, w]) => `<span style="display:flex;gap:var(--space-3);justify-content:space-between;flex-wrap:wrap"><span>${esc(t)}</span><b class="num">${esc(w)}</b></span>`).join('')}</span></div>` : ''}
       <div class="ds-toolbar"><div class="ds-card__title" style="min-width:12.5rem"><h2>Every touch</h2><span class="ds-meta">Calls, emails, texts, broadcasts and notes, newest first</span></div>${filters}${ui.btn({ label: 'Log a call', ic: 'plus', variant: 'outline', size: 'sm', act: 'log-call' })}</div>
-      ${tl.length ? `<div class="ds-acc">${groups.map((g, gi) => ui.acc('tl-' + g.m, g.m, g.items.length + (g.items.length === 1 ? ' touch' : ' touches'), `<div>${g.items.map(x => { const isCall = x.k === 'Call'; return `<div class="ds-tl"><span class="ds-tl__when">${icon(ICON[x.k] || 'note')}${esc(x.d)}</span><span class="ds-row__body"><span class="font-medium">${isCall ? 'Call · outbound' : x.k === 'Text' ? 'Text · outbound' : esc(x.k)}</span><span class="muted" style="text-wrap:pretty">${esc(isCall ? 'Outcome logged by Thomas W.' : x.t)}</span></span><span class="ds-tl__o" data-tone="${tone(x.t)}">${esc(isCall ? x.t : /opened/.test(x.t) ? 'opened' : '')}</span></div>`; }).join('')}</div>`, acc('tl-' + g.m, gi === 0))).join('')}</div>` : '<div class="ds-dashed">No touches logged yet. Calls, emails and notes show up here.</div>'}`;
+      ${tl.length ? `<div class="ds-acc">${groups.map((g, gi) => ui.acc('tl-' + g.m, g.m, g.items.length + (g.items.length === 1 ? ' touch' : ' touches'), `<div>${g.items.map(x => { const isCall = x.k === 'Call'; return `<div class="ds-tl"><span class="ds-tl__when">${icon(ICON[x.k] || 'note')}${esc(x.d)}</span><span class="ds-row__body"><span class="font-medium">${isCall ? 'Call · outbound' : x.k === 'Text' ? 'Text · outbound' : x.k === 'Event' ? 'Calendar' : esc(x.k)}</span><span class="muted" style="text-wrap:pretty">${esc(isCall ? 'Outcome logged by Thomas W.' : x.t)}</span></span><span class="ds-tl__o" data-tone="${tone(x.t)}">${esc(isCall ? x.t : /opened/.test(x.t) ? 'opened' : '')}</span></div>`; }).join('')}</div>`, acc('tl-' + g.m, gi === 0))).join('')}</div>` : '<div class="ds-dashed">No touches logged yet. Calls, emails and notes show up here.</div>'}`;
   };
   const togState = () => ({ emailOut: false, unsub: false, dnc: c.status === 'Do not contact', buy: false, sell: c.cls === 'A', hold: c.cls === 'LH' || c.id === 'marchetti', fin: c.id === 'marchetti', x1031: c.cls === 'A' && n % 2 === 0, ...(S.ctog[id] || {}) });
   const details = () => {
@@ -163,18 +172,20 @@
     const entity = `<div class="ds-entity"><span class="ds-entity__av" aria-hidden="true">${esc(DS.initials(c.name))}</span><div class="ds-stack ds-grow" data-gap="2" style="gap:var(--space-1-5)"><span class="ds-meta">Behind the entity · NY Dept. of State</span><span style="display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap"><span class="ds-entity__name">${esc(c.name)}</span><span class="ds-chip" data-tone="success">Principal</span></span><div class="ds-toolbar" style="gap:var(--space-1) var(--space-4);color:var(--fg-muted)">${[[etype, 'briefcase'], ['Formed in New York', 'map-pin'], [formed + ' · ' + (2026 - formed) + ' yrs', 'calendar-blank']].map(([l, ic]) => `<span class="ds-meta-icon">${icon(ic)}${esc(l)}</span>`).join('')}</div><span class="ds-entity__process">${icon('envelope-simple')}<span><b class="font-medium" style="color:var(--fg-muted)">Service of process</span> · ${esc(mail[0] + ', ' + mail[1] + ', ' + mail[2] + ' ' + mail[3])}</span></span></div></div>`;
     const secs = [
       ['Contact information', c.entity + ' · ' + tier, entity + G('Owner', 'user', [['Account name', c.entity], ['Name', c.name], ['Real owner', c.name], ['Owner profile', c.meta.split(' · ')[1]], ['Contact type', 'Owner']]) + G('Lead property', 'buildings', [['Property address', p.addr], ['Neighborhood', p.hood], ['BBL', p.bbl]]) + G('Pipeline', 'target', [['Contact owner', 'Thomas W.'], ['Record type', 'Class ' + c.cls + ' · ' + D.CLASS[c.cls]], ['Lead stage', tier], ['Source', 'ACRIS']])],
-      ['Email', '2 addresses', G('', '', [['Email', first + '.' + lastN + '@example.com'], ['Other email', first[0] + lastN + '@' + domain]]) + TG('Email status', [['emailOut', 'Email opt out'], ['unsub', 'Unsubscribed']])],
-      ['Phone', cps.filter(x => x[0] === 'phone').length + ' numbers', G('', '', cps.filter(x => x[0] === 'phone').map((x, i) => [i === 0 ? 'Business phone' : 'Phone ' + (i + 1), x[1] + (x[2] === 'Bad' ? ' · bad' : '')])) + TG('Calling rules', [['dnc', 'Asked not to be contacted']])],
+      ['Email', '2 addresses' + (S.blastOut[id] ? ' · excluded from blasts' : ''), G('', '', [['Email', first + '.' + lastN + '@example.com'], ['Other email', first[0] + lastN + '@' + domain]]) + (S.blastOut[id] ? `<div><span class="ds-chip" data-tone="outline">${icon('megaphone')}Excluded from blasts until ${esc(S.blastOut[id])}</span></div>` : '') + TG('Email status', [['emailOut', 'Email opt out'], ['unsub', 'Unsubscribed']])],
+      ['Phone', cps.filter(x => x[0] === 'phone').length + ' numbers', G('', '', cps.filter(x => x[0] === 'phone').map((x, i) => [i === 0 ? 'Business phone' : 'Phone ' + (i + 1), x[1] + (x[2] === 'Bad' ? ' · bad' : x[2] === 'Primary' ? ' · primary' : '')])) + TG('Calling rules', [['dnc', 'Asked not to be contacted']])],
       ['Contact preferences', 'Plans, 1031 and next call', TG('Intent', [['buy', 'Plans to buy'], ['sell', 'Plans to sell'], ['hold', 'Plans to hold'], ['fin', 'Plans to finance'], ['x1031', '1031 exchange']]) + G('', '', [['Last call outcome', c.last === 'Never called' ? null : c.last.split(' · ')[1]], ['Next call date', nextCall === 'Not set' ? null : nextCall], ['Years held', c.years + ' years']])],
       ['Acquisition preferences', 'Product, profile and FAR', G('', '', [['Product type', 'Multifamily walk-up'], ['Owner profile', c.meta.split(' · ')[1]], ['Neighborhood', p.hood], ['Unused FAR', c.id === 'rivera' ? '9,400 SF' : null], ['Narrative type', c.narrative]])],
       ['Address', 'Mailing: ' + mail.slice(0, 2).join(', '), G('', '', [['Mailing street', mail[0]], ['Mailing city', mail[1]], ['Mailing state', mail[2]], ['Mailing ZIP', mail[3]], ['Property ZIP', p.zip], ['Neighborhood', p.hood]])],
       ['System', 'Created Mar 4, 2024 · Updated Sep 28', G('', '', [['Created', 'Mar 4, 2024'], ['Last updated', 'Sep 28, 2026'], ['Source', 'ACRIS'], ['ACRIS enriched', 'Yes'], ['Apollo enriched', n % 3 ? 'Yes' : 'No'], ['Lead source', 'Firm DB']])],
     ];
-    return `<div class="ds-acc">${secs.map(([h, sum, body], i) => ui.acc('det-' + h, h, sum, body, acc('det-' + h, i === 0))).join('')}</div>`;
+    return `<div class="ds-acc">${secs.map(([h, sum, body], i) => ui.acc('det-' + h, h, sum, body, acc('det-' + h, i === 0 || (h === 'Email' && !!S.blastOut[id])))).join('')}</div>`;
   };
   const historyTab = () => {
-    const phone = DS.bestPhone(c), hist = [['Sep 28, 2026 · 4:12 PM', 'Primary phone', '(212) 555-0199', phone, 'Thomas W.'], ['Aug 21, 2026 · 10:03 AM', 'Status', 'New', c.status, 'Thomas W.'], ['Jun 2, 2026 · 6:00 AM', 'Lead stage', 'Tier 2 · Warm', tier, 'Model v4'], ['Mar 4, 2024 · 9:15 AM', 'Record created', 'None', 'ACRIS import', 'System']];
-    return `<div class="ds-acc">${ui.acc('hist', 'Change history', hist.length + ' changes · last Sep 28, 2026', `<div>${hist.map(([w, f, a, b, by]) => `<div class="ds-hist"><span class="ds-meta">${esc(f)}</span><span style="display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap"><s>${esc(a)}</s><span class="muted" aria-hidden="true">→</span><span class="font-medium">${esc(b)}</span></span><span class="ds-meta" style="display:flex;flex-direction:column;align-items:flex-end"><span>${esc(w)}</span><span>${esc(by)}</span></span></div>`).join('')}</div>`, acc('hist', true))}</div>`;
+    const was = (D.contactPoints(c).find(x => x[0] === 'phone' && x[2] === 'Primary') || [])[1], now = 'Sep 30, 2026 · Just now';
+    const logged = [...(S.blastOut[id] ? [[now, 'Blast status', 'Included', 'Excluded until ' + S.blastOut[id], 'Thomas W. · logged call']] : []), ...DS.badOf(c).map(x => [now, 'Phone marked bad', x, 'Bad', 'Thomas W. · logged call']), ...(S.primary[id] && S.primary[id] !== was ? [[now, 'Primary phone', was, S.primary[id], 'Thomas W. · logged call']] : [])];
+    const hist = [...logged, ['Sep 28, 2026 · 4:12 PM', 'Primary phone', '(212) 555-0199', was, 'Thomas W.'], ['Aug 21, 2026 · 10:03 AM', 'Status', 'New', c.status, 'Thomas W.'], ['Jun 2, 2026 · 6:00 AM', 'Lead stage', 'Tier 2 · Warm', tier, 'Model v4'], ['Mar 4, 2024 · 9:15 AM', 'Record created', 'None', 'ACRIS import', 'System']];
+    return `<div class="ds-acc">${ui.acc('hist', 'Change history', hist.length + ' changes · last ' + (logged.length ? 'today' : 'Sep 28, 2026'), `<div>${hist.map(([w, f, a, b, by]) => `<div class="ds-hist"><span class="ds-meta">${esc(f)}</span><span style="display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap"><s>${esc(a)}</s><span class="muted" aria-hidden="true">→</span><span class="font-medium">${esc(b)}</span></span><span class="ds-meta" style="display:flex;flex-direction:column;align-items:flex-end"><span>${esc(w)}</span><span>${esc(by)}</span></span></div>`).join('')}</div>`, acc('hist', true))}</div>`;
   };
 
   /* ───────── Rail ───────── */
@@ -196,14 +207,18 @@
   /* ───────── Actions ───────── */
   const nextOwner = () => { const ids = DS.callIds(), cur = ids.indexOf(id), order = [...ids.slice(cur + 1), ...ids.slice(0, Math.max(cur, 0))], nx = order.find(x => !S.done[x] && x !== id); if (nx) Nav.go('contact', 'id=' + nx); else DS.toast('You’ve called everyone on today’s list.'); };
   const doSave = () => {
-    const oc = outcome(); if (!oc || !oc.choice) return; const ch = oc.choice;
+    const oc = outcome(); if (!oc || !oc.choice) return; const ch = oc.choice, num = oc.num || DS.bestPhone(c), said = ['Call logged'];
     DS.store((Sx, Ux) => {
-      Sx.done[id] = true; Sx.calls += 1; if (ch === 'Connected') Sx.convos += 1; Sx.last[id] = 'Just now · ' + ch; if (oc.acts.bad) Sx.bad[id] = true;
+      Sx.done[id] = true; Sx.calls += 1; if (ch === 'Connected') Sx.convos += 1; Sx.last[id] = 'Just now · ' + ch;
+      // Bad wins over primary when both are ticked.
+      if (oc.acts.bad) { Sx.bad[id] = [...DS.badOf(c), num]; if (Sx.primary[id] === num) delete Sx.primary[id]; said.push(num + ' marked bad'); }
+      else if (oc.acts.primary) { Sx.primary[id] = num; said.push(num + ' is now primary'); }
+      if (oc.acts.blasts) { Sx.blastOut[id] = BLAST_UNTIL; said.push('out of blasts until ' + BLAST_UNTIL); }
       if (oc.notes && oc.acts.note) DS.addTimeline(id, { k: 'Note', t: oc.notes, d: 'Just now' });
       DS.addTimeline(id, { k: 'Call', t: ch + (oc.dur ? ' · ' + oc.dur : '') + (oc.follow ? ' · Follow up ' + oc.follow : ''), d: 'Just now' });
       Ux.outcome = null;
     });
-    st.saving = false; DS.render(); DS.toast('Call logged');
+    st.saving = false; DS.render(); DS.toast(said.join(' · '));
   };
 
   DS.define({
@@ -222,6 +237,7 @@
       'end-call': () => { const dur = callTime(); DS.setUI({ call: null, outcome: { id, dur, choice: null, acts: {}, notes: '', follow: '' } }); DS.render(); },
       'log-call': () => { DS.setUI({ call: null, outcome: { id, dur: null, choice: null, acts: {}, notes: '', follow: '' } }); st.tab = st.tab; DS.render(); },
       'pick-outcome': (el, o) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, choice: o, acts: o === 'Connected' ? { note: true, primary: true } : o === 'Bad number' ? { bad: true } : {} } }); if (o === 'Connected') st.focusNotes = true; DS.render(); },
+      'pick-num': (el, x) => { DS.setUI({ outcome: { ...outcome(), num: x } }); DS.render(); },
       'toggle-oact': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, acts: { ...oc.acts, [k]: !oc.acts[k] } } }); DS.render(); },
       'save-outcome': () => { if (st.saving) return; st.saving = true; DS.render(); setTimeout(() => DS.collapse(document.querySelector('.ds-outcome'), doSave), 520); },
       'skip-outcome': () => DS.collapse(document.querySelector('.ds-outcome'), () => { DS.setUI({ outcome: null }); DS.render(); }),

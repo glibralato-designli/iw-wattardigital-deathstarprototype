@@ -23,11 +23,11 @@
 
   /* ───────── Store: demo data in local storage, session UI in session storage ───────── */
   const STORE = 'ds-proto-v2', UI = 'ds-ui-v2';
-  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {} });
+  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, blastOut: {} });
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
-  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset'].some(k => params.has(k)) && params.get('reset') !== '1';
+  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'blasts'].some(k => params.has(k)) && params.get('reset') !== '1';
   let snapshot = isSnapshot();
   let S = { ...fresh(), ...(read(localStorage, STORE) || {}) };
   if (params.get('reset') === '1') { S = fresh(); write(localStorage, STORE, S); try { sessionStorage.removeItem(UI); } catch (_) {} }
@@ -97,15 +97,27 @@
   const callIds = () => D.callIds.slice(0, Math.max(3, Math.min(6, Number(params.get('calls')) || 6)));
   const callsDone = () => 6 + S.calls;
   const evidenceOf = c => D.evidence(c).map(([l, v, m, k], i) => { const key = c.id + ':' + i, fl = !!S.flags[key]; return { i, l, v, m, k: fl ? 'disputed' : k, flagged: fl, canFlag: !fl && k !== 'disputed', key }; });
-  const contactPointsOf = c => { const bad = !!S.bad[c.id]; return D.contactPoints(c).map((x, i) => { let st = x[2]; if (bad && i === 0) st = 'Bad'; else if (bad && i === 1 && x[0] === 'phone') st = 'Primary'; return [x[0], x[1], st, x[3]]; }); };
+  // Numbers marked bad (S.bad: a list of numbers; `true` is the older form, the first number) and the number marked primary from a logged call (S.primary).
+  const badOf = c => { const b = S.bad[c.id]; return b === true ? [D.contactPoints(c)[0][1]] : Array.isArray(b) ? b : []; };
+  const contactPointsOf = c => {
+    const base = D.contactPoints(c), bad = badOf(c), phones = base.filter(x => x[0] === 'phone' && !bad.includes(x[1])).map(x => x[1]);
+    const prim = phones.includes(S.primary[c.id]) ? S.primary[c.id] : (base.find(x => x[0] === 'phone' && x[2] === 'Primary' && !bad.includes(x[1])) || [])[1] || phones[0];
+    return base.map(x => { let st = x[2]; if (x[0] === 'phone') st = bad.includes(x[1]) ? 'Bad' : x[1] === prim ? 'Primary' : st === 'Primary' ? 'Verified' : st; return [x[0], x[1], st, x[3]]; });
+  };
   const bestPhone = c => { const cps = contactPointsOf(c); return (cps.find(x => x[0] === 'phone' && x[2] === 'Primary') || cps[0])[1]; };
-  const timelineOf = c => [...(S.tl[c.id] || []), ...D.baseTimeline(c).map(([k, t, d]) => ({ k, t, d }))];
+  /* Calendar events linked to a contact: this week's fixtures (Mon–Fri, today is Wednesday) and events Thomas added.
+     Past ones join the contact's timeline; today's (from the 10:30 AM now line) and later ones are upcoming. */
+  const eventsOf = c => [...D.events.filter(e => e[6] === c.id).map(e => ({ off: e[0] - 2, s: e[1], dur: e[2], cal: e[3], t: e[4] })), ...(S.calNew || []).filter(x => x.cid === c.id).map(x => ({ off: x.off, s: x.s, dur: x.dur, cal: x.cal, t: x.t }))]
+    .map(e => ({ ...e, past: e.off < 0 || (e.off === 0 && e.s + e.dur <= 10.5), when: fmtMD(D.addD(e.off)) + ', ' + tFmt(e.s) })).sort((a, b) => a.off - b.off || a.s - b.s);
+  const timelineOf = c => [...(S.tl[c.id] || []), ...eventsOf(c).filter(e => e.past).reverse().map(e => ({ k: 'Event', t: e.t + ' · ' + D.calendars[e.cal] + ' · ' + tFmt(e.s), d: fmtMD(D.addD(e.off)) })), ...D.baseTimeline(c).map(([k, t, d]) => ({ k, t, d }))];
+  // Every email on the record, lower case: the contact points plus the business address on the entity's domain (as the case file shows them).
+  const emailsOf = c => { const [f, l] = c.name.toLowerCase().split(' '), dom = c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com'; return [...D.contactPoints(c).filter(x => x[0] === 'envelope-simple').map(x => x[1].toLowerCase()), f[0] + l + '@' + dom]; };
   const portfolio = c => P.filter(p => p.owner === c.id);
   const addTimeline = (id, entry) => { S.tl[id] = [entry, ...(S.tl[id] || [])]; };
   const remember = id => { S.recent = [id, ...(S.recent || []).filter(x => x !== id)].slice(0, 4); save(); };
 
   /* ───────── Screen registry ───────── */
-  const DS = { D, S: () => S, U: () => U, V, ui, esc, icon, href, params, OFF, loc, pct, fmtL, fmtS, fmtMD, tFmt, initials, isEmptyVal, lastOf, callIds, callsDone, evidenceOf, contactPointsOf, bestPhone, timelineOf, portfolio, addTimeline, remember, save, attrs, acts: {}, inputs: {}, screen: null };
+  const DS = { D, S: () => S, U: () => U, V, ui, esc, icon, href, params, OFF, loc, pct, fmtL, fmtS, fmtMD, tFmt, initials, isEmptyVal, lastOf, callIds, callsDone, evidenceOf, contactPointsOf, bestPhone, badOf, eventsOf, emailsOf, timelineOf, portfolio, addTimeline, remember, save, attrs, acts: {}, inputs: {}, screen: null };
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
@@ -309,7 +321,7 @@
   ui.chatDrawer = () => V.chats ? `<div class="ds-chatdrawer" data-key="drawer-chats"><div class="ds-drawer-scrim" data-act="close-chats" data-anim="fade" data-key="drawer-chats-scrim"></div><aside class="ds-history" data-drawer role="dialog" aria-modal="true" aria-label="Chats" data-anim="drawer" data-key="drawer-chats-body">${DS.chatHistory(true)}</aside></div>` : '';
   // The button that brings the list back: always on a phone and in the app, on wider screens only once hidden.
   ui.chatsBtn = () => `<button type="button" class="ds-icon-btn ds-chats-btn"${U.histHidden ? ' data-collapsed' : ''} aria-label="Chats" aria-expanded="${!!V.chats}" data-act="open-chats">${icon('sidebar-simple')}</button>`;
-  DS.composer = (page, opts = {}) => `<div class="ds-composer"${page ? ' data-page' : ''}>${page ? `<textarea id="${opts.id || 'brain-page-input'}" aria-label="Message Brain" rows="${opts.rows || 1}" placeholder="${esc(opts.ph || 'Reply to Brain')}" data-input="draft" data-enter="send">${esc(V.draft)}</textarea>` : `<input id="brain-input" aria-label="Message Brain" placeholder="Ask about a contact, property or list" value="${esc(V.draft)}" data-input="draft" data-enter="send" autocomplete="off">`}<div class="ds-composer__tools">${icon('paperclip')}<b>@</b><b>/</b><span class="ds-composer__mode"><span>Ask</span><span>Act</span></span><span class="ds-composer__learn">${icon('book-open')}Learning</span><button type="button" class="ds-send" aria-label="Send" data-act="send">${icon('arrow-up')}</button></div></div>`;
+  DS.composer = (page, opts = {}) => `<div class="ds-composer"${page ? ' data-page' : ''}>${page ? `<textarea id="${opts.id || 'brain-page-input'}" aria-label="Message Brain" rows="${opts.rows || 1}" placeholder="${esc(opts.ph || 'Reply to Brain')}" data-input="draft" data-enter="send">${esc(V.draft)}</textarea>` : `<input id="brain-input" aria-label="Message Brain" placeholder="Ask about a contact, property or list" value="${esc(V.draft)}" data-input="draft" data-enter="send" autocomplete="off">`}<div class="ds-composer__tools">${[[icon('paperclip'), 'Attach files'], ['@', 'Mention a contact or property'], ['/', 'Commands']].map(([g, l]) => `<button type="button" class="ds-composer__tool" aria-label="${l}" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">${g}</button>`).join('')}<span class="ds-composer__mode" role="group" aria-label="Mode"><button type="button" aria-pressed="true" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">Ask</button><button type="button" aria-pressed="false" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">Act</button></span><button type="button" class="ds-composer__learn" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">${icon('book-open')}Learning</button><button type="button" class="ds-send" aria-label="Send" data-act="send">${icon('arrow-up')}</button></div></div>`;
   const scopeLabel = () => 'Scoped to ' + (DS.screen.scope ? DS.screen.scope() : 'Home');
   function brainPanel() {
     const p = panel();
@@ -338,7 +350,7 @@
   const palItems = () => {
     const pal = V.pal; if (!pal) return [];
     const q = pal.q.trim().toLowerCase(), dig = q.replace(/\D/g, '');
-    const cItem = c => ({ kind: 'c', id: c.id, cls: c.cls, t: c.name, s: c.entity + ' · ' + c.phone, k: 'Contact' });
+    const cItem = c => ({ kind: 'c', id: c.id, cls: c.cls, t: c.name, s: c.entity + ' · ' + (q.length >= 3 && !c.name.toLowerCase().includes(q) && DS.emailsOf(c).find(e => e.includes(q)) || c.phone), k: 'Contact' });
     const pItem = p => ({ kind: 'p', id: p.id, cls: cById[p.owner].cls, t: p.addr, s: p.hood + ' · BBL ' + p.bbl, k: 'Property' });
     let groups;
     if (!q) {
@@ -346,7 +358,7 @@
       groups = [{ h: pal.mode === 'log' ? 'Recent contacts' : 'Recent', items: rc }];
       if (pal.mode === 'log') groups.push({ h: 'Call next', items: callIds().filter(id => !S.done[id] && !(S.recent || []).includes(id)).map(id => cItem(cById[id])) });
     } else {
-      const cm = C.filter(c => c.name.toLowerCase().includes(q) || c.entity.toLowerCase().includes(q) || (dig.length >= 4 && c.phone.replace(/\D/g, '').includes(dig))).slice(0, 6).map(cItem);
+      const cm = C.filter(c => c.name.toLowerCase().includes(q) || c.entity.toLowerCase().includes(q) || (q.length >= 3 && DS.emailsOf(c).some(e => e.includes(q))) || (dig.length >= 4 && c.phone.replace(/\D/g, '').includes(dig))).slice(0, 6).map(cItem);
       const pm = pal.mode === 'log' ? [] : P.filter(p => p.addr.toLowerCase().includes(q) || (dig.length >= 4 && p.bbl.replace(/\D/g, '').includes(dig))).slice(0, 4).map(pItem);
       groups = [{ h: 'Contacts', items: cm }, { h: 'Properties', items: pm }];
     }
@@ -359,7 +371,7 @@
     const list = groups.map(g => `<div class="ds-palette__group"><span>${esc(g.h)}</span>${g.items.map(it => { const idx = n++; return `<a class="ds-palette__item" href="${palTarget(it, pal.mode === 'log')}" data-pal-index="${idx}" data-act="pal-pick" data-arg="${it.kind}:${it.id}"${idx === pal.active ? ' data-active' : ''}>${ui.cls(it.cls)}<span class="ds-row__body"><span class="font-medium">${esc(it.t)}</span><span class="ds-row__sub">${esc(it.s)}</span></span><span class="ds-meta">${it.k}</span></a>`; }).join('')}</div>`).join('');
     return `<div class="ds-overlay" data-act="close-palette" data-self data-key="palette-ov" data-anim="fade"><div class="ds-palette" role="dialog" aria-modal="true" aria-label="${pal.mode === 'log' ? 'Log a call' : 'Search'}" data-anim="pop" data-key="palette">
       ${pal.mode === 'log' ? '<div class="ds-meta font-medium" style="padding:var(--space-3) var(--space-4) 0">Log a call · pick a contact</div>' : ''}
-      <div class="ds-palette__input">${icon('magnifying-glass')}<input id="palette-input" aria-label="Search" placeholder="${DS.app ? 'Name, phone, address or BBL' : 'Search by name, phone, address or BBL'}" value="${esc(pal.q)}" data-input="palette" autocomplete="off"><kbd>Esc</kbd><button type="button" class="ds-palette__cancel" data-act="close-palette">Cancel</button></div>
+      <div class="ds-palette__input">${icon('magnifying-glass')}<input id="palette-input" aria-label="Search" placeholder="${DS.app ? 'Name, phone, email, address or BBL' : 'Search by name, phone, email, address or BBL'}" value="${esc(pal.q)}" data-input="palette" autocomplete="off"><kbd>Esc</kbd><button type="button" class="ds-palette__cancel" data-act="close-palette">Cancel</button></div>
       <div class="ds-palette__list" id="palette-list">${list || (pal.q.trim() ? `<div class="ds-empty" style="padding:var(--space-6) var(--space-2)"><span class="muted">No matches for “${esc(pal.q)}”. Try a phone number or a BBL.</span></div>` : '')}</div>
       <div class="ds-palette__foot"><span>↵ to open · Shift ↵ to preview</span><span>↑↓ to move</span><span>Esc to close</span></div>
     </div></div>`;
