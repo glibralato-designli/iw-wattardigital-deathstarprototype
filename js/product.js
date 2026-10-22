@@ -166,6 +166,43 @@
     return `<span class="ds-crit"${o.editing ? ' data-editing' : ''}>${d.fixed ? `<span class="ds-crit__main" data-tip="${esc(D.TERRITORY.name + ' · ' + D.TERRITORY.sub)}">${inner}</span>` : `<button type="button" class="ds-crit__main" aria-expanded="${!!o.editing}" data-act="crit-edit" data-arg="${it.k}">${inner}${icon('caret-down')}</button>`}<button type="button" class="ds-crit__x" aria-label="Remove ${esc(d.l)}" data-act="crit-rm" data-arg="${it.k}">${icon('x')}</button></span>`; };
   // "Turn into a list": a real link into the Database builder with these chips.
   ui.toList = (str, o = {}) => o.icon ? `<a class="ds-icon-btn ds-tolist" href="${crit.href(str, o.q)}" aria-label="${esc(o.aria || 'Turn into a list')}" data-tip="${esc(o.aria || 'Turn into a list')}">${icon('list-bullets')}</a>` : `<a class="button" data-variant="${o.variant || 'outline'}" data-size="${o.size || 'sm'}" href="${crit.href(str, o.q)}">${icon('list-bullets')}${esc(o.label || 'Turn into a list')}</a>`;
+  /* The relationship, distilled (case file Overview, web and app): touches since, warmth, the notes that matter (Brain-picked
+     timeline entries), what they said, a suggested angle, the next touch, connected people, the team's history and who knew them. */
+  const relOf = c => {
+    const h = [...c.id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7), r = D.relationship[c.id] || {}, tl = timelineOf(c), notes = tl.filter(x => x.k === 'Note');
+    const team = portfolio(c).flatMap(x => D.teamOf(x.id).map(e => ({ ...e, addr: x.addr })));
+    const who = [...new Set(team.map(e => e.who))].map(w => { const es = team.filter(e => e.who === w).sort((a, b) => a.year - b.year); return [w, es.map(e => e.type + ' ' + e.year).join(', ') + ' · ' + [...new Set(es.map(e => e.addr))].join(', ')]; });
+    if (!who.some(x => x[0] === 'Thomas Windels') && c.last !== 'Never called') who.push(['Thomas Windels', 'Owner of the record · last touch ' + lastOf(c).split(' · ')[0]]);
+    return { since: r.since || 2026 - Math.min(c.years, 6), touches: r.touches || tl.length + (h % 5), warmth: r.warmth || 30 + (h % 40), notesOf: r.notesOf || notes.length, notes: r.notes ? r.notes.map(k => tl.find(x => x.id === k)).filter(Boolean) : notes.slice(0, 3), said: r.said || null, angle: r.angle || null, next: r.next || null, connected: r.connected || [], team, teamPid: (team[0] || {}).pid, who };
+  };
+  // Saving an outcome: the call, its note, and its actions on the number reached (bad wins over primary) and on blasts.
+  const BLAST_UNTIL = 'Sep 30, 2027';
+  const applyOutcome = (c, oc) => {
+    const ch = oc.choice, num = oc.num || bestPhone(c), said = ['Call logged'], id = c.id;
+    S.done[id] = true; S.calls += 1; if (ch === 'Connected') S.convos += 1; S.last[id] = 'Just now · ' + ch;
+    if (oc.acts.bad) { S.bad[id] = [...badOf(c), num]; if (S.primary[id] === num) delete S.primary[id]; said.push(num + ' marked bad'); }
+    else if (oc.acts.primary) { S.primary[id] = num; said.push(num + ' is now primary'); }
+    if (oc.acts.blasts) { S.blastOut[id] = BLAST_UNTIL; said.push('out of blasts until ' + BLAST_UNTIL); }
+    if (oc.notes && oc.acts.note) addTimeline(id, { k: 'Note', t: oc.notes, d: 'Just now' });
+    addTimeline(id, { k: 'Call', t: ch + (oc.dur ? ' · ' + oc.dur : '') + (oc.follow ? ' · Follow up ' + oc.follow : ''), d: 'Just now' });
+    U.outcome = null; save();
+    return said.join(' · ');
+  };
+  // Learning Mode (Brain, web and app): what Brain has been taught, with the way to teach it.
+  ui.learning = () => { const all = [...(S.taught || []).slice().reverse(), ...D.taught];
+    return `<div class="ds-learning"><div class="ds-stack" data-gap="2" style="gap:var(--space-1)"><h1 class="ds-title-xl">What Brain has been taught</h1><span class="ds-lede">Brain learns only what you approve. A lesson changes how it reads similar owners and what it suggests; the predictive score stays separate.</span></div>
+      <section class="ds-card" data-pad="all" aria-label="Lessons">${all.map(([t, scope, when, by]) => `<div class="ds-lesson">${icon('book-open')}<span class="ds-row__body"><span class="font-medium" style="text-wrap:pretty">${esc(t)}</span><span class="ds-row__sub">${esc(scope)} · approved by ${esc(by)}, ${esc(when)}</span></span>${ui.btn({ label: 'Forget', variant: 'ghost', size: 'sm', disabled: true })}</div>`).join('')}</section>
+      <div class="ds-note">${icon('note-pencil')}<span class="ds-grow">To teach Brain, correct an answer in chat, then approve what it should remember.</span>${ui.btn({ label: 'Try it with Okafor', variant: 'outline', size: 'sm', act: 'try-teach' })}</div></div>`; };
+  /* Brain suggests (Today, web and app): Brain's own surface, collapsible. One compact row per suggested list: the live count,
+     a short name and one line of reason; the row opens the list in the builder; Save list and Dismiss approve and decline. */
+  ui.brainSuggests = () => {
+    const saved = savedLists(), list = D.suggested.filter(x => !(S.dismissed || {})[x.id]), open = U.suggOpen !== false;
+    const rows = list.map(x => { const items = crit.parse(x.crit), n = crit.count(items), isSaved = saved.some(l => l.crit === crit.str(items));
+      return `<li class="ds-bsugg__row" title="${esc(x.why(loc(n)))}"><a class="ds-bsugg__main" href="${crit.href(x.crit, 'from=attack-plan')}"><span class="ds-bsugg__n num">${loc(n)}</span><span class="ds-row__body"><span class="ds-bsugg__name">${esc(x.name)}</span><span class="ds-bsugg__hint">${esc(x.tag)} · ${esc(x.hint)}</span></span></a>
+        <span class="ds-bsugg__acts">${isSaved ? `<span class="ds-bsugg__saved">${icon('check')}Saved</span>` : `<button type="button" class="ds-bsugg__save" data-act="sugg-save" data-arg="${x.id}">Save list</button>`}${ui.iconBtn({ ic: 'x', aria: 'Dismiss ' + x.name, tip: 'Dismiss', act: 'sugg-dismiss', arg: x.id })}</span></li>`; }).join('');
+    return `<section class="ds-bsugg" aria-label="Brain suggests"><button type="button" class="ds-bsugg__head" aria-expanded="${open}" data-act="sugg-toggle"><span class="ds-bot-av">${icon('sparkle')}</span><span class="ds-row__body"><b>Brain suggests</b><span class="ds-meta">${list.length ? list.length + (list.length === 1 ? ' list' : ' lists') + ' from last week’s outreach' : 'Nothing new today'}</span></span>${icon(open ? 'caret-up' : 'caret-down')}</button>
+      ${open ? `<div class="ds-bsugg__body" data-anim="grow" data-key="bsugg">${list.length ? `<ul class="ds-bsugg__list">${rows}</ul><span class="ds-bsugg__foot">Nothing is saved or queued until you approve it.</span>` : `<div class="ds-bsugg__empty"><span>No suggestions left today.</span><button type="button" class="ds-link-btn" data-act="sugg-restore">Show dismissed</button></div>`}</div>` : ''}</section>`;
+  };
   /* Approvals: Brain proposes, Thomas approves. One bar for saved lists, suggested lists, drafts and what Brain learns. */
   ui.approval = ({ text, yes, no, more = '', tone }) => `<div class="ds-approve"${tone ? ` data-tone="${tone}"` : ''}>${icon('seal-check')}<span>${text}</span>${more}${ui.btn({ label: yes[0], size: 'sm', act: yes[1], arg: yes[2] })}${no ? ui.btn({ label: no[0], size: 'sm', variant: 'outline', act: no[1], arg: no[2] }) : ''}</div>`;
   ui.approved = text => `<span class="ds-saved" role="status">${icon('check-circle')}${esc(text)}</span>`;
@@ -209,7 +246,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, applyOutcome, BLAST_UNTIL });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
@@ -772,6 +809,10 @@
     drop: () => { V.drop = 'open'; render(); setTimeout(() => { const el = document.getElementById('drop-add'); if (el) el.focus(); }, 30); },
     'close-drop': () => { V.drop = null; render(); },
     'add-drop': () => { S.docsAdded = [...(S.docsAdded || []).filter(d => d[0] !== D.dropFile[0]), D.dropFile]; V.drop = null; V.docsOpen = true; U.histHidden = false; save(); render(); DS.toast('Added to Stored documents'); },
+    'sugg-save': (el, k) => { const x = D.suggested.find(y => y.id === k); saveList(x.name, crit.str(crit.parse(x.crit))); render(); DS.toast('Saved to Lists · ' + x.name); },
+    'sugg-dismiss': (el, k) => { const go = () => { S.dismissed = { ...(S.dismissed || {}), [k]: true }; save(); render(); }; const row = el.closest('.ds-bsugg__row'); if (row) DS.collapse(row, go); else go(); },
+    'sugg-toggle': () => { const go = () => { U.suggOpen = U.suggOpen === false; save(); render(); }; if (U.suggOpen !== false) DS.collapse(document.querySelector('.ds-bsugg__body'), go); else go(); },
+    'sugg-restore': () => { S.dismissed = {}; save(); render(); },
     'decline-list': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false }; save(); render(); },
     'dismiss-acts': (el, i) => { const list = U.msgs || [D.proactive]; U.msgs = list.map((m, j) => j === +i ? { ...m, acts: [] } : m); save(); render(); },
     palette: (el, mode) => DS.openPalette(mode || 'search'),
@@ -851,6 +892,10 @@
     if (params.get('ask') && sc.id !== 'brain') DS.seedChat(params.get('ask'), params.get('stage'));
     const pal = params.get('palette'); if (pal) V.pal = { mode: pal, q: params.get('pq') || '', active: 0 };
     if (params.get('drop') === '1') V.drop = 'open';
+    // Home (web and app): queued=1 shows a list pushed to Phone from the Database.
+    if (sc.id === 'home' && params.get('queued') === '1') S.queues = [...(S.queues || []), { name: 'Class A · Fully free market · Clicked 41 Ludlow St OM', ch: 'phone', n: 6 }];
+    // Brain suggests on Today (web and app): brainsugg=closed|open, dismissed=all, suggsaved=1 (the first one saved).
+    if (sc.id === 'attack-plan') { if (params.get('brainsugg')) U.suggOpen = params.get('brainsugg') !== 'closed'; if (params.get('dismissed') === 'all') D.suggested.forEach(x => { S.dismissed = { ...(S.dismissed || {}), [x.id]: true }; }); if (params.get('suggsaved') === '1') saveList(D.suggested[0].name, D.suggested[0].crit); }
     if (params.get('dropped') === '1') { S.docsAdded = [...(S.docsAdded || []), D.dropFile]; V.docsOpen = true; }
     if (params.get('guide')) { V.menu = 'guide'; V.guideTab = params.get('guide') === 'structure' ? 'structure' : 'flows'; }
     if (params.get('menu')) V.menu = params.get('menu');

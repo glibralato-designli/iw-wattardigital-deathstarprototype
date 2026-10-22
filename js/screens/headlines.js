@@ -37,6 +37,7 @@
     return `${lead(list[0])}${list.length > 1 ? `<div class="ds-newsgrid">${list.slice(1).map(card).join('')}</div>` : ''}<p class="ds-meta" style="text-align:center">${list.length} ${list.length === 1 ? 'story' : 'stories'} · refreshes every 15 minutes</p>`; };
   DS.define({
     id: 'headlines', nav: 'more', brain: 'min',
+    head: () => ({ title: 'Headlines', large: true, back: ['More', 'more'] }),
     crumbs: () => [{ l: 'More', page: 'headlines' }, { l: 'Headlines' }],
     scope: () => 'Headlines',
     render: () => `<div class="ds-page">${ui.pageHead('Headlines', ui.tabs([['headlines', 'Headlines'], [null, 'Market Data']], 'headlines', 'Headlines'))}${ui.nudge('The rent freeze matters to rent-stabilized owners in your LES lists. Draft a post for them before Tuesday’s LinkedIn slot.')}

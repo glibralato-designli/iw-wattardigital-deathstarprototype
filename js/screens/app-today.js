@@ -1,4 +1,4 @@
-/* App 02 Today: the Attack Plan. A day strip, Call next, to-dos, goals and meetings. */
+/* App 02 Today: the Attack Plan. A day strip, Call next (and where the list comes from), Brain suggests, to-dos, goals and meetings. */
 (() => {
   const { D, ui, esc, icon, href, params, fmtL, fmtS, fmtMD } = DS;
   const st = { sel: Math.max(-2, Math.min(4, Number(params.get('day')) || 0)), mode: params.get('range') === 'week' ? 'week' : 'day', resOpen: params.get('resolved') === '1', newTask: '', newCat: 'Follow up' };
@@ -29,7 +29,7 @@
     let body;
     if (r > 0) body = `<div style="padding:0 var(--space-4) var(--space-4)">${ui.empty({ ic: 'calendar-blank', title: 'Not planned yet', text: 'The call list for ' + fmtS(addD(st.sel)) + ' is built the evening before.' })}</div>`;
     else if (r === 0 && left === 0) body = `<div style="padding:0 var(--space-4) var(--space-4)">${ui.empty({ ic: 'check-circle', tone: 'success', title: 'Every call on today’s list is done', text: 'Build the next list, or work the follow-ups.', action: ui.btn({ label: 'Build a list', ic: 'list-bullets', variant: 'outline', act: 'build-list' }) })}</div>`;
-    else body = ids.map(id => callRow(id, r < 0)).join('') + `<p class="ds-meta" style="padding:var(--space-2) var(--space-4) var(--space-4)">5 Class A owners have no verified reason yet</p>`;
+    else body = (r === 0 ? `<p class="ds-plan-src" style="padding:0 var(--space-4) var(--space-2)">${icon('sparkle')}<span>From LES maturities + 3 callbacks + 2 blast openers · built by Brain at 5:40 AM</span></p>` : '') + ids.map(id => callRow(id, r < 0)).join('') + `<p class="ds-meta" style="padding:var(--space-2) var(--space-4) var(--space-4)">5 Class A owners have no verified reason yet</p>`;
     return `<section class="ds-acard" aria-label="${esc(title)}"><div class="ds-acard__head"><div class="ds-acard__title"><h2>${esc(title)}</h2><span class="ds-meta">${esc(sub)}</span></div>
       <div class="ds-acard__prog">${ui.progress(n / 40, 'Calls', { key: r === 0 ? 'calls' : 'calls-' + st.sel })}<span class="ds-meta-strong num"><span${r === 0 ? ' data-count="calls"' : ''}>${n}</span> of 40 calls</span></div></div>${body}</section>`;
   };
@@ -69,7 +69,7 @@
   DS.define({
     id: 'attack-plan', nav: 'dashboard', tab: 'today',
     head, scope: () => 'Today',
-    render: () => `<div class="ds-apage">${ui.large(st.mode === 'week' ? 'This week' : st.sel === 0 ? 'Today' : fmtS(addD(st.sel)), st.mode === 'week' ? 'This week' : fmtL(addD(st.sel)))}${strip()}${st.sel === 0 ? ui.nudge(D.nudges['attack-plan']) : ''}<div class="ds-stack" data-anim="slide" data-key="today-${st.mode}-${st.sel}" style="gap:var(--space-6)">${callNext()}${todos()}${goals()}${meetings()}</div></div>`,
+    render: () => `<div class="ds-apage">${ui.large(st.mode === 'week' ? 'This week' : st.sel === 0 ? 'Today' : fmtS(addD(st.sel)), st.mode === 'week' ? 'This week' : fmtL(addD(st.sel)))}${strip()}${st.sel === 0 ? ui.nudge(D.nudges['attack-plan']) : ''}<div class="ds-stack" data-anim="slide" data-key="today-${st.mode}-${st.sel}" style="gap:var(--space-6)">${callNext()}${st.sel === 0 && st.mode === 'day' ? ui.brainSuggests() : ''}${todos()}${goals()}${meetings()}</div></div>`,
     overlays: addSheet,
     after: () => { if (st.focus) { st.focus = false; const el = document.getElementById('new-task'); if (el) el.focus(); } },
     acts: {

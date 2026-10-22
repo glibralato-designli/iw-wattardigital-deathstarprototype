@@ -13,7 +13,10 @@
   };
   const row = ([, id, topic, o, next]) => { const c = D.cById[id];
     return `<a class="ds-arow" data-lead href="${href('contact', 'id=' + id)}" style="align-items:flex-start">${ui.cls(c.cls)}<span class="ds-arow__body"><span class="ds-arow__title">${esc(c.name)}</span><span class="ds-arow__sub" style="color:var(--fg-secondary)">${esc(topic)}</span><span style="display:flex;align-items:center;gap:var(--space-2);margin-top:var(--space-1)"><span class="ds-outtag" data-o="${esc(o)}">${esc(o)}</span><span class="ds-meta">${icon('arrow-right')} ${esc(next)}</span></span></span></a>`; };
-  const head = () => ({ title: 'Conversations', large: true, back: ['More', 'more'] });
+  const head = () => ({ title: 'Activity', large: true, back: ['More', 'more'] });
+  // What the week came to, in one line (as on the web).
+  const summary = () => { if (st.wk !== 0) return ''; const convs = D.conversations[0].filter(x => x[0] !== 'prop'), follow = convs.filter(x => /Interested|Callback/.test(x[3])).length, total = D.outreachPerf.activity.find(x => x[0] === 'Conversations')[4] + (S.convos || 0);
+    return `<p class="ds-convsum" role="status">${icon('sparkle')}<span><b>This week: ${total} conversations, ${follow} worth a follow-up, 1 first meeting booked.</b> 2 proposals in progress.</span></p>`; };
   const stepper = () => { const s = start(); return `<div class="ds-toolbar" style="justify-content:space-between">${ui.iconBtn({ ic: 'caret-left', aria: 'Previous week', act: 'wk', arg: -1 })}<span class="ds-row__body" style="flex:1;align-items:center;text-align:center"><span class="font-semibold">${st.wk === 0 ? 'This week' : 'Week of ' + fmtMD(D.addD(s))}</span><span class="ds-meta">${fmtMD(D.addD(s))} – ${fmtMD(D.addD(s + 4))} · ${all().filter(x => x[0] !== 'prop').length} conversations</span></span>${ui.iconBtn({ ic: 'caret-right', aria: 'Next week', act: 'wk', arg: 1 })}</div>`; };
   const days = () => { const items = all(), s = start();
     const groups = [0, 1, 2, 3, 4].map(i => ({ i, o: s + i, list: items.filter(x => x[0] === String(i)) })).filter(g => g.list.length || g.o === 0);
@@ -31,7 +34,7 @@
   DS.define({
     id: 'conversations', nav: 'dashboard', tab: 'more',
     head, scope: () => 'Conversations',
-    render: () => `<div class="ds-apage">${ui.large('Conversations', 'Dashboard')}${ui.nudge(D.nudges.conversations)}${stepper()}<div class="ds-stack" style="gap:var(--space-6)" data-anim="fade" data-key="wk-${st.wk}">${days()}${proposals()}</div></div>`,
+    render: () => `<div class="ds-apage">${ui.large('Activity', 'Dashboard')}${ui.nudge(D.nudges.conversations)}${stepper()}${summary()}<div class="ds-stack" style="gap:var(--space-6)" data-anim="fade" data-key="wk-${st.wk}">${days()}${proposals()}</div></div>`,
     fab: () => `<button type="button" class="ds-fab" aria-label="New conversation" data-act="open-new">${icon('plus')}</button>`,
     overlays: () => DS.V.sheet === 'new' ? newSheet() : '',
     onSheetClose: () => { st.dlg = null; },

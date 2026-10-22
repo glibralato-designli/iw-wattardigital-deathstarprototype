@@ -11,12 +11,16 @@
   /* Presets: call=live|outcome|saving|logged|log, choice=<outcome>, why=open, note=1, flag=<evidence index>. */
   const call = params.get('call');
   if (call === 'live') { if (!U.call || U.call.id !== id) DS.setUI({ call: { id, t0: Date.now() - 74000 }, outcome: null }); }
-  if (call === 'outcome' || call === 'saving') DS.setUI({ call: null, outcome: { id, dur: '2:14', choice: params.get('choice') || (call === 'saving' ? 'No answer' : null), acts: {}, notes: '', follow: '' } });
+  if (call === 'outcome' || call === 'saving') DS.setUI({ call: null, outcome: { id, dur: '2:14', choice: params.get('choice') || (call === 'saving' ? 'No answer' : null), acts: params.get('choice') === 'Connected' ? { note: true, primary: true } : {}, notes: '', follow: '' } });
   if (call === 'log') DS.setUI({ call: null, outcome: { id, dur: null, choice: null, acts: {}, notes: '', follow: '' } });
   if (call === 'logged') { S.done[id] = true; S.calls += 1; S.last[id] = 'Just now · No answer'; DS.addTimeline(id, { k: 'Call', t: 'No answer · 0:42', d: 'Just now' }); }
   if (params.has('flag')) S.flags[id + ':' + params.get('flag')] = true;
   if (params.get('why') === 'open') DS.V.sheet = 'why';
   if (params.get('note') === '1') DS.V.sheet = 'note';
+  const byDigits = d => (D.contactPoints(c).find(x => x[0] === 'phone' && x[1].replace(/\D/g, '') === d) || [])[1];
+  if (params.has('primary') && byDigits(params.get('primary'))) S.primary[id] = byDigits(params.get('primary'));
+  if (params.get('blasts') === '1') S.blastOut[id] = DS.BLAST_UNTIL;
+  if (params.has('dialed') && U.outcome && U.outcome.id === id && byDigits(params.get('dialed'))) DS.setUI({ outcome: { ...U.outcome, num: byDigits(params.get('dialed')) } });
   const trigger = params.get('act');
   if (trigger === 'call' && !dnc) DS.setUI({ call: { id, t0: Date.now() }, outcome: null });
   if (trigger === 'log') DS.setUI({ call: null, outcome: { id, dur: null, choice: null, acts: {}, notes: '', follow: '' } });
@@ -29,7 +33,8 @@
   const hash = s => [...s].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7), n = hash(c.id);
   const portfolio = DS.portfolio(c);
   const first = c.name.split(' ')[0].toLowerCase(), lastN = c.name.split(' ')[1].toLowerCase();
-  const ICON = { Call: 'phone', Email: 'envelope-simple', Note: 'note', Flag: 'warning-diamond', Text: 'chat-text', Broadcast: 'megaphone' };
+  const ICON = { Call: 'phone', Email: 'envelope-simple', Note: 'note', Flag: 'warning-diamond', Text: 'chat-text', Broadcast: 'megaphone', Event: 'calendar-blank' };
+  const rel = DS.relOf(c);
   const evidence = () => DS.evidenceOf(c);
   const disputed = () => evidence().some(e => e.k === 'disputed');
   const trustNow = () => evidence().some(e => e.flagged) || (disputed() && c.id !== 'marchetti') ? 'disputed' : c.trust;
@@ -71,20 +76,28 @@
   const tabs = () => `<div class="ds-achips" style="padding-block:0" data-keep-scroll="ctabs">${ui.stateTabs(TABS.map(([k, l]) => [k, k === 'ownership' ? 'Ownership (' + portfolio.length + ')' : k === 'activity' ? 'Activity (' + DS.timelineOf(c).length + ')' : l]), st.tab, 'tab', 'Record')}</div>`;
   const conf = x => x >= 80 ? 'good' : x >= 60 ? 'ok' : x >= 45 ? 'warn' : 'bad';
   const reach = () => {
-    const phone = DS.bestPhone(c), rows = [['phone', 'Best phone', phone, 70 + (n % 26), 'mobile · 3 sources'], ['envelope-simple', 'Personal email', first + '.' + lastN + '@example.com', 55 + (n % 30), '2 sources'], ['briefcase', 'Business email', first[0] + lastN + '@' + c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com', 45 + ((n >> 3) % 30), '1 source']];
+    const phone = DS.bestPhone(c), dead = DS.badOf(c).includes(phone), rows = [['phone', 'Best phone' + (dead ? ' · marked bad' : ' · Primary'), phone, dead ? 12 : 70 + (n % 26), S.primary[id] === phone ? 'confirmed by us' : 'mobile · 3 sources'], ['envelope-simple', 'Personal email', first + '.' + lastN + '@example.com', 55 + (n % 30), '2 sources'], ['briefcase', 'Business email', first[0] + lastN + '@' + c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com', 45 + ((n >> 3) % 30), '1 source']];
     return `<section class="ds-asec" aria-label="Best way to reach"><div class="ds-ahead"><h2>Best way to reach</h2></div><div class="ds-alist">${rows.map(([ic, l, v, pc, src]) => `<div class="ds-arow" data-lead><span class="ds-arow__lead">${icon(ic)}</span><span class="ds-arow__body"><span class="ds-arow__sub">${esc(l)} · ${esc(src)}</span><span class="ds-arow__title" style="overflow-wrap:anywhere;white-space:normal">${esc(v).replace('@', '@<wbr>')}</span></span><span class="ds-conf" data-tone="${conf(pc)}">${pc}%</span></div>`).join('')}</div></section>`;
   };
   const facts = () => `<section class="ds-asec" aria-label="Key facts"><div class="ds-ahead"><h2>Key facts</h2><button type="button" class="ds-link-btn" data-act="tab" data-arg="intelligence">All signals</button></div><div class="ds-acard" style="padding:0 var(--space-4)">${ui.kv([['Lead property', p.addr], ['Debt', p.debt], ['Maturity', p.mat], ['Years held', c.years + ' years'], ['Last touch', DS.lastOf(c)]], { cols: 1 })}</div></section>`;
   const timeline = (limit) => { const tl = DS.timelineOf(c).slice(0, limit || 99);
-    return tl.length ? `<div class="ds-alist">${tl.map(x => `<div class="ds-arow" data-lead><span class="ds-arow__lead" data-tone="plain">${icon(ICON[x.k] || 'note')}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(x.k)}</span><span class="ds-arow__sub">${esc(x.t)}</span></span><span class="ds-arow__end">${esc(x.d)}</span></div>`).join('')}</div>` : `<div class="ds-alist"><div class="ds-arow"><span class="ds-arow__sub">Nothing logged yet.</span></div></div>`; };
-  const overview = () => `${whyCard()}${reach()}${facts()}<section class="ds-asec" aria-label="Recent activity"><div class="ds-ahead"><h2>Recent activity</h2><button type="button" class="ds-link-btn" data-act="tab" data-arg="activity">View all</button></div>${timeline(3)}</section>`;
-  const intelligence = () => { const access = 40 + (n % 50);
-    return `<section class="ds-acard" style="padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3)" aria-label="Predictive score"><span class="ds-meta-strong">Predictive score</span><span class="ds-score-big">${c.score}</span><div class="ds-toolbar" style="gap:var(--space-1-5)">${ui.cls(c.cls, true)}<span class="ds-chip">${esc(D.TIER[c.cls])}</span><span class="ds-chip">Accessibility ${access}</span></div><span class="ds-meta">Model v4 · scored Sep 29, 05:40 UTC</span></section>
+    return tl.length ? `<div class="ds-alist">${tl.map(x => `<div class="ds-arow${params.get('hl') && x.id === params.get('hl') ? ' ds-hl' : ''}"${x.id ? ` id="tl-${esc(x.id)}"` : ''} data-lead><span class="ds-arow__lead" data-tone="plain">${icon(ICON[x.k] || 'note')}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(x.k === 'Event' ? 'Calendar' : x.k)}</span><span class="ds-arow__sub">${esc(x.t)}</span></span><span class="ds-arow__end">${esc(x.d)}</span></div>`).join('')}</div>` : `<div class="ds-alist"><div class="ds-arow"><span class="ds-arow__sub">Nothing logged yet.</span></div></div>`; };
+  const relationship = () => `<section class="ds-asec" aria-label="Relationship"><div class="ds-ahead"><h2>Relationship</h2><span class="ds-meta">${rel.touches} touches since ${rel.since}</span></div>
+    <div class="ds-acard ds-arel"><div class="ds-toolbar" style="gap:var(--space-1-5)"><span class="ds-chip" data-tone="outline">Warmth ${rel.warmth}</span>${rel.team.length ? `<a class="ds-teamchip" href="${href('property', 'id=' + rel.teamPid + '&tab=team')}">${icon('users')}Team knows this building</a>` : ''}</div>
+      ${rel.notes.length ? `<div class="ds-stack" style="gap:var(--space-2)"><span class="ds-meta-strong">${icon('sparkle')} The notes that matter</span>${rel.notes.map(x => `<a class="ds-rel__note" href="${href('contact', 'id=' + id + '&tab=activity' + (x.id ? '&hl=' + x.id : ''))}" style="color:inherit;text-decoration:none"><p>${esc(x.t)}</p><span class="ds-meta">${esc(x.d)} · Open in Activity</span></a>`).join('')}<span class="ds-meta">Picked by Brain from ${rel.notesOf} notes.</span></div>` : ''}
+      ${rel.who.length ? `<div class="ds-stack" style="gap:var(--space-2)"><span class="ds-meta-strong">Who on the team knew them</span>${rel.who.map(([w, l]) => `<div class="ds-rel__who"><span class="avatar" data-size="sm">${esc(DS.initials(w))}</span><span class="ds-row__body"><span class="font-medium">${esc(w)}</span><span class="ds-row__sub" style="white-space:normal">${esc(l)}</span></span></div>`).join('')}</div>` : ''}
+      ${rel.said ? `<div class="ds-stack" style="gap:var(--space-1)"><span class="ds-meta-strong">What they said</span><p class="ds-rel__quote">“${esc(rel.said[0])}”</p><span class="ds-meta">${esc(rel.said[1])}</span></div>` : ''}
+      ${rel.angle ? `<div class="ds-rel__line">${icon('sparkle')}<span><b>Suggested angle.</b> ${esc(rel.angle)}</span></div>` : ''}${rel.next ? `<div class="ds-rel__line">${icon('arrow-right')}<span><b>Next touch.</b> ${esc(rel.next[0])} · ${esc(rel.next[1].replace(/^Suggest/, 'suggest'))}.</span></div>` : ''}</div></section>`;
+  const overview = () => `${whyCard()}${relationship()}${reach()}${facts()}<section class="ds-asec" aria-label="Recent activity"><div class="ds-ahead"><h2>Recent activity</h2><button type="button" class="ds-link-btn" data-act="tab" data-arg="activity">View all</button></div>${timeline(3)}</section>`;
+  const intelligence = () => {
+    return `<section class="ds-acard" style="padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3)" aria-label="Predictive score"><span class="ds-meta-strong">Predictive score</span><span class="ds-score-big">${c.score}</span><div class="ds-toolbar" style="gap:var(--space-1-5)">${ui.cls(c.cls, true)}<span class="ds-chip">${esc(D.TIER[c.cls])}</span><span class="ds-chip" title="Relationship warmth, 0–100. Never added to the predictive score.">Warmth ${rel.warmth}</span></div><span class="ds-meta">Model v4 · scored Sep 29, 05:40 UTC</span></section>
       <section class="ds-asec" aria-label="Drivers"><div class="ds-ahead"><h2>Top drivers</h2></div><div class="ds-acard" style="padding:var(--space-2) var(--space-4)">${D.drivers(c).map(([l, pp], i) => `<div class="ds-driver"><span>${i + 1}</span><span>${esc(l)}</span><span class="ds-meta-strong num">${pp}</span></div>`).join('')}</div></section>
       <section class="ds-asec" aria-label="Evidence"><div class="ds-ahead"><h2>Evidence</h2></div><div class="ds-alist">${evidence().map(e => `<div class="ds-arow"><span class="ds-arow__body"><span class="ds-arow__title">${esc(e.l)}</span><span class="ds-arow__sub">${esc(e.v)} · ${esc(e.m)}</span></span>${ui.trust(e.k)}</div>`).join('')}</div></section>`; };
-  const ownership = () => `<section class="ds-asec" aria-label="Ownership"><div class="ds-ahead"><h2>${portfolio.length} ${portfolio.length === 1 ? 'property' : 'properties'}</h2></div><div class="ds-alist">${portfolio.map(x => `<a class="ds-arow" data-lead href="${href('property', 'id=' + x.id)}"><span class="ds-arow__lead">${icon('buildings')}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(x.addr)}${x.id === c.pid ? ' · Lead' : ''}</span><span class="ds-arow__sub">${esc(x.hood)} · ${x.units} units · debt ${esc(x.debt)}</span></span><span class="ds-arow__end">${icon('caret-right')}</span></a>`).join('')}</div></section>`;
-  const details = () => `<section class="ds-acard" style="padding:0 var(--space-4)" aria-label="Record">${ui.kv([['Contact owner', 'Thomas W.'], ['Lead stage', D.TIER[c.cls]], ['Status', c.status], ['Entity', c.entity], ['Owner type', c.meta], ['Source', 'ACRIS, Apollo'], ['Last updated', 'Sep 28, 2026']], { cols: 1 })}</section>`;
-  const history = () => `<div class="ds-alist">${[['Primary phone', '(212) 555-0199', DS.bestPhone(c), 'Sep 28 · Thomas W.'], ['Status', 'New', c.status, 'Aug 21 · Thomas W.'], ['Lead stage', 'Tier 2 · Warm', D.TIER[c.cls], 'Jun 2 · Model v4']].map(([f, a, b, w]) => `<div class="ds-arow"><span class="ds-arow__body"><span class="ds-arow__sub">${esc(f)} · ${esc(w)}</span><span><s style="color:var(--fg-disabled)">${esc(a)}</s> → <span class="font-medium">${esc(b)}</span></span></span></div>`).join('')}</div>`;
+  const ownership = () => `<section class="ds-asec" aria-label="Ownership"><div class="ds-ahead"><h2>${portfolio.length} ${portfolio.length === 1 ? 'property' : 'properties'}</h2></div><div class="ds-alist">${portfolio.map(x => `<a class="ds-arow" data-lead href="${href('property', 'id=' + x.id)}"><span class="ds-arow__lead">${icon('buildings')}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(x.addr)}${x.id === c.pid ? ' · Lead' : ''}</span><span class="ds-arow__sub">${esc(x.hood)} · ${x.units} units · debt ${esc(x.debt)}</span></span><span class="ds-arow__end">${icon('caret-right')}</span></a>`).join('')}</div></section>
+    <section class="ds-asec" aria-label="Connected people"><div class="ds-ahead"><h2>Connected people</h2></div><div class="ds-alist">${rel.connected.length ? rel.connected.map(([nm, how, cid]) => cid ? `<a class="ds-arow" data-lead href="${href('contact', 'id=' + cid)}"><span class="ds-arow__lead">${esc(DS.initials(nm))}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(nm)}</span><span class="ds-arow__sub">${esc(how)}</span></span><span class="ds-arow__end">${icon('caret-right')}</span></a>` : `<div class="ds-arow" data-lead><span class="ds-arow__lead">${esc(DS.initials(nm))}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(nm)}</span><span class="ds-arow__sub">${esc(how)} · not in the database</span></span></div>`).join('') : '<div class="ds-arow"><span class="ds-arow__sub">No co-owners or partners on record.</span></div>'}</div></section>`;
+  const details = () => `${S.blastOut[id] ? `<span class="ds-chip" data-tone="outline" style="align-self:flex-start">${icon('megaphone')}Excluded from blasts until ${esc(S.blastOut[id])}</span>` : ''}<section class="ds-acard" style="padding:0 var(--space-4)" aria-label="Record">${ui.kv([['Contact owner', 'Thomas W.'], ['Lead stage', D.TIER[c.cls]], ['Status', c.status], ['Entity', c.entity], ['Owner type', c.meta], ['Source', 'ACRIS, Apollo'], ['Last updated', 'Sep 28, 2026']], { cols: 1 })}</section>`;
+  const was = (D.contactPoints(c).find(x => x[0] === 'phone' && x[2] === 'Primary') || [])[1];
+  const history = () => `<div class="ds-alist">${[...(S.blastOut[id] ? [['Blast status', 'Included', 'Excluded until ' + S.blastOut[id], 'Just now · logged call']] : []), ...DS.badOf(c).map(x => ['Phone marked bad', x, 'Bad', 'Just now · logged call']), ...(S.primary[id] && S.primary[id] !== was ? [['Primary phone', was, S.primary[id], 'Just now · logged call']] : []), ['Primary phone', '(212) 555-0199', was, 'Sep 28 · Thomas W.'], ['Status', 'New', c.status, 'Aug 21 · Thomas W.'], ['Lead stage', 'Tier 2 · Warm', D.TIER[c.cls], 'Jun 2 · Model v4']].map(([f, a, b, w]) => `<div class="ds-arow"><span class="ds-arow__body"><span class="ds-arow__sub">${esc(f)} · ${esc(w)}</span><span><s style="color:var(--fg-disabled)">${esc(a)}</s> → <span class="font-medium">${esc(b)}</span></span></span></div>`).join('')}</div>`;
   const BODY = { overview, intelligence, ownership, activity: () => timeline(), details, history };
 
   /* ───────── Sheets ───────── */
@@ -92,7 +105,9 @@
   const ACTS = [['note', 'Save note to record'], ['primary', 'Mark number primary'], ['bad', 'Mark number bad'], ['blasts', 'Remove from blasts for 1 year']];
   const outcomeSheet = () => { const oc = outcome(); if (!oc) return '';
     const FOLLOW = [['', 'None'], ['Tomorrow', 'Tomorrow'], ['Next week', 'Next week'], ['In a month', 'In a month']];
-    return ui.sheet({ key: 'outcome-' + (oc.dur ? 'call' : 'hand'), title: 'Log the outcome', close: 'skip-outcome', size: 'full', body: `<p class="ds-meta">${esc((oc.dur ? 'Call lasted ' + oc.dur : 'Logged by hand') + ' · ' + DS.bestPhone(c))}</p>
+    const nums = DS.contactPointsOf(c).filter(x => x[0] === 'phone' && x[2] !== 'Bad').map(x => x[1]), num = oc.num || DS.bestPhone(c);
+    return ui.sheet({ key: 'outcome-' + (oc.dur ? 'call' : 'hand'), title: 'Log the outcome', close: 'skip-outcome', size: 'full', body: `<p class="ds-meta">${esc((oc.dur ? 'Call lasted ' + oc.dur : 'Logged by hand') + ' · ' + num)}</p>
+      ${nums.length > 1 ? `<div class="ds-sheet-sec"><h3>Number reached</h3><div class="ds-achips" style="margin:0;padding:0;flex-wrap:wrap" role="radiogroup" aria-label="Number reached">${nums.map(x => `<button type="button" class="ds-fchip num" role="radio" aria-checked="${x === num}" aria-pressed="${x === num}" data-act="pick-num" data-arg="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>` : ''}
       <div class="ds-sheet-sec"><h3>Outcome</h3><div class="ds-opts" role="radiogroup" aria-label="Outcome">${OUTS.map(o => `<button type="button" class="ds-optrow" role="radio" aria-checked="${oc.choice === o}" data-act="pick-outcome" data-arg="${o}"><span>${o}</span><span class="ds-optrow__mark" data-tick="opt-${o}|${oc.choice === o ? 'on' : 'off'}">${icon('check')}</span></button>`).join('')}</div></div>
       <div class="ds-sheet-sec"><h3>Follow up</h3><div class="ds-achips" style="margin:0;padding:0;flex-wrap:wrap">${FOLLOW.map(([k, l]) => `<button type="button" class="ds-fchip" aria-pressed="${(oc.follow || '') === k}" data-act="follow" data-arg="${k}">${l}</button>`).join('')}</div></div>
       <div class="ds-sheet-sec"><label class="field"><span class="field__label">Notes</span><textarea id="out-notes" class="field__control" rows="3" placeholder="Optional" data-input="outNotes">${esc(oc.notes)}</textarea></label></div>
@@ -101,29 +116,22 @@
   const noteSheet = () => ui.sheet({ key: 'note', title: 'Add a note', body: `<label class="field" style="padding-top:var(--space-2)"><span class="field__label">What did you learn?</span><textarea id="note-draft" class="field__control" rows="4" data-input="noteDraft">${esc(st.noteDraft)}</textarea></label>`, foot: ui.btn({ label: 'Cancel', variant: 'outline', act: 'close-sheet' }) + ui.btn({ label: 'Save note', act: 'save-note' }) });
   const overlays = () => outcome() ? outcomeSheet() : DS.V.sheet === 'why' ? whySheet() : DS.V.sheet === 'note' ? noteSheet() : '';
 
-  const doSave = () => {
-    const oc = outcome(), ch = oc.choice;
-    DS.store((Sx, Ux) => {
-      Sx.done[id] = true; Sx.calls += 1; if (ch === 'Connected') Sx.convos += 1; Sx.last[id] = 'Just now · ' + ch; if (oc.acts.bad) Sx.bad[id] = true;
-      if (oc.notes && oc.acts.note) DS.addTimeline(id, { k: 'Note', t: oc.notes, d: 'Just now' });
-      DS.addTimeline(id, { k: 'Call', t: ch + (oc.dur ? ' · ' + oc.dur : '') + (oc.follow ? ' · Follow up ' + oc.follow : ''), d: 'Just now' });
-      Ux.outcome = null;
-    });
-    st.saving = false; st.logged = ch; DS.render(); DS.toast('Call logged');
-  };
+  // Saving applies the outcome's actions exactly as on the web (DS.applyOutcome).
+  const doSave = () => { const oc = outcome(), ch = oc.choice, said = DS.applyOutcome(c, oc); st.saving = false; st.logged = ch; DS.render(); DS.toast(said); };
 
   DS.define({
     id: 'contact', nav: 'database', tab: 'database',
     head, scope: () => c.name,
     render: () => `<div class="ds-apage">${dnc ? `<div class="alert" data-status="danger" role="alert">${icon('warning-diamond')}<span>Asked not to be contacted. Calls are off for this owner.</span></div>` : ''}${identity()}${logged()}${quick()}${tabs()}<div class="ds-stack" style="gap:var(--space-6)" data-anim="fade" data-key="ctab-${st.tab}">${BODY[st.tab]()}</div></div>`,
     overlays,
-    after: () => { if (st.focus) { const el = document.getElementById(st.focus); st.focus = null; if (el) el.focus(); } },
+    after: () => { if (params.get('hl') && st.tab === 'activity' && !st.hlDone) { st.hlDone = true; const el = document.getElementById('tl-' + params.get('hl')); if (el) el.scrollIntoView({ block: 'center' }); } if (st.focus) { const el = document.getElementById(st.focus); st.focus = null; if (el) el.focus(); } },
     acts: {
       tab: (el, k) => { st.tab = k; DS.render(); },
       sheet: (el, k) => { DS.V.sheet = k; if (k === 'note') st.focus = 'note-draft'; DS.render(); },
       'start-call': () => { if (dnc) return; st.logged = null; DS.setUI({ call: { id, t0: Date.now() }, outcome: null }); DS.render(); },
       'end-call': () => { const dur = callTime(); DS.setUI({ call: null, outcome: { id, dur, choice: null, acts: {}, notes: '', follow: '' } }); DS.render(); },
       'pick-outcome': (el, o) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, choice: o, acts: o === 'Connected' ? { note: true, primary: true } : o === 'Bad number' ? { bad: true } : {} } }); DS.render(); },
+      'pick-num': (el, x) => { DS.setUI({ outcome: { ...outcome(), num: x } }); DS.render(); },
       'toggle-oact': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, acts: { ...oc.acts, [k]: !oc.acts[k] } } }); DS.render(); },
       follow: (el, k) => { DS.setUI({ outcome: { ...outcome(), follow: k } }); DS.render(); },
       'save-outcome': () => { if (st.saving) return; st.saving = true; DS.render(); setTimeout(doSave, 520); },

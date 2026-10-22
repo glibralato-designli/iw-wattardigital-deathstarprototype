@@ -2,14 +2,18 @@
 (() => {
   const { D, ui, esc, icon, params } = DS;
   const U = DS.U();
-  const st = {};
+  // Presets as on the web: view=learning (Learning Mode), taught=1, act=post&story=<id> (one-shot from Headlines).
+  const st = { view: params.get('view') === 'learning' ? 'learning' : 'chat' };
+  const trigger = params.get('act');
+  if (trigger && !Nav.exported) { const u = new URL(location.href); u.searchParams.delete('act'); window.history.replaceState(null, '', u); params.delete('act'); }
+  if (params.get('taught') === '1') DS.S().taught = [...(DS.S().taught || []), D.okaforLesson];
   // Presets: ask=why|list|lookup|first, stage=thinking|streaming, approved=1, chat=<history id>, new=1, chats=open.
   if (params.get('new') === '1') { U.msgs = []; U.chatTitle = null; U.chatId = null; }
   const chatId = params.get('chat');
   if (chatId) { const ch = D.chats.find(x => x.id === chatId); if (ch) { U.chatId = ch.id; U.chatTitle = ch.t; U.msgs = ch.m ? ch.m.map(m => ({ ...m })) : [{ ...D.proactive }]; } }
   const has = () => (U.msgs || []).length > 0 || DS.V.thinking;
 
-  const head = () => ({ title: has() ? (U.chatTitle || 'Brain') : 'Brain', large: !has(), lead: ui.chatsBtn(), actions: ui.iconBtn({ ic: 'note-pencil', aria: 'New chat', act: 'new-chat' }) });
+  const head = () => st.view === 'learning' ? { title: 'Learning Mode', large: false, back: ['Brain', 'brain'] } : ({ title: has() ? (U.chatTitle || 'Brain') : 'Brain', large: !has(), lead: ui.chatsBtn(), actions: ui.iconBtn({ ic: 'book-open', aria: 'Learning Mode', link: DS.href('brain', 'view=learning') }) + ui.iconBtn({ ic: 'note-pencil', aria: 'New chat', act: 'new-chat' }) });
 
   const chips = [['Why now for…', 'Daniel Marchetti, or any owner', 'sparkle', 'Why now for Daniel Marchetti?'], ['Build a list of…', 'LES owners with debt due this year', 'list-bullets', '/list LES owners with debt due before year end'], ['Look up a property…', '118 Ludlow St, or a BBL', 'buildings', 'Look up 118 Ludlow St'], ['Who should I call first?', 'Today’s plan', 'phone', 'Who should I call first today?']];
   const empty = () => `<div class="ds-apage">${ui.large('What do you need, Thomas?', 'Brain')}<p class="ds-alede" style="margin-top:calc(var(--space-4) * -1)">Ask about an owner, a building or a list. Answers cite their sources.</p>
@@ -21,12 +25,14 @@
     id: 'brain', nav: 'brain', tab: 'brain',
     head, scope: () => 'Brain',
     init: () => { const k = params.get('ask'); if (k) DS.seedChat(k, params.get('stage')); },
-    render: () => `<div class="ds-abrain">${has() ? convo() : empty()}</div>${foot()}`,
+    render: () => st.view === 'learning' ? `<div class="ds-apage">${ui.learning()}</div>` : `<div class="ds-abrain">${has() ? convo() : empty()}</div>${foot()}`,
     overlays: () => ui.chatDrawer(),
     // Follow the conversation: scroll to the newest message when one arrives, not on every render.
-    after: () => { const n = (U.msgs || []).length + (DS.V.thinking ? 1 : 0); if (n !== st.n) { st.n = n; const main = document.getElementById('ds-main'); if (main && has()) main.scrollTop = main.scrollHeight; } },
+    after: () => { if (trigger === 'post' && !st.fired) { st.fired = true; U.msgs = []; U.chatId = null; U.chatTitle = null; const h = D.headlines.find(x => x.id === params.get('story')) || D.headlines[0]; DS.sendText('Turn this headline into a LinkedIn post for ' + h.audience); }
+      const n = (U.msgs || []).length + (DS.V.thinking ? 1 : 0); if (n !== st.n) { st.n = n; const main = document.getElementById('ds-main'); if (main && has()) main.scrollTop = main.scrollHeight; } },
     acts: {
       'open-chat': (el, cid) => { const ch = D.chats.find(x => x.id === cid); U.chatId = cid; U.chatTitle = ch.t; U.msgs = ch.m ? ch.m.map(m => ({ ...m })) : [{ ...D.proactive }]; DS.V.thinking = false; DS.V.stream = null; DS.V.chats = false; DS.save(); DS.render(); },
+      'try-teach': () => { st.view = 'chat'; U.msgs = []; U.chatId = null; U.chatTitle = null; DS.save(); DS.sendText('Why now for Grace Okafor?'); },
       'new-chat': () => { U.msgs = []; U.chatId = null; U.chatTitle = null; DS.V.draft = ''; DS.V.thinking = false; DS.V.stream = null; DS.V.chats = false; DS.save(); DS.render(); const el = document.getElementById('brain-page-input'); if (el) el.focus(); },
     },
   });

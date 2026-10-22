@@ -10,6 +10,7 @@
   const field = (l, v, src, id) => `<div class="field"><label class="field__label" for="bov-${id}">${esc(l)}</label><input id="bov-${id}" class="field__control" value="${esc(v)}" readonly aria-readonly="true"><span class="ds-bovsrc">${esc(src)}</span></div>`;
   DS.define({
     id: 'bov', nav: 'more', brain: 'min',
+    head: () => ({ title: 'BOV & OM', large: true, back: ['More', 'more'] }),
     crumbs: () => [{ l: 'More', page: 'headlines' }, { l: 'BOV & OM' }],
     scope: () => 'BOV · ' + p.addr,
     render: () => `<div class="ds-page">${ui.pageHead('BOV & OM', ui.tabs([['bov', 'BOV'], [null, 'OM']], 'bov', 'BOV and OM'))}

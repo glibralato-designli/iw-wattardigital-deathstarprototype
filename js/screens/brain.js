@@ -12,10 +12,7 @@
   const trigger = params.get('act');
   if (trigger && !Nav.exported) { const u = new URL(location.href); u.searchParams.delete('act'); window.history.replaceState(null, '', u); params.delete('act'); }
   if (params.get('taught') === '1') DS.S().taught = [...(DS.S().taught || []), D.okaforLesson];
-  const learning = () => { const all = [...(DS.S().taught || []).slice().reverse(), ...D.taught];
-    return `<div class="ds-learning"><div class="ds-stack" data-gap="2" style="gap:var(--space-1)"><h1 class="ds-title-xl">What Brain has been taught</h1><span class="ds-lede">Brain learns only what you approve. A lesson changes how it reads similar owners and what it suggests; the predictive score stays separate.</span></div>
-      <section class="ds-card" data-pad="all" aria-label="Lessons">${all.map(([t, scope, when, by]) => `<div class="ds-lesson">${icon('book-open')}<span class="ds-row__body"><span class="font-medium" style="text-wrap:pretty">${esc(t)}</span><span class="ds-row__sub">${esc(scope)} · approved by ${esc(by)}, ${esc(when)}</span></span>${ui.btn({ label: 'Forget', variant: 'ghost', size: 'sm', disabled: true })}</div>`).join('')}</section>
-      <div class="ds-note">${icon('note-pencil')}<span class="ds-grow">To teach Brain, correct an answer in chat, then approve what it should remember.</span>${ui.btn({ label: 'Try it with Okafor', variant: 'outline', size: 'sm', act: 'try-teach' })}</div></div>`; };
+  const learning = () => ui.learning();
   const history = () => U.histHidden ? '' : `<aside class="ds-history" aria-label="Chat history">${DS.chatHistory()}</aside>`;
   const chips = [['Why now for…', 'Daniel Marchetti, or any owner', 'sparkle', 'Why now for Daniel Marchetti?'], ['Build a list of…', 'LES owners with debt due this year', 'list-bullets', '/list LES owners with debt due before year end'], ['Look up a property…', '118 Ludlow St, or a BBL', 'buildings', 'Look up 118 Ludlow St'], ['This week’s market brief', 'Sales, listings and rates', 'newspaper', null]];
   const empty = () => `<div class="ds-brain-empty"><div class="ds-brain-empty__inner"><div class="ds-brain-hello"><span class="ds-brain-hello__icon">${icon('sparkle')}</span><h1>What do you need, Thomas?</h1><span class="ds-lede">Ask about an owner, a building or a list. Answers cite their sources.</span></div>

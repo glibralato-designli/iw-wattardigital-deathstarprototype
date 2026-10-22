@@ -1,8 +1,9 @@
-/* App 07 Property record: identity and owner, key facts, the why now with distress signals, and the record tabs. */
+/* App 07 Property record: identity and owner, the street view and map tile, key facts, the why now with distress signals, and the record tabs (with Team history). */
 (() => {
   const { D, ui, esc, icon, href, params } = DS;
   const p = D.pById[params.get('id')] || D.pById.p118, c = D.cById[p.owner], lead = c.pid === p.id, f = D.propFacts(p);
-  const TABS = [['overview', 'Overview'], ['violations', 'Violations'], ['ownership', 'Ownership'], ['deals', 'Deals'], ['evidence', 'Evidence']];
+  const TABS = [['overview', 'Overview'], ['violations', 'Violations'], ['ownership', 'Ownership'], ['team', 'Team history'], ['deals', 'Deals'], ['evidence', 'Evidence']];
+  const team = D.teamOf(p.id);
   const st = { tab: TABS.some(t => t[0] === params.get('tab')) ? params.get('tab') : 'overview' };
   const fmt = DS.loc;
   DS.remember(p.id);
@@ -11,7 +12,7 @@
   const whyFull = lead ? c.whyFull : c.name + ' owns ' + p.addr + ' as part of a ' + DS.portfolio(c).length + '-building portfolio. The owner’s lead reason to call is at ' + D.pById[c.pid].addr + '.';
 
   const head = () => ({ title: p.addr, large: true, back: ['Back', 'properties', '', 'history'] });
-  const identity = () => `<div class="ds-aid"><span class="ds-aid__av" data-shape="square" aria-hidden="true">${icon('buildings')}</span><h1>${esc(p.addr)}</h1>${ui.cls(c.cls, true)}<span class="ds-aid__meta">${esc(p.hood)} · BBL ${esc(p.bbl)}</span><span class="ds-aid__meta">${esc(f.type)} · built ${p.built}</span></div>`;
+  const identity = () => `<div class="ds-aid"><span class="ds-aid__av" data-shape="square" aria-hidden="true">${icon('buildings')}</span><h1>${esc(p.addr)}</h1>${ui.cls(c.cls, true)}<span class="ds-aid__meta">${esc(p.hood)} · BBL ${esc(p.bbl)}</span>${team.length ? `<button type="button" class="ds-teamchip" data-act="tab" data-arg="team">${icon('users')}Team knows this building</button>` : ''}<span class="ds-aid__meta">${esc(f.type)} · built ${p.built}</span></div>`;
   const quick = () => `<div class="ds-qacts"><a class="ds-qact" data-primary href="${href('contact', 'id=' + c.id + '&act=call')}" aria-label="Call ${esc(c.name)}, the owner">${icon('phone')}Call</a><a class="ds-qact" href="${href('contact', 'id=' + c.id)}">${icon('user')}Owner</a><span class="ds-qact" role="button" tabindex="0" aria-disabled="true" data-tip="${DS.OFF}">${icon('map-trifold')}Map</span><span class="ds-qact" role="button" tabindex="0" aria-disabled="true" data-tip="${DS.OFF}">${icon('magnifying-glass')}Comps</span></div>`;
   const owner = () => `<div class="ds-alist"><a class="ds-arow" data-lead href="${href('contact', 'id=' + c.id)}"><span class="ds-arow__lead">${esc(DS.initials(c.name))}</span><span class="ds-arow__body"><span class="ds-arow__sub">Owner</span><span class="ds-arow__title">${esc(c.name)}</span><span class="ds-arow__sub">${esc(c.entity)} · score ${c.score} · Priority ${f.priority}</span></span><span class="ds-arow__end">${icon('caret-right')}</span></a></div>`;
   const stats = () => { const v = openVio(), t = (l, val, sub, zero) => `<div class="ds-atile"><span class="ds-atile__label">${esc(l)}</span><span class="ds-atile__value"><b${zero ? ' style="color:var(--fg-disabled)"' : ''}>${esc(val)}</b></span><span class="ds-atile__foot">${esc(sub)}</span></div>`;
@@ -19,7 +20,7 @@
   const why = () => `<section class="ds-why" aria-label="Why now"><div class="ds-why__head">${ui.cls(c.cls)}<h2>Why now</h2>${ui.trust(lead ? c.trust : 'verified')}</div><p class="ds-why__text">${esc(whyFull)}</p>
     <div class="ds-stack" data-gap="2"><span class="ds-meta-strong">Distress signals</span><div class="ds-toolbar" style="gap:var(--space-1-5)">${f.signals.map(([l, on]) => `<span class="ds-signal"${on ? ' data-on' : ''}>${on ? icon('check') : ''}${esc(l)}</span>`).join('')}</div></div>
     <div class="ds-why__actions" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr))">${ui.btn({ label: 'Evidence', variant: 'outline', act: 'tab', arg: 'evidence' })}${ui.btn({ label: 'Ask Brain', ic: 'sparkle', variant: 'outline', act: 'ask', arg: 'Look up ' + p.addr })}</div></section>`;
-  const tabs = () => `<div class="ds-achips" style="padding-block:0">${ui.stateTabs(TABS.map(([k, l]) => [k, k === 'violations' ? l + ' (' + openVio() + ')' : k === 'deals' ? l + ' (0)' : l]), st.tab, 'tab', 'Property')}</div>`;
+  const tabs = () => `<div class="ds-achips" style="padding-block:0">${ui.stateTabs(TABS.map(([k, l]) => [k, k === 'violations' ? l + ' (' + openVio() + ')' : k === 'deals' ? l + ' (0)' : k === 'team' ? l + ' (' + team.length + ')' : l]), st.tab, 'tab', 'Property')}</div>`;
   const kvCard = (title, rows) => `<section class="ds-asec" aria-label="${esc(title)}"><div class="ds-ahead"><h2>${esc(title)}</h2></div><div class="ds-acard" style="padding:0 var(--space-4)">${ui.kv(rows, { cols: 1 })}</div></section>`;
   const overview = () => why() + kvCard('Building', [['Property type', f.type], ['Building class', f.cls], ['Gross SF', fmt(p.sf)], ['Stories', String(f.stories)], ['Year built', String(p.built)], ['Units', p.units + ' · ' + p.rs + ' rent stabilized'], ['Rent regulated', f.rentReg]])
     + kvCard('Debt and capital', [['Debt amount', p.debt], ['Maturity date', p.mat], ['Months to maturity', f.months != null ? String(f.months) : 'Not on record', { hot: f.months != null && f.months <= 12 }], ['Lender', f.lender], ['Distress status', f.distress]])
@@ -29,7 +30,11 @@
   const ownership = () => `${owner()}<section class="ds-asec" aria-label="Portfolio"><div class="ds-ahead"><h2>Owner’s portfolio</h2></div><div class="ds-alist">${DS.portfolio(c).map(x => `<a class="ds-arow" data-lead href="${href('property', 'id=' + x.id)}"${x.id === p.id ? ' aria-current="page"' : ''}><span class="ds-arow__lead">${icon('buildings')}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(x.addr)}${x.id === p.id ? ' · This property' : ''}</span><span class="ds-arow__sub">${x.units} units · ${esc(x.hood)}</span></span><span class="ds-arow__end">${icon('caret-right')}</span></a>`).join('')}</div></section>`;
   const deals = () => `<div class="ds-alist" style="padding:var(--space-4)">${ui.empty({ ic: 'handshake', title: 'No deals yet', text: 'A deal starts when the owner agrees to a pricing opinion or a listing.' })}</div>`;
   const ev = () => `<div class="ds-alist">${evidence().map(e => `<div class="ds-arow"><span class="ds-arow__body"><span class="ds-arow__title">${esc(e.l)}</span><span class="ds-arow__sub">${esc(e.v)} · ${esc(e.m)}</span></span>${ui.trust(e.k)}</div>`).join('')}</div>`;
-  const BODY = { overview, violations, ownership, deals, evidence: ev };
+  // Team history: the archive's dated events on this building, kept apart from the score.
+  const teamTab = () => `<p class="ds-meta">From the team’s archive (OneDrive and Salesforce). Kept separate from the predictive score.</p>${team.length ? `<div class="ds-alist">${team.map(e => `<div class="ds-arow" data-lead><span class="ds-arow__lead" data-tone="plain" style="font-size:var(--text-xs);font-weight:var(--weight-semibold)">${e.year}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(e.type)} · ${esc(e.who)}</span><span class="ds-arow__sub">${esc(e.doc)}</span></span></div>`).join('')}</div>` : `<div class="ds-alist" style="padding:var(--space-4)">${ui.empty({ ic: 'users', title: 'No team history yet', text: 'Proposals, BOVs, meetings, listings and sales from the archive show here.' })}</div>`}`;
+  // Street view and map (illustrations), and BOV & OM (next phase).
+  const place = () => `<section class="ds-asec" aria-label="Location"><div class="ds-ahead"><h2>Location</h2><a href="${href('bov', 'id=' + p.id)}">BOV & OM</a></div><div class="ds-acard" style="padding:var(--space-3);display:flex;flex-direction:column;gap:var(--space-3)"><div class="ds-facade" data-wide data-art>${DS.facade(p)}</div>${DS.mapTile(p)}<span class="ds-meta">Illustrations for the demo.</span></div></section>`;
+  const BODY = { overview: () => overview() + place(), violations, ownership, team: teamTab, deals, evidence: ev };
 
   DS.define({
     id: 'property', nav: 'database', tab: 'database',

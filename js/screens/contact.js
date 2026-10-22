@@ -4,7 +4,7 @@
   const id = D.cById[params.get('id')] ? params.get('id') : 'marchetti';
   const c = D.cById[id], p = D.pById[c.pid];
   const S = DS.S(), U = DS.U();
-  const BLAST_UNTIL = 'Sep 30, 2027';
+  const BLAST_UNTIL = DS.BLAST_UNTIL;
   const TABS = ['overview', 'intelligence', 'ownership', 'activity', 'details', 'history'];
   const st = { tab: TABS.includes(params.get('tab')) ? params.get('tab') : 'overview', whyOpen: params.get('why') === 'open', noteOpen: params.get('note') === '1', noteDraft: '', qNote: '', listPick: '', actF: 'All', othersOpen: false, saving: params.get('call') === 'saving' };
   const acc = (key, def) => { const a = DS.V.acc || {}; return key in a ? a[key] : def; };
@@ -37,10 +37,7 @@
   const first = c.name.split(' ')[0].toLowerCase(), lastN = c.name.split(' ')[1].toLowerCase();
   const nextCall = c.status === 'Engaged' ? 'Oct 2' : c.status === 'Do not contact' ? 'Not set' : (c.cls === 'A' || c.cls === 'B') ? 'Oct 6' : 'Not set';
   /* The relationship, distilled (Overview), from D.relationship, the timeline and the team's archive. */
-  const team = portfolio.flatMap(x => D.teamOf(x.id).map(e => ({ ...e, addr: x.addr })));
-  const teamPid = (team[0] || {}).pid;
-  const rel = (() => { const r = D.relationship[id] || {}, tl = DS.timelineOf(c), notes = tl.filter(x => x.k === 'Note');
-    return { since: r.since || 2026 - Math.min(c.years, 6), touches: r.touches || tl.length + (n % 5), warmth: r.warmth || 30 + (n % 40), notesOf: r.notesOf || notes.length, notes: r.notes ? r.notes.map(k => tl.find(x => x.id === k)).filter(Boolean) : notes.slice(0, 3), said: r.said || null, angle: r.angle || null, next: r.next || null, connected: r.connected || [] }; })();
+  const rel = DS.relOf(c), team = rel.team, teamPid = rel.teamPid;
   const teamChip = () => team.length ? `<a class="ds-teamchip" href="${href('property', 'id=' + teamPid + '&tab=team')}" data-tip="From the team’s archive. Not part of the score.">${icon('users')}Team knows this building</a>` : '';
   const ICON = { Call: 'phone', Email: 'envelope-simple', Note: 'note', Flag: 'warning-diamond', Text: 'chat-text', Broadcast: 'megaphone', Event: 'calendar-blank' };
 
@@ -129,8 +126,7 @@
     return ui.acc('notes', 'Notes', ns.length ? ns.length + (ns.length === 1 ? ' note' : ' notes') : 'No notes yet', body, acc('notes', false));
   };
   const relationship = () => {
-    const who = [...new Set(team.map(e => e.who))].map(w => { const es = team.filter(e => e.who === w).sort((a, b2) => a.year - b2.year); return [w, es.map(e => e.type + ' ' + e.year).join(', ') + ' · ' + [...new Set(es.map(e => e.addr))].join(', ')]; });
-    if (!who.some(x => x[0] === 'Thomas Windels') && c.last !== 'Never called') who.push(['Thomas Windels', 'Owner of the record · last touch ' + DS.lastOf(c).split(' · ')[0]]);
+    const who = rel.who;
     return `<section class="ds-rel" aria-label="Relationship"><div class="ds-rel__head">${icon('handshake')}<h2>Relationship</h2><span class="ds-chip" data-tone="outline" data-tip="Relationship warmth, 0–100. Tracked separately, never added to the predictive score.">Warmth ${rel.warmth}</span><span class="ds-meta">${rel.touches} touches since ${rel.since}</span><span class="ds-grow"></span>${teamChip()}</div>
       <div class="ds-rel__grid"><div class="ds-rel__col"><h3>${icon('sparkle')} The notes that matter</h3>${rel.notes.length ? rel.notes.map(x => `<div class="ds-rel__note"><p>${esc(x.t)}</p><div class="ds-toolbar"><span class="ds-meta">${esc(x.d)}</span><a class="ds-link-btn" href="${href('contact', 'id=' + id + '&tab=activity' + (x.id ? '&hl=' + x.id : ''))}">Open in Activity${icon('caret-right')}</a></div></div>`).join('') + `<span class="ds-meta">Picked by Brain from ${rel.notesOf} ${rel.notesOf === 1 ? 'note' : 'notes'}. The rest stay in Activity.</span>` : '<span class="ds-meta">No notes yet. Brain picks the ones that matter as calls are logged.</span>'}</div>
         <div class="ds-rel__col"><h3>Who on the team knew them</h3>${who.length ? who.map(([w, l]) => `<div class="ds-rel__who"><span class="avatar" data-size="sm">${esc(DS.initials(w))}</span><span class="ds-row__body"><span class="font-medium">${esc(w)}</span><span class="ds-row__sub" style="white-space:normal">${esc(l)}</span></span></div>`).join('') : '<span class="ds-meta">Nobody on the team yet.</span>'}
@@ -227,18 +223,8 @@
   /* ───────── Actions ───────── */
   const nextOwner = () => { const ids = DS.callIds(), cur = ids.indexOf(id), order = [...ids.slice(cur + 1), ...ids.slice(0, Math.max(cur, 0))], nx = order.find(x => !S.done[x] && x !== id); if (nx) Nav.go('contact', 'id=' + nx); else DS.toast('You’ve called everyone on today’s list.'); };
   const doSave = () => {
-    const oc = outcome(); if (!oc || !oc.choice) return; const ch = oc.choice, num = oc.num || DS.bestPhone(c), said = ['Call logged'];
-    DS.store((Sx, Ux) => {
-      Sx.done[id] = true; Sx.calls += 1; if (ch === 'Connected') Sx.convos += 1; Sx.last[id] = 'Just now · ' + ch;
-      // Bad wins over primary when both are ticked.
-      if (oc.acts.bad) { Sx.bad[id] = [...DS.badOf(c), num]; if (Sx.primary[id] === num) delete Sx.primary[id]; said.push(num + ' marked bad'); }
-      else if (oc.acts.primary) { Sx.primary[id] = num; said.push(num + ' is now primary'); }
-      if (oc.acts.blasts) { Sx.blastOut[id] = BLAST_UNTIL; said.push('out of blasts until ' + BLAST_UNTIL); }
-      if (oc.notes && oc.acts.note) DS.addTimeline(id, { k: 'Note', t: oc.notes, d: 'Just now' });
-      DS.addTimeline(id, { k: 'Call', t: ch + (oc.dur ? ' · ' + oc.dur : '') + (oc.follow ? ' · Follow up ' + oc.follow : ''), d: 'Just now' });
-      Ux.outcome = null;
-    });
-    st.saving = false; DS.render(); DS.toast(said.join(' · '));
+    const oc = outcome(); if (!oc || !oc.choice) return;
+    const said = DS.applyOutcome(c, oc); st.saving = false; DS.render(); DS.toast(said);
   };
 
   DS.define({

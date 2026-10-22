@@ -1,8 +1,6 @@
 /* 01 Home: the overview. Greeting, today's plan, the pulse strip, metric tabs, Up next and meetings. */
 (() => {
   const { D, ui, esc, icon, href, params } = DS;
-  // Preset queued=1: a list was pushed to Phone from the Database (Home counts it under Outreach).
-  if (params.get('queued') === '1') DS.S().queues = [...DS.queues(), { name: 'Class A · Fully free market · Clicked 41 Ludlow St OM', ch: 'phone', n: 6 }];
   const st = { tile: Math.max(0, Math.min(10, Number(params.get('tile')) || 0)), planOpen: params.get('plan') !== 'min' };
   const layout = params.get('layout') === 'classic' ? 'classic' : 'focused';
   const lead = params.get('lead') === 'upnext' ? 'upnext' : 'plan';
