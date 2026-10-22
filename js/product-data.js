@@ -106,7 +106,7 @@
     { name: 'LinkedIn', icon: 'linkedin-logo', label: 'New connections', num: '12', title: 'New connections per week', sub: 'LinkedIn · last 7 weeks', head: '12', headL: 'new this week', go: 'Go to LinkedIn', labels: W7, vals: [6, 9, 4, 11, 8, 10, 12] },
     { name: 'Social', icon: 'users', label: 'Engagement', num: '230', title: 'Engagement per week', sub: 'Social · last 7 weeks', head: '230', headL: 'engagements this week', go: 'Go to Social', labels: W7, vals: [140, 165, 120, 190, 210, 175, 230] },
     { name: 'Map', icon: 'map-trifold', label: 'ZIP coverage', num: '8%', title: 'Owners called by ZIP', sub: 'Map · share called at least once', head: '8%', headL: 'territory coverage', go: 'Go to Map', labels: ['10002', '10003', '10009', '10012', '10013', '10028', '10038'], vals: [14, 9, 6, 11, 4, 9, 3], fmt: 'pct', flat: true },
-    { name: 'Web analytics', icon: 'globe', label: 'Visitors this week', num: '1,284', title: 'Visitors per week', sub: 'Web analytics · last 7 weeks', head: '1,284', headL: 'visitors this week', go: 'Go to Web analytics', to: 'web-analytics', labels: W7, vals: [880, 940, 1020, 990, 1110, 1190, 1284], fmt: 'loc' },
+    { name: 'Web analytics', icon: 'globe', label: 'Visitors this week', num: '1,284', title: 'Visitors per week', sub: 'Website analytics · last 7 weeks', head: '1,284', headL: 'visitors this week', go: 'Go to Website analytics', to: 'web-analytics', labels: W7, vals: [880, 940, 1020, 990, 1110, 1190, 1284], fmt: 'loc' },
   ];
 
   const meetings = [['9:30 AM', 'Tour · 41 Ludlow St', 'Priya Venkataraman'], ['12:00 PM', 'Lunch · Grace Okafor', 'Okafor family office'], ['3:00 PM', 'Pipeline review', 'Zoom · Mira W.'], ['5:30 PM', 'Lender update', 'Brookline Capital']];
@@ -162,7 +162,8 @@
   const links = [{ h: 'Research', items: ['PincusCo', 'UniCourt', 'LoopNet', 'Zillow', 'StreetEasy', 'Hunter', 'PropertyShark', 'Apollo', 'CoStar', 'NYC ACRIS', 'NYC Open Data'] }, { h: 'Media', items: ['The Real Deal', 'Bisnow', 'Commercial Observer', 'WSJ Real Estate', 'Crain’s New York', 'YIMBY NY', 'GlobeSt'] }];
 
   /* Page tabs. A null page is drawn but disabled. */
-  const dashboardTabs = [['attack-plan', 'Attack Plan'], ['calendar', 'Calendar'], ['conversations', 'Conversations'], '|', ['outreach-performance', 'Outreach performance'], ['reporting', 'Reporting'], ['listings', 'Listings'], ['web-analytics', 'Web analytics']];
+  // Thomas's current tab names and order (Death Star portal, dashboard.js), in sentence case.
+  const dashboardTabs = [['attack-plan', 'Attack Plan'], ['conversations', 'Conversation tracker'], ['calendar', 'Calendar'], '|', ['outreach-performance', 'Outreach performance'], ['reporting', 'Reporting'], ['listings', 'Listing activity'], ['web-analytics', 'Website analytics']];
   const databaseTabs = [['contacts', 'Contacts'], ['properties', 'Properties']];
 
   /* Database scale: about 40,000 contacts and 18,600 properties (Thomas, P3 25:14). The table shows the fictional demo rows. */
@@ -180,10 +181,10 @@
   const engagement = {
     marchetti: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked Q3 report PDF', 'Downloaded Q3 market report'],
     feld: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St'],
-    okafor: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St', 'Downloaded 41 Ludlow St OM', 'Visited the website'],
-    adler: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Clicked Book a call', 'Viewed 41 Ludlow St', 'Downloaded 41 Ludlow St OM', 'Visited the website'],
-    rivera: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 88 Orchard St OM', 'Viewed 88 Orchard St', 'Downloaded 88 Orchard St OM', 'Visited the website'],
-    kowalski: [...Q3, 'Clicked Q3 market report email', 'Clicked 88 Orchard St OM', 'Viewed 88 Orchard St'],
+    okafor: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St', 'Viewed 15 Clinton St', 'Downloaded 41 Ludlow St OM', 'Visited the website'],
+    adler: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Clicked Book a call', 'Viewed 41 Ludlow St', 'Viewed 15 Clinton St', 'Downloaded 41 Ludlow St OM', 'Visited the website'],
+    rivera: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 88 Orchard St OM', 'Viewed 88 Orchard St', 'Viewed 230 E 7th St', 'Downloaded 88 Orchard St OM', 'Visited the website'],
+    kowalski: [...Q3, 'Clicked Q3 market report email', 'Clicked 88 Orchard St OM', 'Viewed 88 Orchard St', 'Viewed 230 E 7th St'],
     chen: [...Q3, 'Viewed 41 Ludlow St'],
     shah: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Clicked Listings page', 'Viewed 41 Ludlow St', 'Visited the website'],
     greene: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Clicked Q3 report PDF', 'Clicked Listings page', 'Viewed 41 Ludlow St', 'Downloaded Q3 market report', 'Visited the website'],
@@ -191,7 +192,7 @@
     baum: ['Viewed 41 Ludlow St'],
     lindqvist: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St', 'Downloaded 41 Ludlow St OM'],
     osei: [...Q3, 'Viewed 41 Ludlow St'],
-    brennan: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St'],
+    brennan: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St', 'Viewed 230 E 7th St'],
     dubois: [...Q3],
   };
   // LinkedIn connections and this week's touches, for the Social connection and Last touch criteria.
@@ -244,7 +245,7 @@
     hood: { 'Lower East Side': 4820, 'East Village': 3960, 'Upper East Side': 7140, 'Midtown West': 5310, Chelsea: 3220, 'Central Harlem': 3730 },
     debt: { '2026-12-31': 140, '2027-06-30': 420, '2027-12-31': 910 },
     team: { Proposal: 2400, BOV: 1100, 'First meeting': 3900, Listing: 640, Sale: 520 },
-    eng: { 'Received Q3 market report': 12400, 'Delivered Q3 market report': 11980, 'Opened Q3 market report': 5270, 'Clicked Q3 market report email': 712, 'Clicked 41 Ludlow St OM': 268, 'Clicked Q3 report PDF': 196, 'Clicked Book a call': 104, 'Clicked Listings page': 86, 'Clicked 88 Orchard St OM': 58, 'Viewed 41 Ludlow St': 11, 'Viewed 88 Orchard St': 2, 'Downloaded 41 Ludlow St OM': 18, 'Downloaded 88 Orchard St OM': 10, 'Downloaded Q3 market report': 19, 'Visited the website': 9 },
+    eng: { 'Received Q3 market report': 12400, 'Delivered Q3 market report': 11980, 'Opened Q3 market report': 5270, 'Clicked Q3 market report email': 712, 'Clicked 41 Ludlow St OM': 268, 'Clicked Q3 report PDF': 196, 'Clicked Book a call': 104, 'Clicked Listings page': 86, 'Clicked 88 Orchard St OM': 58, 'Viewed 41 Ludlow St': 11, 'Viewed 88 Orchard St': 2, 'Viewed 230 E 7th St': 3, 'Viewed 15 Clinton St': 2, 'Downloaded 41 Ludlow St OM': 18, 'Downloaded 88 Orchard St OM': 10, 'Downloaded Q3 market report': 19, 'Visited the website': 9 },
     social: { yes: 5630, no: 34582 },
     rel: { warm: 3310, cold: 36902 },
     touch: { 'Called this week': 112, 'Emailed this week': 186, 'Texted this week': 64, 'Conversation this week': 9, 'Never called': 21000, 'No touch in 90 days': 9000 },
@@ -257,9 +258,9 @@
   /* ───────── Proactive Brain ─────────
      Suggested lists on the Attack Plan: criteria plus a reason (the count in the reason is the live count). */
   const suggested = [
-    { id: 'ludlow-om', name: 'Class A owners who clicked the 41 Ludlow St OM', crit: 'cls:A;eng:Clicked 41 Ludlow St OM', why: n => n + ' Class A owners clicked the 41 Ludlow St OM this month. Owners click a listing to price their own building.' },
-    { id: 'q3-uncalled', name: 'LES Class A, opened the Q3 report, never called', crit: 'cls:A;hood:Lower East Side;eng:Opened Q3 market report;touch:Never called', why: n => n + ' Class A owners on the Lower East Side opened the Q3 report and have never been called.' },
-    { id: 'ues-debt', name: 'UES debt due by June', crit: 'cls:A,B;hood:Upper East Side;debt:2027-06-30', why: n => n + ' Class A and B owners on the Upper East Side have debt due by June 30, 2027. Nobody has a call block on the UES this month.' },
+    { id: 'ludlow-om', name: 'Clicked the 41 Ludlow OM', tag: 'Class A', hint: 'Owners click a listing to price their own building.', crit: 'cls:A;eng:Clicked 41 Ludlow St OM', why: n => n + ' Class A owners clicked the 41 Ludlow St OM this month. Owners click a listing to price their own building.' },
+    { id: 'q3-uncalled', name: 'Opened the Q3 report, never called', tag: 'LES · Class A', hint: 'Warm from the report, cold on the phone.', crit: 'cls:A;hood:Lower East Side;eng:Opened Q3 market report;touch:Never called', why: n => n + ' Class A owners on the Lower East Side opened the Q3 report and have never been called.' },
+    { id: 'ues-debt', name: 'Debt due by June', tag: 'UES · Class A and B', hint: 'No UES call block this month.', crit: 'cls:A,B;hood:Upper East Side;debt:2027-06-30', why: n => n + ' Class A and B owners on the Upper East Side have debt due by June 30, 2027. Nobody has a call block on the UES this month.' },
   ];
   // What Brain has been taught (Learning Mode): corrections Thomas approved. Approving the Okafor correction adds one.
   const taught = [
@@ -271,11 +272,22 @@
   const dropFile = ['Okafor refinance term sheet.pdf', '1.2 MB · added today'];
 
   /* Headlines (read-only, under More): stories tagged by who they matter to, each a list and a post. */
+  // hours: how long ago it was published (today is Wed, Sep 30). Topics and sources follow Thomas's feed (The Real Deal, Commercial Observer, Bisnow, GlobeSt, YIMBY NY…).
   const headlines = [
-    { id: 'rgb', src: 'The Real Deal', when: 'Sep 29', tag: 'Rent regulation', t: 'Rent Guidelines Board votes to freeze stabilized rents for 2026–27 leases', sum: 'One-year and two-year leases on rent-stabilized units stay flat from October 1. Owners with mostly stabilized buildings lose this year’s increase while costs keep rising.', crit: 'btype:rs,mixed;hood:Lower East Side', audience: 'rent-stabilized owners in the LES' },
-    { id: 'q3', src: 'Commercial Observer', when: 'Sep 28', tag: 'Sales', t: 'Manhattan multifamily sales volume rose 18% in Q3 as rates eased', sum: 'Walk-up trades below 96th St led the quarter, with a median of $362 per square foot. Buyers are back for free-market buildings.', crit: 'cls:A,B;btype:fm', audience: 'Class A and B owners of free-market buildings' },
-    { id: 'lenders', src: 'Crain’s New York', when: 'Sep 26', tag: 'Lending', t: 'Two regional banks pull back on walk-up refinancing below 96th St', sum: 'Brookline Capital and Hudson Mutual tightened terms for buildings with stabilized units. Owners with 2026–27 maturities face higher rates or a sale.', crit: 'debt:2027-06-30;btype:rs,mixed', audience: 'owners with debt due by June 2027' },
-    { id: 'far', src: 'YIMBY NY', when: 'Sep 22', tag: 'Development', t: 'East Village air-rights sale sets a $410 per square foot record', sum: 'A developer paid $410/SF for unused rights over a walk-up on E 4th St, the highest on record for the neighborhood.', crit: 'signal:Unused FAR', audience: 'owners with unused air rights' },
+    { id: 'rgb', src: 'The Real Deal', hours: 20, tag: 'Rent regulation', t: 'Rent Guidelines Board votes to freeze stabilized rents for 2026–27 leases', sum: 'One-year and two-year leases on rent-stabilized units stay flat from October 1. Owners with mostly stabilized buildings lose this year’s increase while costs keep rising.', crit: 'btype:rs,mixed;hood:Lower East Side', audience: 'rent-stabilized owners in the LES' },
+    { id: 'q3', src: 'Commercial Observer', hours: 44, tag: 'Sales', t: 'Manhattan multifamily sales volume rose 18% in Q3 as rates eased', sum: 'Walk-up trades below 96th St led the quarter, with a median of $362 per square foot. Buyers are back for free-market buildings.', crit: 'cls:A,B;btype:fm', audience: 'Class A and B owners of free-market buildings' },
+    { id: 'lenders', src: 'Crain’s New York', hours: 92, tag: 'Lending', t: 'Two regional banks pull back on walk-up refinancing below 96th St', sum: 'Brookline Capital and Hudson Mutual tightened terms for buildings with stabilized units. Owners with 2026–27 maturities face higher rates or a sale.', crit: 'debt:2027-06-30;btype:rs,mixed', audience: 'owners with debt due by June 2027' },
+    { id: 'far', src: 'YIMBY NY', hours: 190, tag: 'Development', t: 'East Village air-rights sale sets a $410 per square foot record', sum: 'A developer paid $410/SF for unused rights over a walk-up on E 4th St, the highest on record for the neighborhood.', crit: 'signal:Unused FAR', audience: 'owners with unused air rights' },
+    { id: 'ues-trade', src: 'PincusCo', hours: 6, tag: 'Sales', t: 'Family sells a 28-unit UES walk-up on E 81st St for $14.1M', sum: 'The seller held the building for 34 years. It traded at $498 per square foot, about 6% above the UES average this year.', crit: 'hood:Upper East Side;signal:Long hold', audience: 'long-hold owners on the Upper East Side' },
+    { id: 'lis', src: 'The Real Deal', hours: 30, tag: 'Distress', t: 'Lis pendens filings on Manhattan walk-ups hit a two-year high', sum: 'Foreclosure filings rose 22% in Q3, concentrated on buildings bought between 2014 and 2018 at peak prices.', crit: 'signal:Lis pendens', audience: 'owners with a lis pendens on record' },
+    { id: 'jlaw', src: 'Bisnow', hours: 52, tag: 'Policy', t: 'City Council advances Local Law 97 relief for older walk-ups', sum: 'A proposed amendment gives pre-1930 buildings under 25,000 SF two more years to meet emissions caps.', crit: 'units:-25;btype:rs,mixed', audience: 'owners of small pre-war buildings' },
+    { id: 'rates', src: 'GlobeSt', hours: 70, tag: 'Lending', t: 'Ten-year Treasury slips below 4%, multifamily lenders reprice', sum: 'Agency spreads tightened on smaller loans. Brokers report the first uptick in refinancing quotes since spring.', crit: 'debt:2027-12-31', audience: 'owners with debt due by the end of 2027' },
+    { id: 'chelsea', src: 'Commercial Observer', hours: 120, tag: 'Sales', t: 'Chelsea walk-up portfolio of six buildings trades for $52M', sum: 'A private investor bought the free-market portfolio from a family office. The deal works out to $612 per square foot.', crit: 'hood:Chelsea,Midtown West;btype:fm', audience: 'free-market owners in Chelsea and Midtown West' },
+    { id: 'estate', src: 'Crain’s New York', hours: 160, tag: 'Market data', t: 'Estate sales are a third of Manhattan walk-up trades this year', sum: 'Heirs are selling faster than in past cycles, often within two years of inheriting, as carrying costs rise.', crit: 'signal:Estate transition', audience: 'owners in an estate transition' },
+    { id: 'les-dev', src: 'YIMBY NY', hours: 230, tag: 'Development', t: 'Permits filed for a 14-story building on Delancey St', sum: 'The project would replace two walk-ups and a parking lot. Neighbors on the block may see offers for their air rights.', crit: 'hood:Lower East Side;signal:Unused FAR,Nearby sale', audience: 'LES owners near new development' },
+    { id: 'q2', src: 'The Real Deal', hours: 900, tag: 'Market data', t: 'Q2 review: rent-stabilized values down 4% on the year', sum: 'Stabilized walk-ups traded at a median of $362 per square foot, while free-market buildings held steady.', crit: 'btype:rs', audience: 'owners of mostly stabilized buildings' },
+    { id: 'harlem', src: 'Bisnow', hours: 1300, tag: 'Sales', t: 'Harlem brownstone buildings see bidding wars again', sum: 'Several small multifamily buildings above 110th St sold over ask in the summer, a first since 2022.', crit: 'hood:Central Harlem', audience: 'owners in Central Harlem' },
+    { id: 'insurance', src: 'GlobeSt', hours: 2600, tag: 'Policy', t: 'Insurance premiums for older walk-ups up 31% in a year', sum: 'Carriers cite water damage and aging systems. Owners of pre-war buildings are shopping policies earlier.', crit: 'btype:rs,mixed;units:-25', audience: 'owners of small older buildings' },
   ];
   // The scripted post for the rent-freeze headline (Brain's "headline to post" flow).
   const postDraft = 'The Rent Guidelines Board just froze stabilized rents for 2026–27. If you own a mostly stabilized walk-up on the Lower East Side, this is the second flat year in three, while taxes and insurance keep rising. We’ve run the numbers on what that does to values on the block. Happy to share them, no pitch.';
@@ -328,6 +340,13 @@
       counts: [['Website views', 205, true], ['Blast views', 488, true], ['LinkedIn post views', 310, false], ['Tours', 4, false], ['Written offers', 2, false]],
       viewers: [['rivera', 2, 'Sep 26'], ['kowalski', 1, 'Sep 24']],
       offers: [['Bowery Equities', '$6.7M', 'Sep 18', 'Accepted · in contract'], ['Leah Kim', '$6.4M', 'Sep 12', 'Declined'], ['Halcyon Capital', '$6.2M', 'Sep 3', 'Declined']] },
+    // No street-view asset: the card draws one (DS.streetArt) from these.
+    { addr: '230 E 7th St', sub: 'East Village · 16 units · 11,400 SF · $8.2M', status: 'Active', art: { stories: 5, units: 16, shops: true },
+      counts: [['Website views', 318, true], ['Blast views', 640, true], ['LinkedIn post views', 520, false], ['Tours', 3, false], ['Written offers', 0, false]],
+      viewers: [['rivera', 2, 'Sep 29'], ['kowalski', 1, 'Sep 25'], ['brennan', 1, 'Sep 23']], offers: [] },
+    { addr: '15 Clinton St', sub: 'Lower East Side · 20 units · 14,800 SF · $11.9M', status: 'Coming soon', art: { stories: 6, units: 20, shops: false },
+      counts: [['Website views', 96, true], ['Blast views', 0, true], ['LinkedIn post views', 210, false], ['Tours', 0, false], ['Written offers', 0, false]],
+      viewers: [['adler', 1, 'Sep 30'], ['okafor', 1, 'Sep 29']], offers: [] },
   ];
   // [name, form, email or phone, about, message, date, in database, new]
   const inquiries = [

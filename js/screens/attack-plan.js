@@ -5,6 +5,7 @@
   /* Presets: goals=edit and week=edit open the editors; dismissed=all hides Brain's suggestions; suggsaved=1 saves the first one. */
   st.goalEdit = params.get('goals') === 'edit' ? null : undefined; st.weekEdit = params.get('week') === 'edit';
   if (params.get('dismissed') === 'all') D.suggested.forEach(x => { DS.S().dismissed[x.id] = true; });
+  if (params.get('brainsugg') === 'closed') DS.setUI({ suggOpen: false }); else if (params.get('brainsugg') === 'open') DS.setUI({ suggOpen: true });
   if (params.get('suggsaved') === '1') DS.saveList(D.suggested[0].name, D.suggested[0].crit);
   const goalsOf = f => (DS.S().goalEdits || {})[f] || D.goals[f];
   const weekTpl = () => DS.S().weekTpl;
@@ -61,15 +62,16 @@
     </section>`;
   };
 
+  /* Brain suggests: Brain's own surface (tinted, the sparkle avatar), at the top of the right column. One compact row per list:
+     the live count, a short name and one line of reason; Save list and Dismiss are the approve and decline. Collapsible. */
   const suggested = () => {
-    const S = DS.S(), saved = DS.savedLists(), list = D.suggested.filter(x => !S.dismissed[x.id]);
+    const S = DS.S(), U = DS.U(), saved = DS.savedLists(), list = D.suggested.filter(x => !S.dismissed[x.id]), open = U.suggOpen !== false;
     if (rel() !== 0) return '';
-    return `<section class="ds-card" data-pad="all" aria-label="Suggested by Brain"><div class="ds-card__head"><div class="ds-card__title"><h2>${icon('sparkle')} Suggested by Brain</h2><span class="ds-meta">Lists built from last week’s outreach and new signals. Nothing is saved or queued until you approve it.</span></div></div>
-      ${list.length ? list.map(x => { const items = DS.crit.parse(x.crit), n = DS.crit.count(items), isSaved = saved.some(l => l.crit === DS.crit.str(items));
-        return `<div class="ds-sugglist" data-key="sugg-${x.id}"><div class="ds-sugglist__head"><b class="ds-grow">${esc(x.name)}</b>${ui.btn({ label: 'Open in builder', ic: 'list-bullets', variant: 'outline', size: 'sm', link: DS.crit.href(x.crit, 'from=attack-plan') })}</div>
-          <div class="ds-toolbar" style="gap:var(--space-1-5)">${items.map(it => ui.critChip(it, { static: true })).join('')}</div>
-          ${isSaved ? ui.approved('Saved to Lists · ' + x.name) : ui.approval({ text: esc(x.why(DS.loc(n))), yes: ['Save as list', 'sugg-save', x.id], no: ['Dismiss', 'sugg-dismiss', x.id] })}</div>`; }).join('') : `<div class="ds-note">${icon('check-circle')}<span class="ds-grow">No suggestions left today. Brain builds new ones tomorrow morning.</span>${ui.btn({ label: 'Show dismissed', variant: 'outline', size: 'sm', act: 'sugg-restore' })}</div>`}
-    </section>`;
+    const rows = list.map(x => { const items = DS.crit.parse(x.crit), n = DS.crit.count(items), isSaved = saved.some(l => l.crit === DS.crit.str(items));
+      return `<li class="ds-bsugg__row" title="${esc(x.why(DS.loc(n)))}"><a class="ds-bsugg__main" href="${DS.crit.href(x.crit, 'from=attack-plan')}"><span class="ds-bsugg__n num">${DS.loc(n)}</span><span class="ds-row__body"><span class="ds-bsugg__name">${esc(x.name)}</span><span class="ds-bsugg__hint">${esc(x.tag)} · ${esc(x.hint)}</span></span></a>
+        <span class="ds-bsugg__acts">${isSaved ? `<span class="ds-bsugg__saved">${icon('check')}Saved</span>` : `<button type="button" class="ds-bsugg__save" data-act="sugg-save" data-arg="${x.id}">Save list</button>`}${ui.iconBtn({ ic: 'x', aria: 'Dismiss ' + x.name, tip: 'Dismiss', act: 'sugg-dismiss', arg: x.id })}</span></li>`; }).join('');
+    return `<section class="ds-bsugg" aria-label="Brain suggests"><button type="button" class="ds-bsugg__head" aria-expanded="${open}" data-act="sugg-toggle"><span class="ds-bot-av">${icon('sparkle')}</span><span class="ds-row__body"><b>Brain suggests</b><span class="ds-meta">${list.length ? list.length + (list.length === 1 ? ' list' : ' lists') + ' from last week’s outreach' : 'Nothing new today'}</span></span>${icon(open ? 'caret-up' : 'caret-down')}</button>
+      ${open ? `<div class="ds-bsugg__body" data-anim="grow" data-key="bsugg">${list.length ? `<ul class="ds-bsugg__list">${rows}</ul><span class="ds-bsugg__foot">Nothing is saved or queued until you approve it.</span>` : `<div class="ds-bsugg__empty"><span>No suggestions left today.</span><button type="button" class="ds-link-btn" data-act="sugg-restore">Show dismissed</button></div>`}</div>` : ''}</section>`;
   };
   const dueOf = t => t.due ?? [0, 1, 0, 2, -1, 3, 0][t.id % 7];
   const inRange = t => { const d = dueOf(t), w = wk(); if (st.mode === 'week') return (d >= w.wkOff && d <= w.wkOff + 6) || (w.wkRel === 0 && d < w.wkOff); return st.sel === 0 ? d <= 0 : d === st.sel; };
@@ -129,7 +131,7 @@
     crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: 'Attack Plan' }],
     scope: () => 'Dashboard',
     render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, 'attack-plan', 'Dashboard'))}${ui.nudge(D.nudges['attack-plan'])}${toolbar()}
-      <div class="ds-split" data-anim="slide" data-key="plan-${st.mode}-${st.sel}" style="--dir:${st.dir || 1}"><div class="ds-stack">${todayPlan()}${suggested()}${todos()}${week()}</div><div class="ds-stack">${goals()}${meetings()}</div></div></div>`,
+      <div class="ds-split" data-anim="slide" data-key="plan-${st.mode}-${st.sel}" style="--dir:${st.dir || 1}"><div class="ds-stack">${todayPlan()}${todos()}${week()}</div><div class="ds-stack">${suggested()}${goals()}${meetings()}</div></div></div>`,
     acts: {
       step: (el, d) => { st.dir = Math.sign(Number(d)); st.sel += Number(d) * (st.mode === 'week' ? 7 : 1); DS.render(); },
       'step-week': (el, d) => { st.dir = Math.sign(Number(d)); st.sel += Number(d) * 7; DS.render(); },
@@ -145,7 +147,8 @@
       'task-del': (el, id) => DS.collapse(el.closest('.ds-task'), () => DS.store(S => { S.tasks = S.tasks.filter(t => t.id !== +id); })),
       'add-task': () => { const t = st.newTask.trim(); if (!t) return; const w = wk(); DS.store(S => { S.tasks = [...S.tasks, { id: Date.now(), g: st.newCat, t, due: st.mode === 'week' ? Math.max(0, w.wkOff) : st.sel, m: 'Added today' }]; }); st.newTask = ''; DS.render(); DS.toast('To-do added'); },
       'sugg-save': (el, k) => { const x = D.suggested.find(y => y.id === k); DS.saveList(x.name, DS.crit.str(DS.crit.parse(x.crit))); DS.render(); DS.toast('Saved to Lists · ' + x.name); },
-      'sugg-dismiss': (el, k) => { const go = () => DS.store(S => { S.dismissed = { ...(S.dismissed || {}), [k]: true }; }); const row = el.closest('.ds-sugglist'); if (row) DS.collapse(row, go); else go(); },
+      'sugg-dismiss': (el, k) => { const go = () => DS.store(S => { S.dismissed = { ...(S.dismissed || {}), [k]: true }; }); const row = el.closest('.ds-bsugg__row'); if (row) DS.collapse(row, go); else go(); },
+      'sugg-toggle': () => { const U = DS.U(), go = () => { DS.setUI({ suggOpen: U.suggOpen === false }); DS.render(); }; if (U.suggOpen !== false) DS.collapse(document.querySelector('.ds-bsugg__body'), go); else go(); },
       'sugg-restore': () => DS.store(S => { S.dismissed = {}; }),
       'goal-edit': () => { st.goalEdit = null; DS.render(); },
       'goal-cancel': () => { st.goalEdit = undefined; DS.render(); },

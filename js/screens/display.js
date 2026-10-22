@@ -3,8 +3,10 @@
 (() => {
   const { D, ui, esc, icon, href, loc } = DS;
   const page = document.body.dataset.page;
-  const LABEL = { 'outreach-performance': 'Outreach performance', reporting: 'Reporting', listings: 'Listings', 'web-analytics': 'Web analytics' };
+  const LABEL = { 'outreach-performance': 'Outreach performance', reporting: 'Reporting', listings: 'Listing activity', 'web-analytics': 'Website analytics' };
   const OFF = DS.OFF;
+  // Listing activity: which listing is open (preset listing=<address slug>, e.g. 88-orchard-st).
+  const lst = { sel: DS.params.get('listing') || '' };
 
   /* ── Shared pieces ── */
   const offSeg = (items, on, label) => `<div class="segmented" role="group" aria-label="${esc(label)}">${items.map((l, i) => `<button type="button" class="segmented__item" aria-pressed="${i === on}" aria-disabled="true" data-tip="${OFF}">${esc(l)}</button>`).join('')}</div>`;
@@ -60,22 +62,27 @@
 
   /* ── Listings: each listing with its counts and viewers, then what came in through the website ── */
   const listings = () => {
-    const card = l => {
-      const vs = l.viewers, shown = vs.slice(0, 4);
-      // The listing's street view (an illustration in the prototype), full bleed at the top of the card.
-      const photo = l.photo ? `<img class="ds-listing__photo" src="${Nav.asset((DS.app ? '../../' : '../') + l.photo)}" alt="Street view of ${esc(l.addr)} (illustration)" width="800" height="336" decoding="async">` : '';
-      return `<section class="ds-card ds-listing" data-pad="lg" aria-label="${esc(l.addr)}">${photo}<div class="ds-card__head"><div class="ds-card__title"><h3>${esc(l.addr)}</h3><span class="ds-meta">${esc(l.sub)}</span></div><span class="badge" data-status="${l.status === 'Active' ? 'success' : 'info'}">${esc(l.status)}</span>${ui.btn({ label: 'Open OM', ic: 'file-text', variant: 'outline', size: 'sm', disabled: true })}</div>
+    /* Four compact listing cards in a row; the selected one opens its viewers, offers and counts in one panel below. */
+    const slug = l => l.addr.toLowerCase().replace(/\W+/g, '-'), sel = Math.max(0, D.listings.findIndex(l => slug(l) === lst.sel)), cur = D.listings[sel];
+    const art = (l, cls) => l.photo ? `<img class="${cls}" src="${Nav.asset((DS.app ? '../../' : '../') + l.photo)}" alt="" width="800" height="336" decoding="async">` : `<span class="${cls}" aria-hidden="true">${DS.streetArt({ id: slug(l), label: l.addr, ...l.art })}</span>`;
+    const tone = st => st === 'Active' ? 'success' : st === 'In contract' ? 'info' : 'warning';
+    const count = (l, k) => (l.counts.find(c => c[0] === k) || [])[1] || 0;
+    const card = (l, i) => `<button type="button" class="ds-lcard" aria-pressed="${i === sel}" data-act="pick-listing" data-arg="${slug(l)}" aria-label="${esc(l.addr + ', ' + l.status)}">${art(l, 'ds-lcard__img')}
+      <span class="ds-lcard__body"><span class="ds-lcard__top"><b class="ds-ellipsis">${esc(l.addr)}</b><span class="badge" data-status="${tone(l.status)}">${esc(l.status)}</span></span><span class="ds-meta ds-ellipsis">${esc(l.sub.split(' · ').filter((x, j) => j !== 2).join(' · '))}</span>
+        <span class="ds-lcard__stats"><span><b class="num">${loc(count(l, 'Website views'))}</b> views</span><span><b class="num">${l.viewers.length}</b> known</span><span><b class="num">${l.offers ? l.offers.length : 0}</b> ${l.offers && l.offers.length === 1 ? 'offer' : 'offers'}</span></span></span></button>`;
+    const detail = l => { const hood = l.sub.split(' · ')[0], q = 'from=listings&sugg=' + encodeURIComponent('hood:' + hood), vs = l.viewers, shown = vs.slice(0, 6);
+      return `<section class="ds-card ds-ldetail" data-pad="lg" aria-label="${esc(l.addr)}" data-anim="fade" data-key="ldetail-${slug(l)}">
+        <div class="ds-ldetail__head">${art(l, 'ds-ldetail__img')}<div class="ds-row__body ds-grow"><span style="display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap"><h3 class="ds-title-xl">${esc(l.addr)}</h3><span class="badge" data-status="${tone(l.status)}">${esc(l.status)}</span></span><span class="ds-meta">${esc(l.sub)}</span></div>${ui.btn({ label: 'Open OM', ic: 'file-text', variant: 'outline', size: 'sm', disabled: true })}${ui.toList('eng:Viewed ' + l.addr, { q })}</div>
         <div class="ds-listing__counts">${l.counts.map(([k, v, auto]) => `<div class="ds-listing__count"><span class="ds-meta">${esc(k)}</span><b>${loc(v)}</b>${auto ? '<span class="ds-listing__auto">Auto</span>' : ui.btn({ label: 'Log', ic: 'plus', variant: 'ghost', size: 'xs', disabled: true })}</div>`).join('')}</div>
-        <div class="ds-listing__viewers"><div class="ds-subhead"><h3>Viewed by · 30 days</h3><span class="ds-meta">${vs.length} ${vs.length === 1 ? 'person' : 'people'}</span><span class="ds-grow"></span>${ui.toList('eng:Viewed ' + l.addr, { q: 'from=listings&sugg=' + encodeURIComponent('hood:' + l.sub.split(' · ')[0]) })}</div>${shown.map(([id, n, last]) => { const c = D.cById[id]; return `<a class="ds-row" data-dense href="${href('contact', 'id=' + id)}">${ui.cls(c.cls)}<span class="ds-row__body"><span class="ds-row__title">${esc(c.name)}</span><span class="ds-row__sub">${n} ${n === 1 ? 'view' : 'views'} · last ${esc(last)}</span></span><span class="ds-row__end">${icon('caret-right')}</span></a>`; }).join('')}${vs.length > shown.length ? `<a class="ds-link-btn ds-listing__more" href="${DS.crit.href('eng:Viewed ' + l.addr, 'from=listings&sugg=' + encodeURIComponent('hood:' + l.sub.split(' · ')[0]))}">View all ${vs.length}${icon('caret-right')}</a>` : ''}</div>
-        ${l.offers ? `<div class="ds-listing__viewers"><div class="ds-subhead"><h3>Written offers</h3><span class="ds-meta">${l.offers.length} · ask ${esc(l.sub.split(' · ').pop())}</span></div>${table([{ l: 'From' }, { l: 'Amount', n: 1 }, { l: 'Received', n: 1 }, { l: 'Status' }], l.offers.map(([who, amt, d, s2]) => [esc(who), `<b>${esc(amt)}</b>`, esc(d), `<span class="ds-meta">${esc(s2)}</span>`]), 'Written offers on ' + l.addr)}</div>` : ''}</section>`;
-    };
+        <div class="ds-two" data-ratio="even"><div class="ds-listing__viewers"><div class="ds-subhead"><h3>Viewed by · 30 days</h3><span class="ds-meta">${vs.length} ${vs.length === 1 ? 'person' : 'people'} in your database</span></div>${shown.map(([id, n, last]) => { const c = D.cById[id]; return `<a class="ds-row" data-dense href="${href('contact', 'id=' + id)}">${ui.cls(c.cls)}<span class="ds-row__body"><span class="ds-row__title">${esc(c.name)}</span><span class="ds-row__sub">${n} ${n === 1 ? 'view' : 'views'} · last ${esc(last)} · owns in ${esc(D.pById[c.pid].hood)}</span></span><span class="ds-row__end">${icon('caret-right')}</span></a>`; }).join('')}${vs.length > shown.length ? `<a class="ds-link-btn ds-listing__more" href="${DS.crit.href('eng:Viewed ' + l.addr, q)}">View all ${vs.length}${icon('caret-right')}</a>` : ''}</div>
+          <div class="ds-listing__viewers"><div class="ds-subhead"><h3>Written offers</h3><span class="ds-meta">ask ${esc(l.sub.split(' · ').pop())}</span></div>${l.offers && l.offers.length ? table([{ l: 'From' }, { l: 'Amount', n: 1 }, { l: 'Received', n: 1 }, { l: 'Status' }], l.offers.map(([who, amt, d, s2]) => [esc(who), `<b>${esc(amt)}</b>`, esc(d), `<span class="ds-meta">${esc(s2)}</span>`]), 'Written offers on ' + l.addr) : '<div class="ds-dashed">No written offers yet.</div>'}</div></div></section>`; };
     const waiting = D.inquiries.filter(q => q[7]).length;
     const inq = `<div class="ds-card" data-pad="none">${D.inquiries.map(([n, form, reach, about, msg, when, inDb, isNew]) => `<div class="ds-inq"${isNew ? ' data-new' : ''}><span class="ds-tile-icon">${icon('envelope-simple')}</span><div class="ds-inq__body"><span class="ds-inq__who"><b>${esc(n)}</b><span class="ds-meta">${esc(form)}</span>${inDb ? '<span class="badge" data-status="info">In database</span>' : ''}${isNew ? '<span class="badge" data-status="warning">Awaiting follow-up</span>' : ''}</span><p>${esc(msg)}</p><span class="ds-meta">${esc(reach)} · ${esc(about)} · ${esc(when)}</span></div><div class="ds-inq__acts">${ui.btn({ label: 'Reply', variant: 'outline', size: 'sm', disabled: true })}${ui.btn({ label: isNew ? 'Mark handled' : 'Reopen', variant: 'ghost', size: 'sm', disabled: true })}</div></div>`).join('')}</div>`;
     const small = (t, rows, act, link) => `<section class="ds-card" aria-label="${esc(t)}"><div class="ds-card__head"><div class="ds-card__title"><h3>${esc(t)}</h3></div><span class="ds-meta">${rows.length}</span></div>${rows.map(([a, b, d]) => `<div class="ds-row" data-dense><span class="ds-row__body"><span class="ds-row__title">${esc(a)}</span><span class="ds-row__sub">${esc(b)}</span></span><span class="ds-meta">${esc(d)}</span></div>`).join('')}${act ? link ? `<a class="ds-link-btn ds-listing__more" href="${link}">${esc(act)}${icon('caret-right')}</a>` : `<button type="button" class="ds-link-btn ds-listing__more" aria-disabled="true" data-tip="${OFF}">${esc(act)}${icon('caret-right')}</button>` : ''}</section>`;
     const I = D.inbound, Ev = I.events;
     const events = `<div class="ds-card" data-pad="lg">${cardHead('Events page', Ev.name)}<div class="ds-two" data-ratio="even"><div class="ds-statrow" data-compact>${stat({ l: 'Views · 7 days', v: Ev.v7 })}${stat({ l: 'Views · 30 days', v: Ev.v30 })}${stat({ l: 'RSVPs', v: Ev.rsvps, sub: Ev.rsvps7 + ' this week' })}</div><div class="ds-stack" data-gap="2"><span class="ds-meta">Traffic sources · 30 days</span>${ui.hbars(Ev.refs)}</div></div></div>`;
     return range('All time', 'Auto counts tracked engagement. Tours and offers are logged with a record.') +
-      section('Listing activity', `${D.listings.length} listings on the website`, `<div class="ds-two">${D.listings.map(card).join('')}</div>`) +
+      section('Listing activity', `${D.listings.length} listings on the website · pick one for its viewers and offers`, `<div class="ds-lgrid" role="group" aria-label="Listings">${D.listings.map(card).join('')}</div>${detail(cur)}`) +
       section('Website inquiries', `${waiting} awaiting follow-up · every form on stewartgroup.example`, inq, offIcon('arrow-clockwise', 'Refresh')) +
       section('Other website requests', '', `<div class="ds-three">${small('Buyer registrations', I.buyers)}${small('BOV requests', I.bov, 'Open auto-BOV', href('bov', 'id=p90c'))}${small('Bookings', I.bookings)}</div>${events}`);
   };
@@ -117,5 +124,6 @@
     crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: LABEL[page] }],
     scope: () => LABEL[page],
     render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, page, 'Dashboard'))}${ui.nudge(D.nudges[page])}${BODY[page]()}</div>`,
+    acts: { 'pick-listing': (el, k) => { lst.sel = k; DS.render(); } },
   });
 })();

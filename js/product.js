@@ -179,9 +179,12 @@
      The facade follows the record (stories, units, stores on mixed-use buildings); its colours are illustration art, like
      assets/listings. The map is drawn in theme tokens and is not a real map. */
   const BRICK = [['#a8553f', '#6e3426'], ['#b9704f', '#77452f'], ['#8e5a48', '#5a372b'], ['#c49a6c', '#7d5f40'], ['#9aa3ad', '#5c6773']];
-  const facade = p => {
-    const h = [...p.id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7), f = D.propFacts(p), st = f.stories, cols = Math.max(3, Math.min(6, Math.round(p.units / st) + 1));
-    const [wall, win] = BRICK[h % BRICK.length], W = 360, x0 = 220, fh = st * 40 + 34, y0 = 306 - fh, ww = 26, gap = (W - cols * ww) / (cols + 1), shops = /Mixed/.test(f.type);
+  // "3h ago", "Yesterday", "Sep 26": how a story's age reads (today is Wed, Sep 30).
+  const ago = h => h < 1 ? 'Just now' : h < 24 ? h + 'h ago' : h < 48 ? 'Yesterday' : fmtMD(D.addD(-Math.floor(h / 24)));
+  const facade = p => { const f = D.propFacts(p); return streetArt({ id: p.id, label: p.addr, stories: f.stories, units: p.units, shops: /Mixed/.test(f.type) }); };
+  const streetArt = ({ id, label, stories, units, shops }) => {
+    const p = { id, addr: label, units }, h = [...id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7), st = stories, cols = Math.max(3, Math.min(6, Math.round(units / st) + 1));
+    const [wall, win] = BRICK[h % BRICK.length], W = 360, x0 = 220, fh = st * 40 + 34, y0 = 306 - fh, ww = 26, gap = (W - cols * ww) / (cols + 1);
     const r = (x, y, w, hh, fill) => `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${hh.toFixed(1)}" fill="${fill}"/>`;
     let g = r(0, 0, 800, 336, `url(#sky-${p.id})`) + r(0, 120, 215, 186, '#9aa3ad') + r(585, 90, 215, 216, '#c9a77e');
     for (let yy = 136; yy < 290; yy += 40) for (let xx = 14; xx < 200; xx += 54) g += r(xx, yy, 27, 22, '#5c6773');
@@ -192,7 +195,7 @@
     else g += r(x0 + W / 2 - 18, 268, 36, 38, '#3a2a22');
     if (p.units > 15) g += r(x0 + gap - 6, y0 + 40, ww + gap * 2 - 4 + ww, 3, '#2b2b2b') + r(x0 + gap - 6, y0 + 80, ww + gap * 2 - 4 + ww, 3, '#2b2b2b');
     g += r(0, 306, 800, 30, '#d9dde2') + r(0, 304, 800, 3, '#b9c0c8');
-    return `<svg class="ds-facade-art" viewBox="0 0 800 336" role="img" aria-label="Street view of ${esc(p.addr)} (illustration): ${st} stories, ${p.units} units${shops ? ', stores on the ground floor' : ''}"><defs><linearGradient id="sky-${p.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe3f6"/><stop offset="1" stop-color="#eef5fc"/></linearGradient></defs>${g}</svg>`;
+    return `<svg class="ds-facade-art" viewBox="0 0 800 336" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Street view of ${esc(p.addr)} (illustration): ${st} stories, ${p.units} units${shops ? ', stores on the ground floor' : ''}"><defs><linearGradient id="sky-${p.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe3f6"/><stop offset="1" stop-color="#eef5fc"/></linearGradient></defs>${g}</svg>`;
   };
   const mapTile = p => {
     const h = [...p.id].reduce((a, ch) => (a * 33 + ch.charCodeAt(0)) >>> 0, 5), blocks = [];
@@ -206,7 +209,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, mapTile });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
@@ -389,7 +392,7 @@
       if (m.kind === 'why' && m.cid === 'okafor') blocks += `<button type="button" class="ds-sugg" data-act="ask" data-arg="Okafor isn’t selling, she’s refinancing">${icon('note-pencil')}Correct Brain: “Okafor isn’t selling, she’s refinancing”</button>`;
       if (m.kind === 'teach') blocks += m.pending ? ui.approval({ text: 'Remember this for <b>Okafor and similar family owners</b>?', yes: ['Approve', 'approve-teach', i], no: ['Not now', 'decline-teach', i] }) : m.approved ? `<div class="ds-toolbar">${ui.approved('Remembered · Okafor and 14 similar family owners')}<a class="ds-link-btn" href="${href('brain', 'view=learning')}">See what Brain has learned${icon('caret-right')}</a></div>` : '<span class="ds-meta">Not remembered. This answer only.</span>';
       if (m.kind === 'post') { const h = D.headlines.find(x => x.id === m.story) || D.headlines[0], items = crit.parse(h.crit), n = crit.count(items), step = (k, t) => `<div class="ds-post__step"><span class="ds-step-num">${k}</span><b>${t}</b></div>`;
-        blocks += `<div class="ds-answer ds-post">${step(1, 'Story')}<div class="ds-story-mini"><span class="ds-meta">${esc(h.tag + ' · ' + h.src + ', ' + h.when)}</span><b class="font-semibold">${esc(h.t)}</b></div>
+        blocks += `<div class="ds-answer ds-post">${step(1, 'Story')}<div class="ds-story-mini"><span class="ds-meta">${esc(h.tag + ' · ' + h.src + ', ' + ago(h.hours))}</span><b class="font-semibold">${esc(h.t)}</b></div>
           ${step(2, 'Audience')}<div class="ds-toolbar" style="gap:var(--space-1-5)">${items.map(it => ui.critChip(it, { static: true })).join('')}</div><div class="ds-toolbar" style="justify-content:space-between"><span><b class="num">${loc(n)}</b> owners in your lists</span>${ui.toList(h.crit, { q: 'from=brain' })}</div>
           ${step(3, 'Draft · LinkedIn')}<blockquote class="ds-draftpost">${esc(h.id === 'rgb' ? D.postDraft : h.t + '. ' + h.sum + ' If you own one of these buildings and want to know what it means for yours, I’m happy to share the numbers.')}</blockquote>
           ${step(4, 'Approve')}${m.pending ? ui.approval({ text: 'Post this on LinkedIn in Tuesday’s slot, Oct 6 at 9:00 AM?', yes: ['Approve post', 'approve-post', i], no: ['Not now', 'decline-post', i], more: ui.btn({ label: 'Edit draft', variant: 'ghost', size: 'sm', disabled: true }) }) : m.approved ? `<div class="ds-toolbar">${ui.approved('Approved · LinkedIn, Tue Oct 6, 9:00 AM')}<a class="ds-link-btn" href="${href('attack-plan', 'range=week&day=7')}">See it in next week’s plan${icon('caret-right')}</a></div>` : '<span class="ds-meta">Kept as a draft. Nothing was posted.</span>'}</div>`; }
