@@ -18,6 +18,10 @@
     return `<div class="ds-board">${days}<section class="ds-board__col" data-kind="proposals" aria-label="Proposals"><div class="ds-board__head"><span class="ds-row__body"><b class="font-semibold" style="font-size:var(--text-md);line-height:var(--line-height-sm)">Proposals</b><span class="ds-meta">In progress</span></span>${props.length ? `<span class="ds-board__count">${props.length}</span>` : ''}</div>${props.map(card).join('')}${props.length ? '' : '<span class="ds-meta" style="padding:var(--space-5) var(--space-2);text-align:center">No proposals</span>'}</section></div>`;
   };
   const head = () => { const s = start(), n = all().filter(x => x[0] !== 'prop').length; return `<div class="ds-calhead">${ui.btn({ label: 'This week', variant: 'outline', act: 'this-week' })}<span style="width:var(--space-2)"></span>${ui.iconBtn({ ic: 'caret-left', aria: 'Previous week', act: 'wk', arg: -1 })}${ui.iconBtn({ ic: 'caret-right', aria: 'Next week', act: 'wk', arg: 1 })}<span class="ds-row__body" style="flex:none;padding:0 var(--space-2)"><h2 class="ds-title-xl">${st.wk === 0 ? 'This week' : 'Week of ' + fmtMD(D.addD(s))}</h2><span class="ds-meta">${fmtMD(D.addD(s))} – ${fmtMD(D.addD(s + 4))} · ${n} conversation${n === 1 ? '' : 's'}</span></span><span class="ds-grow"></span>${ui.btn({ label: 'Conversation', ic: 'plus', act: 'open-new' })}</div>`; };
+  const summary = () => { const items = all(), convs = items.filter(x => x[0] !== 'prop'), follow = convs.filter(x => /Interested|Callback/.test(x[3])).length, props = items.filter(x => x[0] === 'prop').length;
+    if (!convs.length) return '';
+    const total = st.wk === 0 ? D.outreachPerf.activity.find(x => x[0] === 'Conversations')[4] + (S.convos || 0) : convs.length;
+    return `<p class="ds-convsum" role="status">${icon('sparkle')}<span><b>${st.wk === 0 ? 'This week' : 'That week'}: ${total} ${total === 1 ? 'conversation' : 'conversations'}, ${follow} worth a follow-up, ${st.wk === 0 ? '1 first meeting booked' : 'no first meetings'}.</b> ${props ? props + ' proposals in progress.' : ''}</span></p>`; };
   const dialog = () => {
     const f = st.dlg; if (!f) return ''; const s = start();
     return `<div class="ds-overlay" data-act="close-new" data-self style="padding-top:7.5rem"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="newconv-title" style="display:flex;flex-direction:column;gap:var(--space-3-5);position:static;margin:0;max-width:27.5rem" data-anim="pop" data-key="newconv">
@@ -32,7 +36,7 @@
     id: 'conversations', nav: 'dashboard', brain: 'min',
     crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: 'Conversations' }],
     scope: () => 'Conversations',
-    render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, 'conversations', 'Dashboard'))}${ui.nudge(D.nudges.conversations)}<div class="ds-stack" data-gap="4">${head()}<div data-anim="slide" data-key="board-${st.wk}" style="--dir:${st.dir || 1}">${board()}</div></div></div>`,
+    render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, 'conversations', 'Dashboard'))}${ui.nudge(D.nudges.conversations)}<div class="ds-stack" data-gap="4">${head()}${summary()}<div data-anim="slide" data-key="board-${st.wk}" style="--dir:${st.dir || 1}">${board()}</div></div></div>`,
     overlays: dialog,
     acts: {
       'this-week': () => { st.dir = st.wk > 0 ? -1 : 1; st.wk = 0; DS.render(); }, wk: (el, d) => { st.dir = Math.sign(Number(d)); st.wk += Number(d); DS.render(); },

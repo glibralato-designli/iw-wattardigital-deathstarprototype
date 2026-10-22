@@ -138,7 +138,7 @@
       ${rel.angle ? `<div class="ds-rel__line">${icon('sparkle')}<span><b>Suggested angle.</b> ${esc(rel.angle)}</span></div>` : ''}${nextTouch()}
     </section>`;
   };
-  const nextTouch = () => '';
+  const nextTouch = () => rel.next ? `<div class="ds-rel__line">${icon('arrow-right')}<span class="ds-grow"><b>Next touch.</b> ${esc(rel.next[0])} · ${esc(rel.next[1].replace(/^Suggest/, 'suggest'))}.</span>${ui.btn({ label: 'Text', ic: 'chat-text', variant: 'outline', size: 'sm', disabled: true })}${ui.btn({ label: 'LinkedIn', ic: 'linkedin-logo', variant: 'outline', size: 'sm', disabled: true })}</div>` : '';
   const overview = () => whyCard() + relationship() + `<div class="ds-acc">${reach()}${facts()}${recent()}${notes()}</div>`;
 
   /* ───────── Intelligence ───────── */

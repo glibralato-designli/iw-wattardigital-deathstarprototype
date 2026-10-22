@@ -27,7 +27,7 @@
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
-  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'blasts', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued'].some(k => params.has(k)) && params.get('reset') !== '1';
+  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'blasts', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
   let snapshot = isSnapshot();
   let S = { ...fresh(), ...(read(localStorage, STORE) || {}) };
   if (params.get('reset') === '1') { S = fresh(); write(localStorage, STORE, S); try { sessionStorage.removeItem(UI); } catch (_) {} }
@@ -35,7 +35,7 @@
   let U = loadU();
   const save = () => { if (snapshot) return; write(localStorage, STORE, S); write(sessionStorage, UI, U); };
   // Per-screen view state; Brain's draft, thinking and streaming carry across screens.
-  const freshV = () => ({ sheet: null, menu: null, drawer: false, chats: false, histQ: '', docsOpen: false, brainHere: false, pal: null, peek: null, peekDir: 0, acc: null, guideTab: 'flows', brainParam: params.get('brain') });
+  const freshV = () => ({ sheet: null, menu: null, drawer: false, chats: false, histQ: '', docsOpen: false, brainHere: false, drop: null, pal: null, peek: null, peekDir: 0, acc: null, guideTab: 'flows', brainParam: params.get('brain') });
   const V = { toast: null, draft: '', thinking: false, thinkSteps: [], thinkI: 0, stream: null, ...freshV() };
 
   /* ───────── Shared UI helpers ───────── */
@@ -152,7 +152,7 @@
     test: (c, items) => { const on = crit.on(items), cs = on.filter(it => CRIT[it.k].c), ps = on.filter(it => CRIT[it.k].p); return cs.every(it => CRIT[it.k].c(c, it.v, it)) && (!ps.length || portfolio(c).some(p => ps.every(it => CRIT[it.k].p(p, it.v, it)))); },
     rows: items => C.filter(c => crit.test(c, items)),
     // The database-wide size: each chip's own count, combined (owners who match one chip match others more often than chance).
-    count: items => { const on = crit.on(items); if (!on.length) return NDB; const ns = on.map(it => CRIT[it.k].n(it)); const k = on.filter(it => it.k !== 'terr').length; const est = ns.reduce((r, n) => r * n / NDB, NDB) * Math.pow(1.8, Math.max(0, k - 1)); return Math.max(crit.rows(items).length, Math.round(Math.min(est, ...ns))); },
+    count: items => { const on = crit.on(items); if (!on.length) return NDB; const ns = on.map(it => CRIT[it.k].n(it)); const k = on.filter((it, i) => it.k !== 'terr' && ns[i] / NDB < 0.5).length; const est = ns.reduce((r, n) => r * n / NDB, NDB) * Math.pow(1.8, Math.max(0, k - 1)); return Math.max(crit.rows(items).length, Math.round(Math.min(est, ...ns))); },
     value: (it, v) => { const d = CRIT[it.k]; if (d.range) return rangeL(v, d.range); const o = (d.opts || []).find(x => x[0] === v); return o ? o[1] : v; },
     label: it => { const d = CRIT[it.k]; if (d.fixed) return d.fixed; if (!it.v.length) return 'Any'; const vs = it.v.map(v => crit.value(it, v)); return (vs.length > 2 ? vs.slice(0, 2).join(', ') + ' +' + (vs.length - 2) : vs.join(it.k === 'cls' ? ', ' : ' or ')) + (it.yr ? ' · ' + it.yr.join('–') : ''); },
     name: items => crit.on(items).filter(it => it.k !== 'terr').map(it => (['cls', 'btype', 'eng', 'signal', 'touch', 'trust'].includes(it.k) ? '' : CRIT[it.k].l + ' ') + crit.label(it)).join(' · ') || 'All contacts',
@@ -175,12 +175,38 @@
   // Queues pushed from a list: Home's "Queues ready" counts them.
   const queues = () => S.queues || [];
 
+  /* Street view and map tile for a property: original illustrations in the Listings style (no photos of real buildings).
+     The facade follows the record (stories, units, stores on mixed-use buildings); its colours are illustration art, like
+     assets/listings. The map is drawn in theme tokens and is not a real map. */
+  const BRICK = [['#a8553f', '#6e3426'], ['#b9704f', '#77452f'], ['#8e5a48', '#5a372b'], ['#c49a6c', '#7d5f40'], ['#9aa3ad', '#5c6773']];
+  const facade = p => {
+    const h = [...p.id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7), f = D.propFacts(p), st = f.stories, cols = Math.max(3, Math.min(6, Math.round(p.units / st) + 1));
+    const [wall, win] = BRICK[h % BRICK.length], W = 360, x0 = 220, fh = st * 40 + 34, y0 = 306 - fh, ww = 26, gap = (W - cols * ww) / (cols + 1), shops = /Mixed/.test(f.type);
+    const r = (x, y, w, hh, fill) => `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${hh.toFixed(1)}" fill="${fill}"/>`;
+    let g = r(0, 0, 800, 336, `url(#sky-${p.id})`) + r(0, 120, 215, 186, '#9aa3ad') + r(585, 90, 215, 216, '#c9a77e');
+    for (let yy = 136; yy < 290; yy += 40) for (let xx = 14; xx < 200; xx += 54) g += r(xx, yy, 27, 22, '#5c6773');
+    for (let yy = 106; yy < 290; yy += 40) for (let xx = 598; xx < 790; xx += 54) g += r(xx, yy, 27, 22, '#6b5236');
+    g += r(x0, y0, W, fh, wall) + r(x0 - 6, y0 - 8, W + 12, 10, win);
+    for (let i = 0; i < st - (shops ? 1 : 0); i++) for (let j = 0; j < cols; j++) g += r(x0 + gap + j * (ww + gap), y0 + 18 + i * 40, ww, 24, win) + r(x0 + gap + j * (ww + gap) - 2, y0 + 42 + i * 40, ww + 4, 3, '#e8e2d8');
+    if (shops) g += r(x0 + 10, 262, W / 2 - 26, 40, '#3e4c5a') + r(x0 + W / 2 + 16, 262, W / 2 - 26, 40, '#3e4c5a') + r(x0, 252, W, 8, '#2b3540');
+    else g += r(x0 + W / 2 - 18, 268, 36, 38, '#3a2a22');
+    if (p.units > 15) g += r(x0 + gap - 6, y0 + 40, ww + gap * 2 - 4 + ww, 3, '#2b2b2b') + r(x0 + gap - 6, y0 + 80, ww + gap * 2 - 4 + ww, 3, '#2b2b2b');
+    g += r(0, 306, 800, 30, '#d9dde2') + r(0, 304, 800, 3, '#b9c0c8');
+    return `<svg class="ds-facade-art" viewBox="0 0 800 336" role="img" aria-label="Street view of ${esc(p.addr)} (illustration): ${st} stories, ${p.units} units${shops ? ', stores on the ground floor' : ''}"><defs><linearGradient id="sky-${p.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe3f6"/><stop offset="1" stop-color="#eef5fc"/></linearGradient></defs>${g}</svg>`;
+  };
+  const mapTile = p => {
+    const h = [...p.id].reduce((a, ch) => (a * 33 + ch.charCodeAt(0)) >>> 0, 5), blocks = [];
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) blocks.push(`<rect x="${8 + i * 80}" y="${8 + j * 64}" width="68" height="52" rx="3" style="fill:var(--bg);stroke:var(--border)"/>`);
+    const px = 120 + (h % 3) * 16, py = 92;
+    return `<svg class="ds-maptile" viewBox="0 0 328 200" role="img" aria-label="Map tile around ${esc(p.addr)}, ${esc(p.hood)} (illustration)"><rect width="328" height="200" style="fill:var(--bg-muted)"/>${blocks.join('')}<rect x="${px - 30}" y="${py - 22}" width="68" height="52" rx="3" style="fill:var(--brand-primary-subtle);stroke:var(--brand-primary-border)"/><circle cx="${px + 4}" cy="${py + 4}" r="9" style="fill:var(--brand-primary)"/><circle cx="${px + 4}" cy="${py + 4}" r="3.5" style="fill:var(--bg)"/><text class="ds-maptile__label" x="10" y="192">${esc(p.hood)} · ${esc(p.zip)}</text></svg>`;
+  };
+
   /* ───────── Screen registry ───────── */
   const DS = { D, S: () => S, U: () => U, V, ui, esc, icon, href, params, OFF, loc, pct, fmtL, fmtS, fmtMD, tFmt, initials, isEmptyVal, lastOf, callIds, callsDone, evidenceOf, contactPointsOf, bestPhone, badOf, eventsOf, emailsOf, timelineOf, portfolio, addTimeline, remember, save, attrs, acts: {}, inputs: {}, screen: null };
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, mapTile });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
@@ -249,8 +275,9 @@
       h += `<a class="ds-nav" href="${href(page)}"${key === sc.nav ? ' aria-current="page"' : ''}${railTip(label)}>${key === sc.nav ? '<span class="ds-nav__ink" aria-hidden="true"></span>' : ''}${icon(ic)}<span>${esc(label)}</span></a>`;
     });
     if (rail || !U.navGrp.Marketing) {
-      h += `<button type="button" class="ds-nav ds-nav-more" aria-expanded="${!!U.moreOpen}" data-act="toggle-more"${railTip('More')}>${icon('dots-three')}<span>More</span>${icon(U.moreOpen ? 'caret-down' : 'caret-right')}</button>`;
-      if (U.moreOpen) D.more.forEach(([l, ic]) => { h += `<a class="ds-nav" data-sub role="link" tabindex="0" aria-disabled="true" data-tip="${OFF}" data-tip-side="right">${icon(ic)}<span>${esc(l)}</span></a>`; });
+      const moreOpen = U.moreOpen || sc.nav === 'more';
+      h += `<button type="button" class="ds-nav ds-nav-more" aria-expanded="${!!moreOpen}" data-act="toggle-more"${railTip('More')}>${icon('dots-three')}<span>More</span>${icon(moreOpen ? 'caret-down' : 'caret-right')}</button>`;
+      if (moreOpen) D.more.forEach(([l, ic, page]) => { h += page ? `<a class="ds-nav" data-sub href="${href(page)}"${sc.id === page ? ' aria-current="page"' : ''}${railTip(l)}>${sc.id === page ? '<span class="ds-nav__ink" aria-hidden="true"></span>' : ''}${icon(ic)}<span>${esc(l)}</span></a>` : `<a class="ds-nav" data-sub role="link" tabindex="0" aria-disabled="true" data-tip="${OFF}" data-tip-side="right">${icon(ic)}<span>${esc(l)}</span></a>`; });
     }
     h += `</div><div class="ds-sidebar__foot"><div style="position:relative"><button type="button" class="ds-nav" aria-haspopup="dialog" aria-expanded="${V.menu === 'guide'}" data-act="menu" data-arg="guide"${railTip('Guide')}>${icon('question')}<span>Guide</span></button>${V.menu === 'guide' ? guide() : ''}</div>`;
     h += `<a class="ds-nav" role="link" tabindex="0" aria-disabled="true" data-tip="${OFF}" data-tip-side="right">${icon('gear-six')}<span>System</span></a><div class="ds-rail-divider" style="margin:var(--space-1-5) 0" aria-hidden="true"></div>`;
@@ -276,7 +303,7 @@
     const LATER = { brain: 'Learning Mode', Map: 'Map · Prospects', Outreach: 'Queues · Hub · Attribution', Phone: 'Dialer · Auto-dialer · Recordings', Email: 'Inbox · Sequences · Smartlead', Texting: 'Threads · Templates', LinkedIn: 'Posts · Connections', Social: 'Inbox · Analytics', Marketing: 'Campaigns · Mail merge · Branding', Website: 'Editor · Pages' };
     const groups = []; let g = { h: 'Workspace', rows: [] }; groups.push(g);
     D.nav.forEach(n => { if (typeof n === 'string') { g = { h: n, rows: [] }; groups.push(g); return; } const [l, ic, page] = n; g.rows.push({ l, ic, page, on: TABS[page] ? TABS[page].join(' · ') : '', off: page ? (LATER[page] || '') : (LATER[l] || '') }); });
-    groups.push({ h: 'More', rows: D.more.map(([l, ic]) => ({ l, ic, page: null, on: '', off: '' })) });
+    groups.push({ h: 'More', rows: D.more.map(([l, ic, page]) => ({ l, ic, page: page || null, on: page === 'bov' ? 'Drawn · next phase' : page ? 'Read-only' : '', off: '' })) });
     groups.push({ h: 'System', rows: [{ l: 'System', ic: 'gear-six', page: null, on: '', off: 'Settings · Health · System status · Runbook · Controls' }] });
     groups.push({ h: 'Top bar', rows: [{ l: 'Links', ic: 'link-simple', page: null, on: '', off: 'Research (11) · Media (7)' }] });
     const struct = groups.map(gr => `<div class="ds-stack" data-gap="2"><div class="ds-struct-head"><b>${esc(gr.h)}</b><span>${gr.rows.filter(r => r.page).length} of ${gr.rows.length} built</span></div><div>${gr.rows.map(r => {
@@ -308,6 +335,8 @@
   /* ───────── Brain: messages, replies, panel ───────── */
   DS.reply = text => {
     const q = text.toLowerCase();
+    if (q.includes('okafor') && (/isn.t selling|refinanc/.test(q))) return { kind: 'teach', text: 'Understood. I had Grace Okafor as likely to sell or recapitalize because her $6.1M loan on 90 Clinton St matures in August. If the family is refinancing, I’ll lower her sale likelihood and suggest a check-in after the refinance closes, not a pitch. 14 other family owners with maturing loans look like her.', pending: true };
+    if (q.includes('linkedin post') || q.startsWith('/post') || q.includes('headline into')) return { kind: 'post', story: (D.headlines.find(h => q.includes(h.audience.toLowerCase())) || D.headlines[0]).id, text: 'Here is the story, who it matters to, and a draft. Nothing goes out until you approve it.', pending: true, src: [['The Real Deal', 'Sep 29 · Rent Guidelines Board vote'], ['Database', 'Rent-stabilized and mixed buildings on the Lower East Side']] };
     const c = C.find(x => q.includes(x.name.toLowerCase()) || q.includes(x.name.split(' ')[1].toLowerCase()));
     if (c && (q.includes('why') || q.includes(c.name.toLowerCase()))) return { kind: 'why', cid: c.id, text: c.whyFull, src: c.id === 'marchetti' ? [['ACRIS', 'Mortgage recorded Jun 2016 · $9.4M'], ['NY DOS', 'Ludlow 118 Holdings LLC · principal'], ['DOF', '37 units · 25 rent stabilized']] : [['ACRIS', 'Deed and mortgage history'], ['NY DOS', c.entity]] };
     if (q.startsWith('/list') || q.includes('list')) return { kind: 'list', text: 'I found 12 owners on the Lower East Side and in the East Village with debt due before year end. Marchetti, Okafor and Kowalski are the top three by score. The criteria are below; open them in the builder to change any.', listName: 'LES debt due 2026', crit: D.brainList, pending: true, src: [['ACRIS', 'Mortgages maturing by Dec 31, 2026'], ['Model v4', 'Class A and B only']] };
@@ -315,7 +344,7 @@
     if (q.includes('who should i call') || q.includes('call first')) return { text: 'Start with Daniel Marchetti. His $9.4M loan matures June 9, and he hasn’t had a call in 41 days. Then Aaron Feld and Grace Okafor.', trust: 'Verified · ACRIS, Aug 12', acts: [['Open record', 'contact', 'id=marchetti', true]] };
     return { text: 'I can explain why an owner is worth calling now, build a list of owners, or look up a property. Try “Why now for Daniel Marchetti?”.' };
   };
-  const stepsFor = q => q.includes('list') ? ['Reading your filters', 'Matching ACRIS mortgages', 'Ranking by score'] : (q.includes('ludlow') || q.includes('look')) ? ['Finding the property', 'Reading DOF and ACRIS', 'Checking the owner'] : ['Finding the owner', 'Reading the evidence', 'Writing the why now'];
+  const stepsFor = q => q.includes('okafor') && /isn.t selling|refinanc/.test(q) ? ['Reading your correction', 'Checking Okafor’s loan and filings', 'Finding similar family owners'] : (q.includes('linkedin post') || q.includes('headline into')) ? ['Reading the story', 'Finding who it matters to', 'Drafting the post'] : q.includes('list') ? ['Reading your filters', 'Matching ACRIS mortgages', 'Ranking by score'] : (q.includes('ludlow') || q.includes('look')) ? ['Finding the property', 'Reading DOF and ACRIS', 'Checking the owner'] : ['Finding the owner', 'Reading the evidence', 'Writing the why now'];
   let thinkT, stepT, streamT;
   DS.sendText = (text, opts = {}) => {
     const t = (text || '').trim(); if (!t || V.thinking) return;
@@ -334,13 +363,15 @@
   const panelVisible = () => panel() === 'open' || DS.screen.id === 'brain';
   DS.seedChat = (kind, stage) => {
     // Presets: render a finished (or mid-way) answer without waiting.
-    const qs = { why: 'Why now for Daniel Marchetti?', list: '/list LES owners with debt due before year end', lookup: 'Look up 118 Ludlow St', first: 'Who should I call first today?' };
-    const t = qs[kind] || qs.why, rp = DS.reply(t);
-    U.msgs = [...(DS.screen.id === 'brain' ? [] : [D.proactive]), { role: 'user', text: t }];
+    const qs = { why: 'Why now for Daniel Marchetti?', list: '/list LES owners with debt due before year end', lookup: 'Look up 118 Ludlow St', first: 'Who should I call first today?', okafor: 'Why now for Grace Okafor?', teach: ['Why now for Grace Okafor?', 'Okafor isn’t selling, she’s refinancing'], post: 'Turn this headline into a LinkedIn post for rent-stabilized owners in the LES' };
+    const turns = [].concat(qs[kind] || qs.why), t = turns[turns.length - 1], rp = DS.reply(t);
+    U.msgs = [...(DS.screen.id === 'brain' ? [] : [D.proactive]), ...turns.slice(0, -1).flatMap(x => [{ role: 'user', text: x }, { role: 'bot', ...DS.reply(x) }]), { role: 'user', text: t }];
     U.chatTitle = t;
     if (stage === 'thinking') { V.thinking = true; V.thinkSteps = stepsFor(t.toLowerCase()); V.thinkI = 1; return; }
     U.msgs.push({ role: 'bot', ...rp, ...(params.get('approved') ? { pending: false, approved: true } : {}) });
     if (params.get('approved') && rp.kind === 'list') saveList(rp.listName, rp.crit);
+    if (params.get('approved') && rp.kind === 'teach') S.taught = [...(S.taught || []), D.okaforLesson];
+    if (params.get('approved') && rp.kind === 'post') S.posts = [...(S.posts || []), { story: rp.story, day: 'Tue, Oct 6' }];
     if (stage === 'streaming') V.stream = { i: U.msgs.length - 1, n: Math.round(rp.text.length * 0.55) };
   };
   function messageHTML(m, i, page) {
@@ -355,6 +386,13 @@
         const rows = crit.rows(items).slice(0, 3).map(c => `<a class="ds-answer__row" href="${href('contact', 'id=' + c.id)}">${ui.cls(c.cls)}<span class="ds-row__body"><span class="font-medium">${esc(c.name)}</span><span class="ds-row__sub">${esc(pById[c.pid].addr + ' · ' + c.why)}</span></span></a>`).join('');
         blocks += `<div class="ds-answer"><div class="ds-toolbar" style="gap:var(--space-1-5)">${items.map(it => ui.critChip(it, { static: true })).join('')}</div><div class="ds-toolbar" style="justify-content:space-between"><b class="font-semibold">${loc(n)} owners match</b>${ui.btn({ label: 'Open in builder', ic: 'list-bullets', variant: 'outline', size: 'sm', link: crit.href(str, 'from=brain') })}</div><div>${rows}</div>${m.pending ? ui.approval({ text: `Save as <b>${esc(m.listName)}</b>?`, yes: ['Save list', 'approve-list', i], no: ['Not now', 'decline-list', i] }) : ''}${m.approved ? ui.approved('Saved to Lists · ' + m.listName) : ''}</div>`;
       }
+      if (m.kind === 'why' && m.cid === 'okafor') blocks += `<button type="button" class="ds-sugg" data-act="ask" data-arg="Okafor isn’t selling, she’s refinancing">${icon('note-pencil')}Correct Brain: “Okafor isn’t selling, she’s refinancing”</button>`;
+      if (m.kind === 'teach') blocks += m.pending ? ui.approval({ text: 'Remember this for <b>Okafor and similar family owners</b>?', yes: ['Approve', 'approve-teach', i], no: ['Not now', 'decline-teach', i] }) : m.approved ? `<div class="ds-toolbar">${ui.approved('Remembered · Okafor and 14 similar family owners')}<a class="ds-link-btn" href="${href('brain', 'view=learning')}">See what Brain has learned${icon('caret-right')}</a></div>` : '<span class="ds-meta">Not remembered. This answer only.</span>';
+      if (m.kind === 'post') { const h = D.headlines.find(x => x.id === m.story) || D.headlines[0], items = crit.parse(h.crit), n = crit.count(items), step = (k, t) => `<div class="ds-post__step"><span class="ds-step-num">${k}</span><b>${t}</b></div>`;
+        blocks += `<div class="ds-answer ds-post">${step(1, 'Story')}<div class="ds-story-mini"><span class="ds-meta">${esc(h.tag + ' · ' + h.src + ', ' + h.when)}</span><b class="font-semibold">${esc(h.t)}</b></div>
+          ${step(2, 'Audience')}<div class="ds-toolbar" style="gap:var(--space-1-5)">${items.map(it => ui.critChip(it, { static: true })).join('')}</div><div class="ds-toolbar" style="justify-content:space-between"><span><b class="num">${loc(n)}</b> owners in your lists</span>${ui.toList(h.crit, { q: 'from=brain' })}</div>
+          ${step(3, 'Draft · LinkedIn')}<blockquote class="ds-draftpost">${esc(h.id === 'rgb' ? D.postDraft : h.t + '. ' + h.sum + ' If you own one of these buildings and want to know what it means for yours, I’m happy to share the numbers.')}</blockquote>
+          ${step(4, 'Approve')}${m.pending ? ui.approval({ text: 'Post this on LinkedIn in Tuesday’s slot, Oct 6 at 9:00 AM?', yes: ['Approve post', 'approve-post', i], no: ['Not now', 'decline-post', i], more: ui.btn({ label: 'Edit draft', variant: 'ghost', size: 'sm', disabled: true }) }) : m.approved ? `<div class="ds-toolbar">${ui.approved('Approved · LinkedIn, Tue Oct 6, 9:00 AM')}<a class="ds-link-btn" href="${href('attack-plan', 'range=week&day=7')}">See it in next week’s plan${icon('caret-right')}</a></div>` : '<span class="ds-meta">Kept as a draft. Nothing was posted.</span>'}</div>`; }
       if (m.kind === 'lookup') { const p = pById[m.pid], c = cById[p.owner]; blocks += `<div class="ds-answer"><div style="display:flex;align-items:center;gap:var(--space-2-5)"><span class="ds-tile-icon" style="border:0;background:var(--bg-muted);color:var(--fg-muted)">${icon('buildings')}</span><span class="ds-row__body"><b class="font-semibold">${esc(p.addr)}</b><span class="ds-row__sub">${esc(p.hood + ' · ' + p.zip + ' · BBL ' + p.bbl)}</span></span></div>${ui.kv([['Units', p.units + ' · ' + p.fm + ' FM · ' + p.rs + ' RS'], ['Owner', c.name + ' · Class ' + c.cls], ['Debt', p.debt + ' due ' + p.mat]], { cols: 1 })}<div>${ui.btn({ label: 'Open property', size: 'sm', variant: 'outline', link: href('property', 'id=' + p.id) })}</div></div>`; }
       if (m.src) blocks += `<div class="ds-sources"><span class="ds-meta font-medium">Sources</span>${m.src.map(([l, d]) => `<span class="ds-source">${icon('link-simple')}<b class="font-medium">${esc(l)}</b><span aria-hidden="true">·</span><span>${esc(d)}</span></span>`).join('')}</div>`;
       if (m.trust) blocks += `<span class="badge" data-status="success" style="align-self:flex-start">${icon('seal-check')}${esc(m.trust)}</span>`;
@@ -377,14 +415,14 @@
     return `<div class="ds-history__top"><div class="ds-history__row">${ui.btn({ label: 'New chat', ic: 'note-pencil', variant: 'outline', act: 'new-chat', cls: 'ds-newchat' })}${ui.iconBtn({ ic: 'sidebar-simple', aria: drawer ? 'Close chats' : 'Hide chats', act: 'close-chats', tip: drawer ? null : 'Hide chats' })}</div><label class="ds-input-icon">${icon('magnifying-glass')}<input id="${drawer ? 'chats-q' : 'hist-q'}" aria-label="Search chats" placeholder="Search chats" value="${esc(V.histQ)}" data-input="histQ" autocomplete="off"></label></div>
       <div class="ds-history__list">${groups.map(({ g, items }) => `<div class="ds-history__group"><span>${esc(g)}</span>${items.map(c => `<button type="button" class="ds-hitem"${U.chatId === c.id ? ' aria-current="true"' : ''} data-act="open-chat" data-arg="${c.id}">${c.pin ? icon('push-pin') : ''}<span>${esc(c.t)}</span></button>`).join('')}</div>`).join('')}${groups.length ? '' : `<span class="ds-meta" style="padding:var(--space-2)">No chats match “${esc(V.histQ)}”.</span>`}
         <div class="ds-history__group">${[['Folders', 'folders'], ['Archived', 'archive']].map(([l, ic]) => `<span class="ds-hitem" role="button" tabindex="0" aria-disabled="true" data-tip="${DS.OFF}"${drawer ? '' : ' data-tip-side="right"'}>${icon(ic)}<span>${l}</span></span>`).join('')}</div></div>
-      <div class="ds-history__docs"><button type="button" class="ds-hitem font-medium" aria-expanded="${V.docsOpen}" data-act="docs">${icon('folder')}<span>Stored documents</span><span class="ds-meta" style="flex:none">3</span>${icon(V.docsOpen ? 'caret-down' : 'caret-right')}</button>
-        ${V.docsOpen ? D.docs.map(([n, s]) => `<div class="ds-doc" data-anim="expand" data-key="doc-${esc(n)}">${icon('file-text')}<span class="ds-row__body"><span class="ds-row__title" style="font-size:var(--text-xs);line-height:var(--line-height-xs)">${esc(n)}</span><span class="ds-row__sub">${esc(s)}</span></span></div>`).join('') : ''}</div>`;
+      <div class="ds-history__docs"><button type="button" class="ds-hitem font-medium" aria-expanded="${V.docsOpen}" data-act="docs">${icon('folder')}<span>Stored documents</span><span class="ds-meta" style="flex:none">${D.docs.length + (S.docsAdded || []).length}</span>${icon(V.docsOpen ? 'caret-down' : 'caret-right')}</button>
+        ${V.docsOpen ? [...(S.docsAdded || []), ...D.docs].map(([n, s]) => `<div class="ds-doc" data-anim="expand" data-key="doc-${esc(n)}">${icon('file-text')}<span class="ds-row__body"><span class="ds-row__title" style="font-size:var(--text-xs);line-height:var(--line-height-xs)">${esc(n)}</span><span class="ds-row__sub">${esc(s)}</span></span></div>`).join('') : ''}</div>`;
   };
   // The drawer form. Screens put it in overlays(); on the web it only shows below 768.
   ui.chatDrawer = () => V.chats ? `<div class="ds-chatdrawer" data-key="drawer-chats"><div class="ds-drawer-scrim" data-act="close-chats" data-anim="fade" data-key="drawer-chats-scrim"></div><aside class="ds-history" data-drawer role="dialog" aria-modal="true" aria-label="Chats" data-anim="drawer" data-key="drawer-chats-body">${DS.chatHistory(true)}</aside></div>` : '';
   // The button that brings the list back: always on a phone and in the app, on wider screens only once hidden.
   ui.chatsBtn = () => `<button type="button" class="ds-icon-btn ds-chats-btn"${U.histHidden ? ' data-collapsed' : ''} aria-label="Chats" aria-expanded="${!!V.chats}" data-act="open-chats">${icon('sidebar-simple')}</button>`;
-  DS.composer = (page, opts = {}) => `<div class="ds-composer"${page ? ' data-page' : ''}>${page ? `<textarea id="${opts.id || 'brain-page-input'}" aria-label="Message Brain" rows="${opts.rows || 1}" placeholder="${esc(opts.ph || 'Reply to Brain')}" data-input="draft" data-enter="send">${esc(V.draft)}</textarea>` : `<input id="brain-input" aria-label="Message Brain" placeholder="Ask about a contact, property or list" value="${esc(V.draft)}" data-input="draft" data-enter="send" autocomplete="off">`}<div class="ds-composer__tools">${[[icon('paperclip'), 'Attach files'], ['@', 'Mention a contact or property'], ['/', 'Commands']].map(([g, l]) => `<button type="button" class="ds-composer__tool" aria-label="${l}" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">${g}</button>`).join('')}<span class="ds-composer__mode" role="group" aria-label="Mode"><button type="button" aria-pressed="true" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">Ask</button><button type="button" aria-pressed="false" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">Act</button></span><button type="button" class="ds-composer__learn" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">${icon('book-open')}Learning</button><button type="button" class="ds-send" aria-label="Send" data-act="send">${icon('arrow-up')}</button></div></div>`;
+  DS.composer = (page, opts = {}) => `<div class="ds-composer"${page ? ' data-page' : ''}>${page ? `<textarea id="${opts.id || 'brain-page-input'}" aria-label="Message Brain" rows="${opts.rows || 1}" placeholder="${esc(opts.ph || 'Reply to Brain')}" data-input="draft" data-enter="send">${esc(V.draft)}</textarea>` : `<input id="brain-input" aria-label="Message Brain" placeholder="Ask about a contact, property or list" value="${esc(V.draft)}" data-input="draft" data-enter="send" autocomplete="off">`}<div class="ds-composer__tools"><button type="button" class="ds-composer__tool" aria-label="Attach files" data-tip="Attach files" data-tip-side="top" data-act="drop">${icon('paperclip')}</button>${[['@', 'Mention a contact or property'], ['/', 'Commands']].map(([g, l]) => `<button type="button" class="ds-composer__tool" aria-label="${l}" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">${g}</button>`).join('')}<span class="ds-composer__mode" role="group" aria-label="Mode"><button type="button" aria-pressed="true" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">Ask</button><button type="button" aria-pressed="false" aria-disabled="true" data-tip="${OFF}" data-tip-side="top">Act</button></span><a class="ds-composer__learn" href="${href('brain', 'view=learning')}" data-tip="What Brain has been taught" data-tip-side="top">${icon('book-open')}Learning</a><button type="button" class="ds-send" aria-label="Send" data-act="send">${icon('arrow-up')}</button></div></div>`;
   const scopeLabel = () => 'Scoped to ' + (DS.screen.scope ? DS.screen.scope() : 'Home');
   function brainPanel() {
     const p = panel();
@@ -405,6 +443,10 @@
     }
     return '';
   }
+  const dropDialog = () => V.drop ? `<div class="ds-overlay" data-act="close-drop" data-self data-key="drop-ov" data-anim="fade"><div class="dialog ds-drop" role="dialog" aria-modal="true" aria-labelledby="drop-title" data-anim="pop" data-key="drop"><div style="display:flex;align-items:center;gap:var(--space-2)"><h2 id="drop-title" class="ds-grow">Drop files for Brain</h2>${ui.iconBtn({ ic: 'x', aria: 'Close', act: 'close-drop' })}</div>
+    <div class="ds-dropzone">${icon('paperclip')}<b>Drop files here</b><span class="ds-meta">PDFs, spreadsheets and notes. Brain reads them and files them under Stored documents.</span>${ui.btn({ label: 'Choose files', variant: 'outline', size: 'sm', disabled: true })}</div>
+    <div class="ds-doc" style="padding:var(--space-2-5) var(--space-3)">${icon('file-text')}<span class="ds-row__body"><span class="ds-row__title">${esc(D.dropFile[0])}</span><span class="ds-row__sub">1.2 MB · ready to add · simulated drop</span></span></div>
+    <div class="dialog__actions" style="margin-top:0">${ui.btn({ label: 'Cancel', variant: 'outline', act: 'close-drop' })}${ui.btn({ label: 'Add to Stored documents', act: 'add-drop', id: 'drop-add' })}</div></div></div>` : '';
   DS.openBrain = () => { const was = panel(); U.brainUser = 'open'; U.seen = true; V.brainHere = true; save(); if (was === 'open') render(); else DS.vt(render, 'brain'); setTimeout(() => { const el = document.getElementById('brain-input') || document.getElementById('brain-page-input'); if (el) el.focus(); }, 30); };
   DS.ask = text => { if (DS.screen.id !== 'brain') { U.brainUser = 'open'; U.seen = true; U.scopeOff = false; } DS.sendText(text); };
 
@@ -455,11 +497,11 @@
           sec('Recent activity', listRows(tl.length ? tl.map(x => [ic[x.k] || 'note', x.k + ' · ' + x.t, x.d, href('contact', 'id=' + c.id + '&tab=activity')]) : [['note', 'Nothing logged yet', 'Calls and notes show up here', href('contact', 'id=' + c.id)]]), `<a class="ds-link-btn" href="${href('contact', 'id=' + c.id + '&tab=activity')}">View all</a>`);
       }
       const others = portfolio(c).filter(x => x.id !== p.id);
-      return sec('', `<div class="ds-facade" data-wide>${icon('buildings')}Facade photo</div>`) + sec('Lead property', kvIcons([['Address', p.addr + ', ' + p.zip], ['Units', p.units + ' · ' + p.fm + ' FM · ' + p.rs + ' RS'], ['Gross SF', loc(p.sf)], ['Year built', p.built], ['Debt', p.debt === 'Not on record' ? 'Not on record' : p.debt + ' due ' + p.mat], ['BBL', p.bbl]]), `<a class="ds-link-btn" href="${href('property', 'id=' + p.id)}">Open property</a>`) +
+      return sec('', `<div class="ds-facade" data-wide data-art>${facade(p)}</div>`) + sec('Lead property', kvIcons([['Address', p.addr + ', ' + p.zip], ['Units', p.units + ' · ' + p.fm + ' FM · ' + p.rs + ' RS'], ['Gross SF', loc(p.sf)], ['Year built', p.built], ['Debt', p.debt === 'Not on record' ? 'Not on record' : p.debt + ' due ' + p.mat], ['BBL', p.bbl]]), `<a class="ds-link-btn" href="${href('property', 'id=' + p.id)}">Open property</a>`) +
         (others.length ? sec('Other properties', listRows(others.map(x => ['buildings', x.addr, x.units + ' units · ' + x.hood, null, ['peek', 'p:' + x.id]]))) : '');
     }
     const p = pById[pk.id], c = cById[p.owner], lead = c.pid === p.id;
-    if (tab === 'overview') return sec('', `<div class="ds-facade" data-wide>${icon('buildings')}Facade photo</div>`) + sec('Why now', ui.whyMini(lead ? c.whyFull : 'Part of ' + c.name + '’s portfolio. The lead reason to call is at ' + pById[c.pid].addr + '.', lead ? c.trust : 'verified')) + sec('Building', kvIcons([['Units', p.units + ' · ' + p.fm + ' FM · ' + p.rs + ' RS'], ['Gross SF', loc(p.sf)], ['Year built', p.built], ['Debt', p.debt === 'Not on record' ? 'Not on record' : p.debt + ' due ' + p.mat], ['BBL', p.bbl]]));
+    if (tab === 'overview') return sec('', `<div class="ds-facade" data-wide data-art>${facade(p)}</div>`) + sec('Why now', ui.whyMini(lead ? c.whyFull : 'Part of ' + c.name + '’s portfolio. The lead reason to call is at ' + pById[c.pid].addr + '.', lead ? c.trust : 'verified')) + sec('Building', kvIcons([['Units', p.units + ' · ' + p.fm + ' FM · ' + p.rs + ' RS'], ['Gross SF', loc(p.sf)], ['Year built', p.built], ['Debt', p.debt === 'Not on record' ? 'Not on record' : p.debt + ' due ' + p.mat], ['BBL', p.bbl]]));
     const others = portfolio(c).filter(x => x.id !== p.id);
     return sec('Owner', kvIcons([['Name', c.name], ['Entity', c.entity], ['Class', 'Class ' + c.cls + ' · ' + D.CLASS[c.cls]], ['Best phone', c.phone], ['Last touch', lastOf(c)]]), `<a class="ds-link-btn" href="${href('contact', 'id=' + c.id)}">Open owner</a>`) + (others.length ? sec('Also owns', listRows(others.map(x => ['buildings', x.addr, x.units + ' units · ' + x.hood, null, ['peek', 'p:' + x.id]]))) : '');
   }
@@ -659,7 +701,7 @@
         document.getElementById('ds-callslot').innerHTML = callPill();
         document.getElementById('ds-fabslot').innerHTML = sc.fab ? sc.fab() : '';
         document.getElementById('ds-tabbar').innerHTML = tabbar();
-        document.getElementById('ds-overlays').innerHTML = palette() + (sc.overlays ? sc.overlays() : '');
+        document.getElementById('ds-overlays').innerHTML = palette() + dropDialog() + (sc.overlays ? sc.overlays() : '');
         return;
       }
       const side = document.getElementById('ds-sidebar');
@@ -668,7 +710,7 @@
       document.getElementById('ds-topbar').innerHTML = topbar();
       document.getElementById('ds-main').innerHTML = sc.render();
       document.getElementById('ds-brain-slot').innerHTML = brainPanel();
-      document.getElementById('ds-overlays').innerHTML = peek() + palette() + (sc.overlays ? sc.overlays() : '') + (V.menu && V.menu !== 'peek' ? '<div class="ds-pop__scrim" data-act="close-menu"></div>' : '') + (V.drawer && isPhone() ? '<div class="ds-drawer-scrim" data-act="close-drawer" data-anim="fade" data-key="drawer-scrim"></div>' : '');
+      document.getElementById('ds-overlays').innerHTML = peek() + palette() + dropDialog() + (sc.overlays ? sc.overlays() : '') + (V.menu && V.menu !== 'peek' ? '<div class="ds-pop__scrim" data-act="close-menu"></div>' : '') + (V.drawer && isPhone() ? '<div class="ds-drawer-scrim" data-act="close-drawer" data-anim="fade" data-key="drawer-scrim"></div>' : '');
     });
     settleAnims();
     runExits(snap.exits); runFlips(snap.flips); runTicks(snap.ticks); runGrows(); runCounts();
@@ -720,6 +762,13 @@
     ask: (el, t) => DS.ask(t),
     'ask-nudge': (el, t) => DS.ask('Tell me more: ' + t),
     'approve-list': (el, i) => { const m = U.msgs[+i], str = m.crit || D.brainList; U.msgs[+i] = { ...m, pending: false, approved: true }; saveList(m.listName, str); render(); DS.toast('Saved to Lists · ' + loc(crit.count(crit.parse(str))) + ' owners'); },
+    'approve-teach': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false, approved: true }; S.taught = [...(S.taught || []).filter(x => x[0] !== D.okaforLesson[0]), D.okaforLesson]; save(); render(); DS.toast('Remembered. Learning Mode lists it.'); },
+    'decline-teach': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false }; save(); render(); },
+    'approve-post': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false, approved: true }; S.posts = [...(S.posts || []), { story: U.msgs[+i].story, day: 'Tue, Oct 6' }]; save(); render(); DS.toast('Post approved for Tue, Oct 6, 9:00 AM'); },
+    'decline-post': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false }; save(); render(); },
+    drop: () => { V.drop = 'open'; render(); setTimeout(() => { const el = document.getElementById('drop-add'); if (el) el.focus(); }, 30); },
+    'close-drop': () => { V.drop = null; render(); },
+    'add-drop': () => { S.docsAdded = [...(S.docsAdded || []).filter(d => d[0] !== D.dropFile[0]), D.dropFile]; V.drop = null; V.docsOpen = true; U.histHidden = false; save(); render(); DS.toast('Added to Stored documents'); },
     'decline-list': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false }; save(); render(); },
     'dismiss-acts': (el, i) => { const list = U.msgs || [D.proactive]; U.msgs = list.map((m, j) => j === +i ? { ...m, acts: [] } : m); save(); render(); },
     palette: (el, mode) => DS.openPalette(mode || 'search'),
@@ -766,6 +815,7 @@
     if (ev.key === 'Escape') {
       if (DS.screen.onEscape && DS.screen.onEscape()) return;
       if (V.pal) { V.pal = null; render(); return; }
+      if (V.drop) { V.drop = null; render(); return; }
       if (V.sheet) { A['close-sheet'](); return; }
       if (V.chats) { A['close-chats'](); return; }
       if (V.menu) { V.menu = null; render(); return; }
@@ -797,6 +847,8 @@
     const pk = params.get('peek'); if (pk && !V.peek) { const k = cById[pk] ? 'c' : pById[pk] ? 'p' : null; if (k) V.peek = { k, id: pk, tab: params.get('peektab') || 'overview', mode: params.get('peekmode') || 'side' }; }
     if (params.get('ask') && sc.id !== 'brain') DS.seedChat(params.get('ask'), params.get('stage'));
     const pal = params.get('palette'); if (pal) V.pal = { mode: pal, q: params.get('pq') || '', active: 0 };
+    if (params.get('drop') === '1') V.drop = 'open';
+    if (params.get('dropped') === '1') { S.docsAdded = [...(S.docsAdded || []), D.dropFile]; V.docsOpen = true; }
     if (params.get('guide')) { V.menu = 'guide'; V.guideTab = params.get('guide') === 'structure' ? 'structure' : 'flows'; }
     if (params.get('menu')) V.menu = params.get('menu');
     if (params.get('sheet')) V.sheet = params.get('sheet');

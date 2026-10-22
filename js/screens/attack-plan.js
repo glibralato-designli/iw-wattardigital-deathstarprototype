@@ -2,6 +2,12 @@
 (() => {
   const { D, ui, esc, icon, href, params, fmtL, fmtS, fmtMD } = DS;
   const st = { mode: params.get('range') === 'week' ? 'week' : 'day', sel: Number(params.get('day')) || 0, picker: params.get('picker') === '1', pickM: null, goalF: params.get('range') === 'week' ? 'Weekly' : 'Daily', resOpen: params.get('resolved') === '1', newTask: '', newCat: 'Follow up' };
+  /* Presets: goals=edit and week=edit open the editors; dismissed=all hides Brain's suggestions; suggsaved=1 saves the first one. */
+  st.goalEdit = params.get('goals') === 'edit' ? null : undefined; st.weekEdit = params.get('week') === 'edit';
+  if (params.get('dismissed') === 'all') D.suggested.forEach(x => { DS.S().dismissed[x.id] = true; });
+  if (params.get('suggsaved') === '1') DS.saveList(D.suggested[0].name, D.suggested[0].crit);
+  const goalsOf = f => (DS.S().goalEdits || {})[f] || D.goals[f];
+  const weekTpl = () => DS.S().weekTpl;
   if (params.get('called') === 'all') DS.callIds().forEach(id => { DS.S().done[id] = true; });
   const addD = D.addD;
   const wk = () => { const selD = addD(st.sel), wkOff = st.sel - ((selD.getDay() + 6) % 7); return { selD, wkOff, wkRel: Math.floor((wkOff + 2) / 7), range: fmtMD(addD(wkOff)) + ' – ' + fmtMD(addD(wkOff + 4)) }; };
@@ -46,6 +52,7 @@
       <div class="ds-card__head" style="padding-bottom:var(--space-1)"><div class="ds-card__title"><h2>${esc(title)}</h2><span class="ds-meta">${esc(sub)}</span></div><span class="ds-meta-strong num"><span data-count="${r === 0 && st.mode === 'day' ? 'calls' : 'plan-' + st.mode + st.sel}">${n}</span> of ${of} ${st.mode === 'week' ? 'dials' : 'calls'}</span>${ui.progress(n / of, 'Calls', { key: r === 0 && st.mode === 'day' ? 'calls' : 'plan-' + st.mode + st.sel })}</div>
       <div class="ds-stack" data-gap="2" style="gap:var(--space-0-5)">
         <div class="ds-subhead"><h3>${r < 0 ? 'Outreach · Called' : 'Outreach · Call next'}</h3><a class="small" href="${href('contacts', 'list=A')}">View all Class A</a></div>
+        ${r === 0 ? `<p class="ds-plan-src">${icon('sparkle')}<span>From LES maturities + 3 callbacks + 2 blast openers · built by Brain at 5:40 AM</span></p>` : ''}
         ${r > 0 ? `<div class="ds-note" style="margin-bottom:var(--space-1)">${icon('calendar-blank')}<span class="ds-grow">${esc(st.mode === 'week' ? 'Brain builds each day’s call list that morning. 200 owners are queued for ' + w.range + '.' : 'Brain builds this call list the morning of ' + fmtL(w.selD) + '. 40 owners are queued from your Class A segments.')}</span></div>` : ''}
         ${rows.join('')}
         ${allCalled ? `<div class="ds-note" style="color:var(--fg)"><span class="ds-grow">You’ve called everyone on today’s list.</span>${ui.btn({ label: 'Build a new list', variant: 'outline', act: 'build-list' })}</div>` : ''}
@@ -54,6 +61,16 @@
     </section>`;
   };
 
+  const suggested = () => {
+    const S = DS.S(), saved = DS.savedLists(), list = D.suggested.filter(x => !S.dismissed[x.id]);
+    if (rel() !== 0) return '';
+    return `<section class="ds-card" data-pad="all" aria-label="Suggested by Brain"><div class="ds-card__head"><div class="ds-card__title"><h2>${icon('sparkle')} Suggested by Brain</h2><span class="ds-meta">Lists built from last week’s outreach and new signals. Nothing is saved or queued until you approve it.</span></div></div>
+      ${list.length ? list.map(x => { const items = DS.crit.parse(x.crit), n = DS.crit.count(items), isSaved = saved.some(l => l.crit === DS.crit.str(items));
+        return `<div class="ds-sugglist" data-key="sugg-${x.id}"><div class="ds-sugglist__head"><b class="ds-grow">${esc(x.name)}</b>${ui.btn({ label: 'Open in builder', ic: 'list-bullets', variant: 'outline', size: 'sm', link: DS.crit.href(x.crit, 'from=attack-plan') })}</div>
+          <div class="ds-toolbar" style="gap:var(--space-1-5)">${items.map(it => ui.critChip(it, { static: true })).join('')}</div>
+          ${isSaved ? ui.approved('Saved to Lists · ' + x.name) : ui.approval({ text: esc(x.why(DS.loc(n))), yes: ['Save as list', 'sugg-save', x.id], no: ['Dismiss', 'sugg-dismiss', x.id] })}</div>`; }).join('') : `<div class="ds-note">${icon('check-circle')}<span class="ds-grow">No suggestions left today. Brain builds new ones tomorrow morning.</span>${ui.btn({ label: 'Show dismissed', variant: 'outline', size: 'sm', act: 'sugg-restore' })}</div>`}
+    </section>`;
+  };
   const dueOf = t => t.due ?? [0, 1, 0, 2, -1, 3, 0][t.id % 7];
   const inRange = t => { const d = dueOf(t), w = wk(); if (st.mode === 'week') return (d >= w.wkOff && d <= w.wkOff + 6) || (w.wkRel === 0 && d < w.wkOff); return st.sel === 0 ? d <= 0 : d === st.sel; };
   const todos = () => {
@@ -73,24 +90,33 @@
   };
   const week = () => {
     const w = wk(), S = DS.S();
-    const days = [0, 1, 2, 3, 4].map(i => { const off = w.wkOff + i, d = addD(off), f = w.wkRel === 0 ? D.weekFocus[i] : D.weekAlt[(i + Math.abs(w.wkRel)) % 5];
-      const n = w.wkRel === 0 ? (f[1] === 'calls' ? DS.callsDone() + ' of 40 calls' : f[1]) : off < 0 ? 'Done' : 'Planned';
+    const tpl = weekTpl(), posted = (S.posts || []).length && w.wkRel === 1;
+    if (st.weekEdit) return `<section class="ds-card" data-pad="all" aria-label="Week template"><div class="ds-card__head"><div class="ds-card__title"><h2>Week template</h2><span class="ds-meta">The channel focus for each weekday. It repeats every week.</span></div></div>
+      <div class="ds-weekedit">${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((dn, i) => `<div class="field"><label class="field__label" for="wk-${i}">${dn}</label><input id="wk-${i}" class="field__control" value="${esc((st.wkDraft || [])[i] ?? (tpl ? tpl[i] : D.weekFocus[i][0]))}" data-input="wkDay" data-arg="${i}" autocomplete="off"></div>`).join('')}</div>
+      <div class="ds-toolbar">${ui.btn({ label: 'Save template', act: 'week-save' })}${ui.btn({ label: 'Cancel', variant: 'outline', act: 'week-cancel' })}</div></section>`;
+    const days = [0, 1, 2, 3, 4].map(i => { const off = w.wkOff + i, d = addD(off), f0 = w.wkRel === 0 ? D.weekFocus[i] : D.weekAlt[(i + Math.abs(w.wkRel)) % 5], f = tpl ? [tpl[i], f0[1]] : f0;
+      const n = posted && i === 1 ? 'LinkedIn post approved · 9:00 AM' : w.wkRel === 0 ? (f[1] === 'calls' ? DS.callsDone() + ' of 40 calls' : f[1]) : off < 0 ? 'Done' : 'Planned';
       return `<button type="button" class="ds-day" aria-pressed="${st.mode === 'day' && off === st.sel}"${off === 0 ? ' data-today' : ''} data-act="pick-day" data-arg="${off}"><span class="ds-meta-strong font-medium">${d.toLocaleDateString('en-US', { weekday: 'short' })} ${d.getDate()}${off === 0 ? ' · Today' : ''}</span><b>${esc(f[0])}</b><span class="ds-meta">${esc(n)}</span></button>`; }).join('');
-    return `<section class="ds-card" data-pad="all" aria-label="This week"><div class="ds-card__head"><h2 class="ds-grow">${w.wkRel === 0 ? 'This week' : 'Week of ' + esc(w.range)}</h2>${ui.iconBtn({ ic: 'caret-left', aria: 'Previous week', act: 'step-week', arg: -1 })}${ui.iconBtn({ ic: 'caret-right', aria: 'Next week', act: 'step-week', arg: 1 })}</div><div class="ds-week">${days}</div></section>`;
+    return `<section class="ds-card" data-pad="all" aria-label="This week"><div class="ds-card__head"><h2 class="ds-grow">${w.wkRel === 0 ? 'This week' : 'Week of ' + esc(w.range)}</h2>${ui.btn({ label: 'Edit template', ic: 'note-pencil', variant: 'ghost', size: 'sm', act: 'week-edit' })}${ui.iconBtn({ ic: 'caret-left', aria: 'Previous week', act: 'step-week', arg: -1 })}${ui.iconBtn({ ic: 'caret-right', aria: 'Next week', act: 'step-week', arg: 1 })}</div><div class="ds-week">${days}</div></section>`;
   };
   const goals = () => {
     const S = DS.S(), w = wk(), done = DS.callsDone();
     const gRel = st.goalF === 'Daily' ? Math.sign(st.sel) : st.goalF === 'Weekly' ? Math.sign(w.wkRel) : Math.sign((w.selD.getFullYear() - 2026) * 12 + w.selD.getMonth() - 8);
     const period = st.goalF === 'Daily' ? (st.sel === 0 ? 'Today' : fmtS(w.selD)) : st.goalF === 'Weekly' ? (w.wkRel === 0 ? 'This week · ' : '') + w.range : w.selD.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     const live = { calls: done, convos: 2 + S.convos, dials: 112 + S.calls };
-    const rows = D.goals[st.goalF].map(([t, target, cur], i) => {
+    if (st.goalEdit !== undefined) { const rows = st.goalEdit || goalsOf(st.goalF).map(g => [...g]);
+      st.goalEdit = rows;
+      return `<section class="ds-card" data-pad="all" aria-label="Edit goals"><div class="ds-card__head"><div class="ds-card__title"><h2>Edit ${esc(st.goalF.toLowerCase())} goals</h2><span class="ds-meta">A target of 0 makes it a checkbox goal.</span></div></div>
+        ${rows.map(([t, target], i) => `<div class="ds-goaledit"><input class="field__control" aria-label="Goal ${i + 1}" value="${esc(t)}" data-input="goalT" data-arg="${i}" autocomplete="off"><input class="field__control" type="number" min="0" aria-label="Target for goal ${i + 1}" value="${target}" data-input="goalN" data-arg="${i}"></div>`).join('')}
+        <div class="ds-toolbar">${ui.btn({ label: 'Add goal', ic: 'plus', variant: 'ghost', size: 'sm', act: 'goal-add' })}<span class="ds-grow"></span>${ui.btn({ label: 'Cancel', variant: 'outline', size: 'sm', act: 'goal-cancel' })}${ui.btn({ label: 'Save goals', size: 'sm', act: 'goal-save' })}</div></section>`; }
+    const rows = goalsOf(st.goalF).map(([t, target, cur], i) => {
       const key = st.goalF + i + ':' + (st.goalF === 'Daily' ? st.sel : st.goalF === 'Weekly' ? w.wkOff : w.selD.getMonth());
       const n0 = typeof cur === 'string' ? live[cur] : cur, n = gRel === 0 ? n0 : gRel > 0 ? 0 : Math.round(target * [1, 0.9, 0.8][i % 3]);
       const isDone = target ? n >= target : gRel < 0 ? i % 2 === 0 : !!S.goalDone[key];
       const box = target ? `<span class="ds-box"${isDone ? ' data-on' : ''} role="img" aria-label="${isDone ? 'Done' : 'In progress'}">${isDone ? icon('check') : ''}</span>` : `<button type="button" class="ds-box" role="checkbox" aria-checked="${isDone}" aria-label="${esc(t)}"${isDone ? ' data-on' : ''} data-act="goal" data-arg="${esc(key)}">${isDone ? icon('check') : ''}</button>`;
       return `<div class="ds-goalrow"><div>${box}<span class="ds-grow font-medium">${esc(t)}</span>${target ? `<span class="ds-meta num"><span data-count="goal-${esc(key)}">${Math.min(n, target)}</span> of ${target}</span>` : ''}</div>${target ? ui.progress(n / target, t, { tone: 'accent', key: 'goal-' + key }) : ''}</div>`;
     }).join('');
-    return `<section class="ds-card" data-pad="all" aria-label="Goals"><div class="ds-card__head"><div class="ds-card__title"><h2>Goals</h2><span class="ds-meta">${esc(period)}</span></div>${ui.segmented([['Daily', 'Daily'], ['Weekly', 'Weekly'], ['Monthly', 'Monthly']], st.goalF, 'goal-f', 'Goal period', 'sm')}</div>${rows}</section>`;
+    return `<section class="ds-card" data-pad="all" aria-label="Goals"><div class="ds-card__head"><div class="ds-card__title"><h2>Goals</h2><span class="ds-meta">${esc(period)}</span></div>${ui.segmented([['Daily', 'Daily'], ['Weekly', 'Weekly'], ['Monthly', 'Monthly']], st.goalF, 'goal-f', 'Goal period', 'sm')}</div>${rows}<div>${ui.btn({ label: 'Edit goals', ic: 'note-pencil', variant: 'ghost', size: 'sm', act: 'goal-edit' })}</div></section>`;
   };
   const meetings = () => {
     const w = wk(), r = rel(), title = st.mode === 'week' ? 'Meetings · ' + w.range : st.sel === 0 ? 'Today’s meetings' : 'Meetings · ' + fmtS(w.selD);
@@ -103,7 +129,7 @@
     crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: 'Attack Plan' }],
     scope: () => 'Dashboard',
     render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, 'attack-plan', 'Dashboard'))}${ui.nudge(D.nudges['attack-plan'])}${toolbar()}
-      <div class="ds-split" data-anim="slide" data-key="plan-${st.mode}-${st.sel}" style="--dir:${st.dir || 1}"><div class="ds-stack">${todayPlan()}${todos()}${week()}</div><div class="ds-stack">${goals()}${meetings()}</div></div></div>`,
+      <div class="ds-split" data-anim="slide" data-key="plan-${st.mode}-${st.sel}" style="--dir:${st.dir || 1}"><div class="ds-stack">${todayPlan()}${suggested()}${todos()}${week()}</div><div class="ds-stack">${goals()}${meetings()}</div></div></div>`,
     acts: {
       step: (el, d) => { st.dir = Math.sign(Number(d)); st.sel += Number(d) * (st.mode === 'week' ? 7 : 1); DS.render(); },
       'step-week': (el, d) => { st.dir = Math.sign(Number(d)); st.sel += Number(d) * 7; DS.render(); },
@@ -118,9 +144,21 @@
       'task-done': (el, id) => { const go = () => DS.store(S => { S.tasks = S.tasks.map(t => t.id === +id ? { ...t, done: !t.done } : t); }); const row = el.closest('.ds-task,.ds-resolved'); if (row) { DS.play(el, [{ transform: 'scale(.8)' }, { transform: 'scale(1)' }], { duration: 160 }); DS.collapse(row, go); } else go(); },
       'task-del': (el, id) => DS.collapse(el.closest('.ds-task'), () => DS.store(S => { S.tasks = S.tasks.filter(t => t.id !== +id); })),
       'add-task': () => { const t = st.newTask.trim(); if (!t) return; const w = wk(); DS.store(S => { S.tasks = [...S.tasks, { id: Date.now(), g: st.newCat, t, due: st.mode === 'week' ? Math.max(0, w.wkOff) : st.sel, m: 'Added today' }]; }); st.newTask = ''; DS.render(); DS.toast('To-do added'); },
+      'sugg-save': (el, k) => { const x = D.suggested.find(y => y.id === k); DS.saveList(x.name, DS.crit.str(DS.crit.parse(x.crit))); DS.render(); DS.toast('Saved to Lists · ' + x.name); },
+      'sugg-dismiss': (el, k) => { const go = () => DS.store(S => { S.dismissed = { ...(S.dismissed || {}), [k]: true }; }); const row = el.closest('.ds-sugglist'); if (row) DS.collapse(row, go); else go(); },
+      'sugg-restore': () => DS.store(S => { S.dismissed = {}; }),
+      'goal-edit': () => { st.goalEdit = null; DS.render(); },
+      'goal-cancel': () => { st.goalEdit = undefined; DS.render(); },
+      'goal-add': () => { st.goalEdit = [...st.goalEdit, ['New goal', 0, 0]]; DS.render(); },
+      'goal-save': () => { const rows = st.goalEdit.filter(g => g[0].trim()).map(([t, n, cur]) => [t.trim(), Number(n) || 0, typeof cur === 'string' && Number(n) ? cur : 0]); DS.store(S => { S.goalEdits = { ...(S.goalEdits || {}), [st.goalF]: rows }; }); st.goalEdit = undefined; DS.render(); DS.toast('Goals saved'); },
+      'week-edit': () => { st.weekEdit = true; st.wkDraft = null; DS.render(); },
+      'week-cancel': () => { st.weekEdit = false; DS.render(); },
+      'week-save': () => { const base = weekTpl() || D.weekFocus.map(f => f[0]), next = base.map((x, i) => ((st.wkDraft || [])[i] ?? x).trim() || x); DS.store(S => { S.weekTpl = next; }); st.weekEdit = false; DS.render(); DS.toast('Week template saved. It repeats every week.'); },
       'build-list': () => { DS.V.draft = '/list '; DS.openBrain(); },
     },
-    inputs: { newTask: v => { st.newTask = v; }, newCat: v => { st.newCat = v; } },
+    inputs: { goalT: (v, el) => { st.goalEdit[+el.dataset.arg][0] = v; }, goalN: (v, el) => { st.goalEdit[+el.dataset.arg][1] = Number(v); },
+      wkDay: (v, el) => { st.wkDraft = st.wkDraft || []; st.wkDraft[+el.dataset.arg] = v; },
+      newTask: v => { st.newTask = v; }, newCat: v => { st.newCat = v; } },
     onEscape: () => { if (st.picker) { st.picker = false; DS.render(); return true; } return false; },
   });
 })();

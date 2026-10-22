@@ -7,6 +7,15 @@
   const chatId = params.get('chat');
   if (chatId) { const ch = D.chats.find(x => x.id === chatId); if (ch) { U.chatId = ch.id; U.chatTitle = ch.t; U.msgs = ch.m ? ch.m.map(m => ({ ...m })) : [{ ...D.proactive }]; } }
 
+  // Presets: view=learning (what Brain has been taught), act=post (one-shot from Headlines: ask for the post, then drop the trigger).
+  const st = { view: params.get('view') === 'learning' ? 'learning' : 'chat' };
+  const trigger = params.get('act');
+  if (trigger && !Nav.exported) { const u = new URL(location.href); u.searchParams.delete('act'); window.history.replaceState(null, '', u); params.delete('act'); }
+  if (params.get('taught') === '1') DS.S().taught = [...(DS.S().taught || []), D.okaforLesson];
+  const learning = () => { const all = [...(DS.S().taught || []).slice().reverse(), ...D.taught];
+    return `<div class="ds-learning"><div class="ds-stack" data-gap="2" style="gap:var(--space-1)"><h1 class="ds-title-xl">What Brain has been taught</h1><span class="ds-lede">Brain learns only what you approve. A lesson changes how it reads similar owners and what it suggests; the predictive score stays separate.</span></div>
+      <section class="ds-card" data-pad="all" aria-label="Lessons">${all.map(([t, scope, when, by]) => `<div class="ds-lesson">${icon('book-open')}<span class="ds-row__body"><span class="font-medium" style="text-wrap:pretty">${esc(t)}</span><span class="ds-row__sub">${esc(scope)} · approved by ${esc(by)}, ${esc(when)}</span></span>${ui.btn({ label: 'Forget', variant: 'ghost', size: 'sm', disabled: true })}</div>`).join('')}</section>
+      <div class="ds-note">${icon('note-pencil')}<span class="ds-grow">To teach Brain, correct an answer in chat, then approve what it should remember.</span>${ui.btn({ label: 'Try it with Okafor', variant: 'outline', size: 'sm', act: 'try-teach' })}</div></div>`; };
   const history = () => U.histHidden ? '' : `<aside class="ds-history" aria-label="Chat history">${DS.chatHistory()}</aside>`;
   const chips = [['Why now for…', 'Daniel Marchetti, or any owner', 'sparkle', 'Why now for Daniel Marchetti?'], ['Build a list of…', 'LES owners with debt due this year', 'list-bullets', '/list LES owners with debt due before year end'], ['Look up a property…', '118 Ludlow St, or a BBL', 'buildings', 'Look up 118 Ludlow St'], ['This week’s market brief', 'Sales, listings and rates', 'newspaper', null]];
   const empty = () => `<div class="ds-brain-empty"><div class="ds-brain-empty__inner"><div class="ds-brain-hello"><span class="ds-brain-hello__icon">${icon('sparkle')}</span><h1>What do you need, Thomas?</h1><span class="ds-lede">Ask about an owner, a building or a list. Answers cite their sources.</span></div>
@@ -22,14 +31,16 @@
     init: () => { const k = params.get('ask'); if (k) DS.seedChat(k, params.get('stage')); },
     render: () => {
       const has = (U.msgs || []).length > 0 || DS.V.thinking;
-      return `<div class="ds-brainpage">${history()}<div class="ds-brainpage__main"><div class="ds-brainpage__tabs">${ui.chatsBtn()}${ui.stateTabs([['chat', 'Chat'], ['learning', 'Learning Mode', true]], 'chat', 'noop', 'Brain')}<span class="ds-grow"></span>${has ? `<span class="ds-meta ds-ellipsis" style="max-width:20rem">${esc(U.chatTitle || 'New chat')}</span>` : ''}</div>${has ? convo() : empty()}</div></div>`;
+      return `<div class="ds-brainpage">${history()}<div class="ds-brainpage__main"><div class="ds-brainpage__tabs">${ui.chatsBtn()}${ui.stateTabs([['chat', 'Chat'], ['learning', 'Learning Mode']], st.view, 'brain-view', 'Brain')}<span class="ds-grow"></span>${has && st.view === 'chat' ? `<span class="ds-meta ds-ellipsis" style="max-width:20rem">${esc(U.chatTitle || 'New chat')}</span>` : ''}</div>${st.view === 'learning' ? learning() : has ? convo() : empty()}</div></div>`;
     },
     overlays: () => ui.chatDrawer(),
-    after: () => { if (DS.V.focusPage) { DS.V.focusPage = false; const el = document.getElementById('brain-page-input'); if (el) el.focus(); } },
+    after: () => { if (trigger === 'post' && !st.fired) { st.fired = true; DS.V.draft = ''; U.msgs = []; U.chatId = null; U.chatTitle = null; const h = D.headlines.find(x => x.id === params.get('story')) || D.headlines[0]; DS.sendText('Turn this headline into a LinkedIn post for ' + h.audience); } if (DS.V.focusPage) { DS.V.focusPage = false; const el = document.getElementById('brain-page-input'); if (el) el.focus(); } },
     acts: {
       noop: () => {},
-      'open-chat': (el, cid) => { const ch = D.chats.find(x => x.id === cid); U.chatId = cid; U.chatTitle = ch.t; U.msgs = ch.m ? ch.m.map(m => ({ ...m })) : [{ ...D.proactive }]; DS.V.thinking = false; DS.V.stream = null; DS.V.chats = false; DS.save(); DS.V.scrollChat = true; DS.render(); },
-      'new-chat': () => { U.msgs = []; U.chatId = null; U.chatTitle = null; DS.V.draft = ''; DS.V.chats = false; DS.save(); DS.V.focusPage = true; DS.render(); },
+      'brain-view': (el, k) => { st.view = k; DS.render(); },
+      'try-teach': () => { st.view = 'chat'; U.msgs = []; U.chatId = null; U.chatTitle = null; DS.save(); DS.sendText('Why now for Grace Okafor?'); },
+      'open-chat': (el, cid) => { st.view = 'chat'; const ch = D.chats.find(x => x.id === cid); U.chatId = cid; U.chatTitle = ch.t; U.msgs = ch.m ? ch.m.map(m => ({ ...m })) : [{ ...D.proactive }]; DS.V.thinking = false; DS.V.stream = null; DS.V.chats = false; DS.save(); DS.V.scrollChat = true; DS.render(); },
+      'new-chat': () => { st.view = 'chat'; U.msgs = []; U.chatId = null; U.chatTitle = null; DS.V.draft = ''; DS.V.chats = false; DS.save(); DS.V.focusPage = true; DS.render(); },
     },
   });
 })();

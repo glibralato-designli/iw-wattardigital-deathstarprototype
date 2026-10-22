@@ -158,7 +158,7 @@
     'Prospecting', ['Database', 'database', 'contacts'], ['Map', 'map-trifold'], ['Outreach', 'list-bullets'],
     'Channels', ['Phone', 'phone'], ['Email', 'envelope-simple', null, '4'], ['Texting', 'chat-text', null, '2'], ['LinkedIn', 'linkedin-logo'], ['Social', 'users'],
     'Marketing', ['Marketing', 'megaphone'], ['Website', 'globe']];
-  const more = [['Today', 'sun'], ['Field Mode', 'device-mobile'], ['Headlines', 'newspaper'], ['Market Data', 'chart-line'], ['Ledger', 'book'], ['Prediction Model', 'brain'], ['BOV & OM', 'file-text'], ['Integrations', 'puzzle-piece']];
+  const more = [['Today', 'sun'], ['Field Mode', 'device-mobile'], ['Headlines', 'newspaper', 'headlines'], ['Market Data', 'chart-line'], ['Ledger', 'book'], ['Prediction Model', 'brain'], ['BOV & OM', 'file-text', 'bov'], ['Integrations', 'puzzle-piece']];
   const links = [{ h: 'Research', items: ['PincusCo', 'UniCourt', 'LoopNet', 'Zillow', 'StreetEasy', 'Hunter', 'PropertyShark', 'Apollo', 'CoStar', 'NYC ACRIS', 'NYC Open Data'] }, { h: 'Media', items: ['The Real Deal', 'Bisnow', 'Commercial Observer', 'WSJ Real Estate', 'Crain’s New York', 'YIMBY NY', 'GlobeSt'] }];
 
   /* Page tabs. A null page is drawn but disabled. */
@@ -253,11 +253,49 @@
   const brainList = 'hood:Lower East Side,East Village;debt:2026-12-31;cls:A,B';
   const listCrit = { all: '', A: 'cls:A', B: 'cls:B', C: 'cls:C', D: 'cls:D', LH: 'cls:LH', warm: 'rel:warm', cold: 'rel:cold' };
 
+
+  /* ───────── Proactive Brain ─────────
+     Suggested lists on the Attack Plan: criteria plus a reason (the count in the reason is the live count). */
+  const suggested = [
+    { id: 'ludlow-om', name: 'Class A owners who clicked the 41 Ludlow St OM', crit: 'cls:A;eng:Clicked 41 Ludlow St OM', why: n => n + ' Class A owners clicked the 41 Ludlow St OM this month. Owners click a listing to price their own building.' },
+    { id: 'q3-uncalled', name: 'LES Class A, opened the Q3 report, never called', crit: 'cls:A;hood:Lower East Side;eng:Opened Q3 market report;touch:Never called', why: n => n + ' Class A owners on the Lower East Side opened the Q3 report and have never been called.' },
+    { id: 'ues-debt', name: 'UES debt due by June', crit: 'cls:A,B;hood:Upper East Side;debt:2027-06-30', why: n => n + ' Class A and B owners on the Upper East Side have debt due by June 30, 2027. Nobody has a call block on the UES this month.' },
+  ];
+  // What Brain has been taught (Learning Mode): corrections Thomas approved. Approving the Okafor correction adds one.
+  const taught = [
+    ['Estate owners in probate are not sellers until the court names an executor', 'Feld and 22 similar estate owners', 'Sep 18', 'Thomas W.'],
+    ['“Long hold” alone is not a reason to call. Pair it with a debt or estate signal', 'All Class C and D owners', 'Sep 4', 'Thomas W.'],
+  ];
+  const okaforLesson = ['Grace Okafor is refinancing, not selling. Treat family owners refinancing a maturing loan as a check-in after the refi closes, not a pitch', 'Okafor and 14 similar family owners', 'Today', 'Thomas W.'];
+  // The paperclip's simulated drop.
+  const dropFile = ['Okafor refinance term sheet.pdf', '1.2 MB · added today'];
+
+  /* Headlines (read-only, under More): stories tagged by who they matter to, each a list and a post. */
+  const headlines = [
+    { id: 'rgb', src: 'The Real Deal', when: 'Sep 29', tag: 'Rent regulation', t: 'Rent Guidelines Board votes to freeze stabilized rents for 2026–27 leases', sum: 'One-year and two-year leases on rent-stabilized units stay flat from October 1. Owners with mostly stabilized buildings lose this year’s increase while costs keep rising.', crit: 'btype:rs,mixed;hood:Lower East Side', audience: 'rent-stabilized owners in the LES' },
+    { id: 'q3', src: 'Commercial Observer', when: 'Sep 28', tag: 'Sales', t: 'Manhattan multifamily sales volume rose 18% in Q3 as rates eased', sum: 'Walk-up trades below 96th St led the quarter, with a median of $362 per square foot. Buyers are back for free-market buildings.', crit: 'cls:A,B;btype:fm', audience: 'Class A and B owners of free-market buildings' },
+    { id: 'lenders', src: 'Crain’s New York', when: 'Sep 26', tag: 'Lending', t: 'Two regional banks pull back on walk-up refinancing below 96th St', sum: 'Brookline Capital and Hudson Mutual tightened terms for buildings with stabilized units. Owners with 2026–27 maturities face higher rates or a sale.', crit: 'debt:2027-06-30;btype:rs,mixed', audience: 'owners with debt due by June 2027' },
+    { id: 'far', src: 'YIMBY NY', when: 'Sep 22', tag: 'Development', t: 'East Village air-rights sale sets a $410 per square foot record', sum: 'A developer paid $410/SF for unused rights over a walk-up on E 4th St, the highest on record for the neighborhood.', crit: 'signal:Unused FAR', audience: 'owners with unused air rights' },
+  ];
+  // The scripted post for the rent-freeze headline (Brain's "headline to post" flow).
+  const postDraft = 'The Rent Guidelines Board just froze stabilized rents for 2026–27. If you own a mostly stabilized walk-up on the Lower East Side, this is the second flat year in three, while taxes and insurance keep rising. We’ve run the numbers on what that does to values on the block. Happy to share them, no pitch.';
+
+  /* BOV & OM (next phase, drawn): comps with trust, and a price range, for 118 Ludlow St. [address, date, units, $/SF, $/unit, cap, trust] */
+  const comps = [
+    ['104 Ludlow St', 'Jul 2026', 28, 362, 271000, '5.4%', 'verified'],
+    ['77 Essex St', 'May 2026', 34, 348, 239000, '5.7%', 'verified'],
+    ['159 Rivington St', 'Apr 2026', 22, 391, 318000, '5.1%', 'single'],
+    ['31 Orchard St', 'Feb 2026', 40, 333, 226000, '5.9%', 'verified'],
+    ['12 Clinton St', 'Nov 2025', 25, 404, 334000, '4.9%', 'stale'],
+  ];
+
   /* Display-only Dashboard tabs. Content mirrors the client's portal tabs; drill-downs and logging are drawn but off. */
   const outreachPerf = {
     // [label, icon, today, previous day, this week]; counted automatically.
     activity: [['Calls', 'phone', 6, 33, 112], ['Emails', 'envelope-simple', 38, 41, 186], ['Texts', 'chat-text', 5, 22, 64], ['Conversations', 'phone-call', 2, 1, 9]],
     efficiency: { hit: 38, efficacy: 12, conversations: 9, confirmed: 42, calls: 112 },
+    // A drop worth explaining: conversations this week vs last, with what moved.
+    diagnosis: { metric: 'Conversations', now: 9, prev: 15, calls: [112, 110], confirmed: [42, 70], list: 'hood:Lower East Side;touch:Called this week', text: 'Conversations are down 40% on last week (9 vs 15). Calls are flat (112 vs 110), but confirmed numbers fell from 70 to 42, so check data quality on the LES list before the next call block.' },
     linkedin: { pct: 14, connected: 5630, total: 40212 },
     blasts: { n: 2, sub: 'Q3 market report, LES digest' },
     // [label, current, change %, window, previous]; logged by hand. Pipeline order.
@@ -328,7 +366,7 @@
     'attack-plan': '22 Class A owners have no logged call yet and 3 loans mature inside 12 months. Start the call block with the maturities.',
     calendar: 'Your 1:30 PM call block has 6 owners queued. Marchetti is first.',
     conversations: '3 conversations this week asked for a number. Two proposals are in progress.',
-    'outreach-performance': 'Replies are up but conversations are flat. Work the 5 replies before sending anything new.',
+    'outreach-performance': 'Replies are up but conversations are down 40% on last week. Work the 5 replies before sending anything new.',
     reporting: 'Coverage is thinnest in 10038 and 10013. Both have Class A owners nobody has called.',
     listings: '3 people viewed 41 Ludlow this week. Two are in your database.',
     'web-analytics': 'The 41 Ludlow St page drives most inquiries. Feature it in Thursday’s digest.',
@@ -380,5 +418,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { TODAY, addD, TERRITORY, DB, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

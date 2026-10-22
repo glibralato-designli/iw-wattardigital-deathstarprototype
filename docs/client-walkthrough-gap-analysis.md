@@ -98,6 +98,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
   - Give each display tab one primary next action (the T1 list action covers most of them).
   - Add one scripted Brain flow: "Turn this headline into a LinkedIn post for rent-stabilized owners in the LES". This shows story → audience → draft → approve.
   - Consider bringing Headlines into the proposal as a drawn read-only screen, since he spent about 4 minutes on it.
+  - **Done (phase 3):** Headlines is a read-only screen under More (stories tagged "Relevant to N owners in your lists"); Draft a post runs Brain's scripted flow: story → audience (count and Turn into a list) → LinkedIn draft → approve.
 
 ### T5. Proactive system, with Thomas as the last touch. **P2.**
 - **Thomas wants:**
@@ -110,6 +111,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 - **Gap / suggestion:**
   - Generalise the approval bar into an **Approvals** pattern for drafts (mail merge, post, text) and suggested lists.
   - Show 2–3 "Suggested by Brain" lists on the Attack Plan or Outreach entry point, each with its reason ("12 owners opened the Q3 report and haven't been called").
+  - **Done (phase 3):** three suggested lists on the Attack Plan (reason with the live count, Open in builder, Save as list or Dismiss); one Approvals pattern for saved and suggested lists, the post draft and what Brain learns.
 
 ### T6. Simplify. **P2 (design decision).**
 - **Thomas wants:** "We're probably going to want to simplify the dashboard a bunch, kind of consolidate" (P1 ~20:00); "simplify, simplify, simplify" (P1 ~25:00).
@@ -149,9 +151,9 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
   - Goals aligned with the plan.
 - **Prototype:** LIVE. It has a ranked call list with a why now each, To-dos, the This week focus strip, and Daily/Weekly/Monthly goals with auto-counted progress.
 - **Gaps:**
-  - Goals can't be created or edited (P2).
-  - The week template isn't editable; it should be "pretty similar week to week" (P2).
-  - The plan doesn't explain where today's list comes from. Add a one-line source: "From LES maturities + 3 callbacks + 2 blast openers" (P2).
+  - Goals can't be created or edited (P2). **Done (phase 3):** Edit goals per period (names, targets, add).
+  - The week template isn't editable; it should be "pretty similar week to week" (P2). **Done (phase 3):** Edit template; it repeats every week.
+  - The plan doesn't explain where today's list comes from. Add a one-line source: "From LES maturities + 3 callbacks + 2 blast openers" (P2). **Done (phase 3).**
 
 **Activity / Conversations** (P1 07:40–08:30)
 - **Thomas wants:**
@@ -159,7 +161,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
   - A **cold-calling coach** that tracks which call styles produce conversations.
 - **Prototype:** the board is LIVE.
 - **Gaps:**
-  - No weekly summary line ("9 conversations, 3 worth a follow-up, 1 first meeting booked") (P2).
+  - No weekly summary line ("9 conversations, 3 worth a follow-up, 1 first meeting booked") (P2). **Done (phase 3).**
   - The cold-calling coach is ABSENT. That's fine as a later item; mention it as a Brain capability (P3).
 
 **Calendar** (P1 08:33–09:50)
@@ -177,7 +179,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
   - Outreach performance across all channels.
 - **Prototype:** display-only. It counts automatically, shows hit rate and efficacy, logged business generation with deltas, workflow efficacy, and model accuracy.
 - **Gaps:**
-  - Add a **diagnosis line** when a metric drops, e.g. "Conversations down 40%: calls are flat but confirmed numbers fell, so check data quality on the LES list." This fits the existing one-line Brain nudge (P2).
+  - Add a **diagnosis line** when a metric drops, e.g. "Conversations down 40%: calls are flat but confirmed numbers fell, so check data quality on the LES list." This fits the existing one-line Brain nudge (P2). **Done (phase 3):** a warning alert at the top of Outreach performance, with Open the LES list.
   - Clicking any number should lead to the people behind it (T1) (P1). **Done (phase 2):** each outreach count and LinkedIn connections turn into a list.
 
 **Reporting / coverage** (P1 13:40–16:30)
@@ -195,7 +197,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 - **Prototype:** viewers are LIVE links. The Log buttons, Open OM and View all are DRAWN.
 - **Gaps:**
   - "Follow up with viewers" leading to a filtered list with an "owns in the same neighborhood" criterion. This is his own example of nuance: people view a listing to price their own building (P1). **Done (phase 2):** Viewed by › Turn into a list offers "Owns in Lower East Side" (11 → 8).
-  - Offers as a list with amounts, to support "we just reduced the price, any room to come up?" (P2).
+  - Offers as a list with amounts, to support "we just reduced the price, any room to come up?" (P2). **Done (phase 3, built with phase 2):** written offers per listing with amount, date and status.
 
 **Website analytics** (P1 17:40–20:30)
 - **Thomas wants:** who downloaded each OM, what pages people viewed, and event viewers who didn't register, so he can call them.
@@ -220,7 +222,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 - **Thomas wants:** a facade photo, a little map, everything from PropertyShark, documents (deeds, BS documents), financials, and the real owner from the deed.
 - **Prototype:** facts are strong. The facade, map and street view are DRAWN or placeholders, and Documents is DRAWN.
 - **Gaps:**
-  - Show an illustrated facade and a static map tile in the demo. Listings already uses illustrations (P2).
+  - Show an illustrated facade and a static map tile in the demo. Listings already uses illustrations (P2). **Done (phase 3):** drawn from the record in the Location card and the peek; no photos.
   - Documents: show the deed as the "layer of truth" behind the owner, linked from Ownership (P2).
 
 ### 3.5 Headlines and Market Data (P1 26:51–29:51)
@@ -233,7 +235,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 - **Prototype:** DRAWN (under More).
 - **Gaps:**
   - The most-explained area that has no screen in the proposal.
-  - Suggest at least one read-only Headlines screen, with each story tagged "Relevant to: N owners in your list" and a "Draft a post" action that goes through Brain approval (P2).
+  - Suggest at least one read-only Headlines screen, with each story tagged "Relevant to: N owners in your list" and a "Draft a post" action that goes through Brain approval (P2). **Done (phase 3):** see T4.
   - Market Data can stay out for now (P3).
 
 ### 3.6 Outreach Queue (P2 01:45–03:24)
@@ -268,7 +270,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 ### 3.9 Texting and cross-channel sequences (P2 10:51–12:15)
 - **Thomas wants:** texting as a more human touch, used selectively. A pointed cross-channel sequence: they click an email → text "saw you took a look" → LinkedIn request mentioning the text.
 - **Prototype:** DRAWN.
-- **Gap:** no concept of a **sequence** across channels. Consider one illustration of a per-owner "next touch" suggestion on the case file ("Opened the Q3 report 2 days ago · Suggested: text, then LinkedIn") (P2).
+- **Gap:** no concept of a **sequence** across channels. Consider one illustration of a per-owner "next touch" suggestion on the case file ("Opened the Q3 report 2 days ago · Suggested: text, then LinkedIn") (P2). **Done (phase 3):** a Next touch line in the Relationship block (Text and LinkedIn drawn).
 
 ### 3.10 Marketing (P2 12:15–13:27)
 - **Thomas wants:** Constant Contact's workflow, with delivered/viewed/bounced reporting; brand items; channels working together.
@@ -302,9 +304,9 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
   - Long-term memory of the market.
 - **Prototype:** chat and scripted answers are LIVE. Learning Mode, attachments, Ask/Act, @ and / are decorative or DRAWN. Stored documents are read-only.
 - **Gaps:**
-  - Show **one teaching moment**: Thomas corrects an answer ("Okafor isn't a seller, she's refinancing") → Brain asks "Remember this for Okafor and similar family owners?" → approve. Flag as wrong already exists on evidence; this extends it to Brain (P2).
+  - Show **one teaching moment**: Thomas corrects an answer ("Okafor isn't a seller, she's refinancing") → Brain asks "Remember this for Okafor and similar family owners?" → approve. Flag as wrong already exists on evidence; this extends it to Brain (P2). **Done (phase 3):** the correction, Approve or Not now, and Learning Mode as a live Brain tab listing what Brain has been taught.
   - Add scripted answers for the walkthrough's core asks: a relationship summary (T2), a list from report criteria (T1), and headline → post (T4) (P2).
-  - Make the attachment icon open a "Drop files" state, even if it's simulated (P3).
+  - Make the attachment icon open a "Drop files" state, even if it's simulated (P3). **Done (phase 3):** the paperclip opens Drop files; the file lands in Stored documents.
 
 ### 3.15 BOV and OM Generator (P2 18:24–21:03)
 - **Thomas wants:**
@@ -315,6 +317,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
   - **Personally urgent for him** and fully absent from the proposal.
   - Even one drawn screen would show we heard it: "BOV for 118 Ludlow: inputs pre-filled from the record, comps with trust badges, price-range table, Generate deck".
   - Alternatively, name it explicitly as the next phase in the presentation (P2).
+  - **Done (phase 3):** a drawn BOV & OM screen under More, reachable from the property record and Listings, marked Next phase: inputs pre-filled from the record, comps with trust badges, a price range, Generate deck off.
 
 ### 3.16 Prediction model, team history, data and subscriptions (P2 21:03–24:00)
 - **Thomas wants:**

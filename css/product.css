@@ -882,6 +882,8 @@ button.ds-crit[data-suggest]:hover{background:var(--bg)}
 .ds-tolist{flex:none}
 .ds-tolist-row{display:flex;align-items:center;gap:var(--space-2)}
 .ds-approve>svg{width:1rem;height:1rem;flex:none;color:var(--brand-primary-text)}
+.ds-msg-bot button.ds-sugg{display:inline-flex;align-items:center;gap:var(--space-1-5);align-self:flex-start}
+.ds-msg-bot button.ds-sugg svg{width:1rem;height:1rem;flex:none}
 
 /* ───────── Team history and the relationship ─────────
    Team history is kept apart from the score: its chip is dashed with a people icon and never sits next to the score chip. */
@@ -913,6 +915,46 @@ a.ds-teamchip:hover{background:var(--brand-secondary-subtle)}
 .ds-conn:last-child{border-bottom:0}
 @media(max-width:1023px){.ds-rel__grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:767px){.ds-rel{padding:var(--space-3-5)}.ds-builder{padding:var(--space-2-5)}.ds-crit-range .field{width:calc(50% - var(--space-4))}.ds-teamrow{grid-template-columns:3rem minmax(0,1fr)}.ds-teamrow>:last-child{grid-column:2}}
+
+/* ───────── Proactive Brain, Learning Mode, Headlines, BOV & OM, illustrations ───────── */
+.ds-facade[data-art]{display:block;aspect-ratio:auto;overflow:hidden;background:none}
+.ds-facade .ds-facade-art{display:block;width:100%;height:auto}
+.ds-maptile{display:block;width:100%;height:auto;border-radius:var(--radius-lg);border:var(--border-width) solid var(--border)}
+.ds-maptile__label{fill:var(--fg-muted);font-size:var(--text-2xs);font-family:var(--font-body)}
+.ds-sugglist{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--border-subtle)}
+.ds-sugglist:last-child{border-bottom:0;padding-bottom:0}
+.ds-sugglist__head{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2)}
+.ds-plan-src{display:flex;align-items:center;gap:var(--space-1-5);padding:0 var(--space-2);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+.ds-plan-src svg{width:.875rem;height:.875rem;color:var(--brand-primary-text)}
+.ds-goaledit{display:grid;grid-template-columns:minmax(0,1fr) 5.5rem;gap:var(--space-2);align-items:center;padding:var(--space-1-5) 0}
+.ds-weekedit{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--space-2)}
+.ds-weekedit .field__label{white-space:nowrap}
+.ds-convsum{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1) var(--space-3);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-convsum b{font-weight:var(--weight-semibold)}
+.ds-post{gap:var(--space-2-5)}
+.ds-post__step{display:flex;align-items:center;gap:var(--space-2);margin-top:var(--space-1)}
+.ds-post__step .ds-step-num{width:1.25rem;height:1.25rem;font-size:var(--text-2xs)}
+.ds-story-mini{display:flex;flex-direction:column;gap:var(--space-0-5);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-md);background:var(--bg-subtle)}
+.ds-draftpost{margin:0;padding:var(--space-3);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--fg);text-wrap:pretty}
+.ds-drop{width:min(30rem,calc(100vw - var(--space-8)));display:flex;flex-direction:column;gap:var(--space-3);position:static;margin:0}
+.ds-dropzone{display:flex;flex-direction:column;align-items:center;gap:var(--space-1-5);padding:var(--space-6) var(--space-4);border:2px dashed var(--border-strong);border-radius:var(--radius-xl);background:var(--bg-subtle);text-align:center}
+.ds-dropzone>svg{width:1.5rem;height:1.5rem;color:var(--fg-muted)}
+.ds-learning{max-width:47.5rem;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6) var(--space-4)}
+.ds-lesson{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:var(--space-1) var(--space-3);align-items:start;padding:var(--space-3-5) 0;border-bottom:var(--border-width) solid var(--border-subtle)}
+.ds-lesson:last-child{border-bottom:0}
+.ds-lesson>svg{width:1.125rem;height:1.125rem;margin-top:2px;color:var(--brand-primary-text)}
+.ds-story{display:flex;flex-direction:column;gap:var(--space-2-5)}
+.ds-story h2{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg);text-wrap:pretty}
+.ds-story__rel{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1-5) var(--space-2);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-md);background:var(--bg-subtle)}
+.ds-nextphase{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2)}
+.ds-nextphase>.ds-row__body{flex:1 1 16rem}
+.ds-bovgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3)}
+.ds-bovgrid .field__control[readonly]{background:var(--bg-subtle);color:var(--fg)}
+.ds-bovsrc{font-size:var(--text-2xs);line-height:var(--line-height-2xs);color:var(--fg-muted)}
+.ds-range{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3)}
+.ds-range .ds-stat[data-emph]{border-color:var(--brand-primary-border)}
+@media(max-width:1023px){.ds-bovgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.ds-weekedit{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:767px){.ds-range{grid-template-columns:minmax(0,1fr)}.ds-lesson{grid-template-columns:auto minmax(0,1fr)}.ds-lesson>:last-child{grid-column:2}.ds-learning{padding:var(--space-4) var(--space-1)}}
 
 /* ───────── Motion: entrances for overlays only, from an already-visible default ───────── */
 @keyframes ds-pop{from{opacity:0;transform:translateY(4px)}}

@@ -85,7 +85,8 @@ window.PROJECT = {
         { id: 'live-call', title: 'Live call', goal: 'Judge the why now, call, log the outcome (no answer in two clicks) and move to the next owner.', entry: 'contact' },
         { id: 'ask-brain', title: 'Ask Brain', goal: 'Explain a why now, build a list, or look up a property, with sources.', entry: 'brain', next: [{ flow: 'live-call', on: 'Open record' }] },
         { id: 'find', title: 'Find anything', goal: 'Find a contact or property by name, phone or BBL.', entry: 'contacts', next: [{ flow: 'live-call', on: 'Open record' }] },
-        { id: 'plan-week', title: 'Plan the week', goal: 'See the week, add an event, review conversations and the numbers.', entry: 'calendar' }
+        { id: 'plan-week', title: 'Plan the week', goal: 'See the week, add an event, review conversations and the numbers.', entry: 'calendar' },
+        { id: 'news-to-post', title: 'Headline to post', goal: 'Turn a headline into a list and a LinkedIn post for the owners it matters to, then approve it.', entry: 'headlines', next: [{ flow: 'ask-brain', on: 'Draft a post' }] }
       ],
       screens: [
         { id: 'home', name: '01 Home', path: 'pages/home.html', flow: 'start-day', kind: 'data', primaryAction: 'Open Attack Plan',
@@ -93,16 +94,16 @@ window.PROJECT = {
           states: { ClassicLayout: 'layout=classic', UpNextFirst: 'lead=upnext', SidebarCollapsed: 'nav=rail', BrainMinimized: 'brain=min&ask=why', BrainClosed: 'brain=closed', GuideFlows: 'guide=flows', GuideStructure: 'guide=structure', AccountMenu: 'menu=avatar', QueuePushed: 'tile=2&queued=1' },
           waivers: { Loading: LOCAL, Error: LOCAL, Empty: 'Home always has today’s plan' } },
         { id: 'attack-plan', name: '02 Dashboard · Attack Plan', path: 'pages/attack-plan.html', flow: 'start-day', kind: 'data', primaryAction: 'Call Daniel Marchetti',
-          description: 'Today’s plan with Call next, to-dos, the week strip, goals and meetings. Day and week stepper with a date picker.',
-          states: { Empty: 'called=all', PastDay: 'day=-1', FutureDay: 'day=1', Week: 'range=week', DatePicker: 'picker=1', Resolved: 'resolved=1' },
+          description: 'Today’s plan with Call next (and where the list comes from), Suggested by Brain lists to approve or dismiss, to-dos, the editable week template, editable goals and meetings. Day and week stepper with a date picker.',
+          states: { Empty: 'called=all', PastDay: 'day=-1', FutureDay: 'day=1', Week: 'range=week', DatePicker: 'picker=1', Resolved: 'resolved=1', SuggestionSaved: 'suggsaved=1', SuggestionsDismissed: 'dismissed=all', EditGoals: 'goals=edit', EditWeek: 'week=edit' },
           waivers: { Loading: LOCAL, Error: LOCAL } },
         { id: 'contact', name: '03 Contact case file', path: 'pages/contact.html', flow: 'live-call', kind: 'form', primaryAction: 'Call',
           description: 'Daniel Marchetti’s record: why now with trust and the Relationship beside it (touches since 2014, the notes that matter, who on the team knew him, what he said, a suggested angle), the live-call bar, the outcome bar (its actions apply on save: primary number, bad number, out of blasts for a year), and the record tabs. Calendar events with the contact show in Activity.',
           states: { WhyThis: 'id=marchetti&why=open', LiveCall: 'id=marchetti&call=live', Outcome: 'id=marchetti&call=outcome', Selected: 'id=marchetti&call=outcome&choice=No%20answer', Submitting: 'id=marchetti&call=saving', Success: 'id=marchetti&call=logged', Disputed: 'id=marchetti&why=open&flag=1', Intelligence: 'id=marchetti&tab=intelligence', Ownership: 'id=marchetti&tab=ownership', Activity: 'id=marchetti&tab=activity', Details: 'id=marchetti&tab=details', History: 'id=marchetti&tab=history', NoteOpen: 'id=marchetti&note=1', DoNotContact: 'id=baum', PropertyPeek: 'id=marchetti&tab=ownership&peek=p22h', OutcomeOtherNumber: 'id=marchetti&call=outcome&choice=Connected&dialed=9175550123', PrimaryMoved: 'id=marchetti&primary=9175550123&blasts=1', BlastExcluded: 'id=marchetti&primary=9175550123&blasts=1&tab=details', OutcomeHistory: 'id=marchetti&primary=9175550123&blasts=1&tab=history', EventsInActivity: 'id=okafor&tab=activity', NoteInActivity: 'id=marchetti&tab=activity&hl=n1', ConnectedPeople: 'id=marchetti&tab=ownership' },
           waivers: { Loading: LOCAL, Error: LOCAL, Empty: 'every contact has a why now', Validation: 'the only required input is the outcome; Save stays disabled until one is picked (Outcome state)' } },
         { id: 'brain', name: '04 Brain', path: 'pages/brain.html', flow: 'ask-brain', kind: 'data', primaryAction: 'Send',
-          description: 'Chat history (a collapsible column; a drawer on a phone), the empty state with suggestions, and a centred conversation with why-now, list and lookup answers.',
-          states: { Empty: 'new=1', Loading: 'ask=why&stage=thinking', Streaming: 'ask=why&stage=streaming', WhyNowAnswer: 'ask=why', ListAnswer: 'ask=list', Success: 'ask=list&approved=1', LookupAnswer: 'ask=lookup', History: 'chat=c1', HistoryHidden: 'chats=hidden', ChatsDrawer: 'chats=open' },
+          description: 'Chat history (a collapsible column; a drawer on a phone), the empty state with suggestions, and a centred conversation with why-now, list (the builder’s chips) and lookup answers; a correction Brain asks to remember; the headline-to-post flow (story, audience, draft, approve); Learning Mode (what Brain has been taught); and the paperclip’s Drop files.',
+          states: { Empty: 'new=1', Loading: 'ask=why&stage=thinking', Streaming: 'ask=why&stage=streaming', WhyNowAnswer: 'ask=why', ListAnswer: 'ask=list', Success: 'ask=list&approved=1', LookupAnswer: 'ask=lookup', History: 'chat=c1', HistoryHidden: 'chats=hidden', ChatsDrawer: 'chats=open', OkaforAnswer: 'ask=okafor', TeachCorrection: 'ask=teach', TeachRemembered: 'ask=teach&approved=1', LearningMode: 'view=learning', LearningAfterTeach: 'view=learning&taught=1', DropFiles: 'ask=why&drop=1', FileAdded: 'ask=why&dropped=1', PostDraft: 'ask=post', PostApproved: 'ask=post&approved=1' },
           waivers: { Error: 'answers are scripted and always return' } },
         { id: 'contacts', name: '05 Database · Contacts', path: 'pages/contacts.html', flow: 'find', kind: 'data', primaryAction: 'Open record',
           description: 'Lists and the criteria builder over the contacts table, at the scale of a 40,000-contact database: stackable chips (AND across, OR within), a live count, Save as list and Push to queue (Phone, Mail merge, Constant Contact). Every “Turn into a list” lands here. Search covers name, phone, email and address; a row opens the peek; ⌘K finds anything.',
@@ -119,17 +120,22 @@ window.PROJECT = {
           states: { Day: 'view=day', Month: 'view=month', Selected: 'event=0-6', Draft: 'draft=1', NewEvent: 'dialog=new', Validation: 'dialog=new&clash=1', Success: 'added=1' },
           waivers: { Loading: LOCAL, Error: LOCAL, Empty: 'the week always has events', Submitting: 'saving an event is instant and confirmed by a toast (Success)' } },
         { id: 'conversations', name: '09 Dashboard · Conversations', path: 'pages/conversations.html', flow: 'plan-week', kind: 'data', primaryAction: 'Conversation',
-          description: 'A Monday to Friday board plus Proposals. Connected calls from the case file land on today.',
+          description: 'A weekly summary line, then a Monday to Friday board plus Proposals. Connected calls from the case file land on today.',
           states: { Empty: 'week=1', PreviousWeek: 'week=-1', NewConversation: 'dialog=new' },
           waivers: { Loading: LOCAL, Error: LOCAL } },
         { id: 'outreach-performance', name: '10 Dashboard · Outreach performance', path: 'pages/outreach-performance.html', flow: 'plan-week', kind: 'info',
-          description: 'From the portal tab: Outreach (today vs previous day vs week, calling efficiency, LinkedIn, blasts; each count turns into a list), Business generation with deltas, Workflow efficacy. Logging is off.' },
+          description: 'From the portal tab: a diagnosis when a number drops, Outreach (today vs previous day vs week, calling efficiency, LinkedIn, blasts; each count turns into a list), Business generation with deltas, Workflow efficacy. Logging is off.' },
         { id: 'reporting', name: '11 Dashboard · Reporting', path: 'pages/reporting.html', flow: 'plan-week', kind: 'info',
           description: 'Coverage by ZIP weakest first, one email funnel with its rates beside Clicked what, engagement by channel. Every ZIP tile, funnel stage and Clicked what row turns into a list. Channel filters are off.' },
         { id: 'listings', name: '12 Dashboard · Listings', path: 'pages/listings.html', flow: 'plan-week', kind: 'info', primaryAction: 'Open a viewer',
           description: 'Listing cards with Auto and logged counts, their viewers (rows open the contact; Turn into a list offers “owns in the same neighborhood”) and written offers with amounts, website inquiries awaiting follow-up first, other requests and the events page.' },
         { id: 'web-analytics', name: '13 Dashboard · Web analytics', path: 'pages/web-analytics.html', flow: 'plan-week', kind: 'info',
-          description: 'Audience and outcomes, traffic with its summary, channels and campaigns, known contacts (open the contact, or turn them into a list), content tables with a list per OM and document, and collapsed site speed and tracking notes.' }
+          description: 'Audience and outcomes, traffic with its summary, channels and campaigns, known contacts (open the contact, or turn them into a list), content tables with a list per OM and document, and collapsed site speed and tracking notes.' },
+        { id: 'headlines', name: '14 More · Headlines', path: 'pages/headlines.html', flow: 'news-to-post', kind: 'info', primaryAction: 'Draft a post',
+          description: 'Read-only stories, each tagged “Relevant to N owners in your lists” with its audience chips; Draft a post opens Brain’s headline-to-post flow and Turn into a list opens the builder.' },
+        { id: 'bov', name: '15 More · BOV & OM', path: 'pages/bov.html', flow: 'find', kind: 'info',
+          description: 'Next phase, drawn: a BOV for 118 Ludlow St with inputs pre-filled from the property record, comps with trust badges and a price range. Generate deck is off.',
+          states: { OtherBuilding: 'id=p90c' } }
       ]
     }
   }

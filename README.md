@@ -15,7 +15,7 @@ Open http://localhost:4173. The preview server disables caching and reloads on c
 - `prototype.html`: the player. Its hamburger menu holds Light/Dark, the screen and state list, and Restart.
 - `screens.html`: the canvas, every screen and declared state at 1440, 1024 and 390 (desktop, tablet and phone layouts).
 - `system.html`: foundations, the 13 core families, and the Death Star product patterns.
-- `pages/`: 13 web screens. `pages/app/`: 14 mobile app screens (concept), sharing the same data, Brain and call loop.
+- `pages/`: 15 web screens (13, plus More › Headlines and More › BOV & OM). `pages/app/`: 14 mobile app screens (concept), sharing the same data, Brain and call loop.
 
 ## The demo
 Start on Home. The core loop: **Home → Call Daniel Marchetti → Why this? → Call → End call → No answer → Save outcome → Next owner.** Logged calls, notes, flags, to-dos, events and conversations persist in this browser; **Reset prototype data** (account menu, bottom left) or `?reset=1` restores the seed. Light and Dark are in the same account menu.
