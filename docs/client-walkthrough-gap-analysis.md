@@ -53,6 +53,8 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 
   Present this as one demo path: Reporting › Clicked "41 Ludlow OM" → Turn into list → add "Class A" and "fully free market" → Save → Push to Phone.
 
+  **Done (phase 2):** the criteria builder replaces the Database selects (14 criteria, AND across, OR within, live count at database scale); Save as list (working Saved lists, Brain's included) and Push to queue (Phone, Mail merge, Constant Contact; counted on Home); Turn into a list on funnel stages, Clicked what rows, ZIP tiles, listing viewers (with an "Owns in" chip), OM and document rows, known contacts and Outreach performance counts; Brain's /list opens in the builder. The demo path runs end to end (268 → 6 owners).
+
 ### T2. "A broker, not an assistant": distil history, don't just log it. **P1.**
 - **Thomas wants:**
   - Opening a contact years from now should give "a long history of outreach, here are the few substantive notes, here's your team history, here's what's happening now, this is why to reach out now". Not "on this date he hung up" (P1 ~09:30–11:00; P2 ~05:30; P3 33:17–34:01).
@@ -69,6 +71,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
     - last reply
     - a suggested angle
   - Keep the raw timeline in Activity.
+  - **Done (phase 2):** the Relationship block on Overview (Warmth, touches since 2014, Brain-picked notes linking to Activity, who on the team knew them, what they said, suggested angle).
   - The contact screen in the current portal already has "Relationship / Why call now / Warmth / Who on the team knew them / What they said / Connected people". The redesign should carry these over (see §3.3).
 
 ### T3. Team history as a first-class layer. **P1.**
@@ -83,6 +86,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
   - Add a team-history strand to the property record (Ownership history, currently a DRAWN tab) and to the case file. Show it as dated team events: proposal, BOV, first meeting, listing, sale, each with who on the team and a document link.
   - Show "Team knows this building" as a chip that is **visibly separate from the score**, to respect his "keep it separate from the empirical model".
   - Add it to the criteria builder (T1).
+  - **Done (phase 2):** a team-history fixture per building; the property's Ownership history tab became a live Team history tab; the dashed "Team knows this building" chip sits apart from the score; Team history (type and year range) is a criterion. 118 Ludlow's dates follow the fixtures (Marchetti bought in 2006), so it reads proposed 2004, listed 2005, sold 2006, BOV 2012.
 
 ### T4. Everything becomes outreach. **P2.**
 - **Thomas wants:** headlines, market data, listing views, OM downloads and email clicks each to lead to an action: a post, a tailored email, a call (P1 26:51–29:51; P2 ~10:00; P3 34:01–35:22).
@@ -174,13 +178,13 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 - **Prototype:** display-only. It counts automatically, shows hit rate and efficacy, logged business generation with deltas, workflow efficacy, and model accuracy.
 - **Gaps:**
   - Add a **diagnosis line** when a metric drops, e.g. "Conversations down 40%: calls are flat but confirmed numbers fell, so check data quality on the LES list." This fits the existing one-line Brain nudge (P2).
-  - Clicking any number should lead to the people behind it (T1) (P1).
+  - Clicking any number should lead to the people behind it (T1) (P1). **Done (phase 2):** each outreach count and LinkedIn connections turn into a list.
 
 **Reporting / coverage** (P1 13:40–16:30)
 - **Thomas wants:** coverage across channels by ZIP. Click a ZIP to see campaigns, owners and who clicked, then create outreach from it. Low coverage means "cover the zip better" and see which topics work there.
 - **Prototype:** ZIP tiles weakest first, the funnel, Clicked what, and engagement by channel. Drill-downs and filters are DRAWN.
 - **Gaps:**
-  - The ZIP drill-down, with a "Create outreach for this ZIP" action (P1, through T1).
+  - The ZIP drill-down, with a "Create outreach for this ZIP" action (P1, through T1). **Done (phase 2):** each ZIP tile turns into a list, which can be pushed to a queue.
   - Topic performance per ZIP is ABSENT (P3).
 
 **Listings** (P1 16:30–17:40)
@@ -190,14 +194,14 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
   - LinkedIn, Instagram and Facebook views as follow-up triggers.
 - **Prototype:** viewers are LIVE links. The Log buttons, Open OM and View all are DRAWN.
 - **Gaps:**
-  - "Follow up with viewers" leading to a filtered list with an "owns in the same neighborhood" criterion. This is his own example of nuance: people view a listing to price their own building (P1).
+  - "Follow up with viewers" leading to a filtered list with an "owns in the same neighborhood" criterion. This is his own example of nuance: people view a listing to price their own building (P1). **Done (phase 2):** Viewed by › Turn into a list offers "Owns in Lower East Side" (11 → 8).
   - Offers as a list with amounts, to support "we just reduced the price, any room to come up?" (P2).
 
 **Website analytics** (P1 17:40–20:30)
 - **Thomas wants:** who downloaded each OM, what pages people viewed, and event viewers who didn't register, so he can call them.
 - **Prototype:** downloads per file and Known contacts.
 - **Gaps:**
-  - Who downloaded each file (P1).
+  - Who downloaded each file (P1). **Done (phase 2):** each OM and document row turns into the list of who downloaded it.
   - An "Event viewers who didn't RSVP" segment (P2).
   - Custom date ranges ("93 days, 35 days"); currently DRAWN (P3).
 
@@ -209,7 +213,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 - **Prototype:** strong (see §1).
 - **Gaps:**
   - The Relationship summary (T2) and team history (T3) (P1).
-  - The current portal's contact page has **Warmth (0–100), "Who on the team knew them", "What they said" and "Connected people"** (co-owners across buildings). The prototype has warmth as "Accessibility" on Intelligence and no connected people. Bring connected people onto the Ownership tab or the rail (P2).
+  - The current portal's contact page has **Warmth (0–100), "Who on the team knew them", "What they said" and "Connected people"** (co-owners across buildings). The prototype has warmth as "Accessibility" on Intelligence and no connected people. Bring connected people onto the Ownership tab or the rail (P2). **Done (phase 2):** Warmth replaces Accessibility; Connected people is on the Ownership tab; the other two are in the Relationship block.
   - **Density check:** the why now, best way to reach, key facts, activity and notes on Overview, plus 5 more tabs and a 3-card rail. Test against "simple and to the point, so when I read it, I got it" (P2).
 
 ### 3.4 Database: property record (P1 25:15–26:50)
@@ -235,7 +239,7 @@ These match the walkthrough closely, so it's worth pointing them out to Thomas.
 ### 3.6 Outreach Queue (P2 01:45–03:24)
 - **Thomas wants:** the attack-list builder with proactive suggestions and maximum specificity, then push to Phone, Mail merge or Constant Contact.
 - **Prototype:** DRAWN. "Add to queue" shows only a toast.
-- **Gaps:** covered by T1 and T5. The criteria builder is the queue builder; consider putting it here rather than in the Database (P1).
+- **Gaps:** covered by T1 and T5. The criteria builder is the queue builder; consider putting it here rather than in the Database (P1). **Done (phase 2):** built in the Database as requested; Push to queue feeds Outreach's queues.
 
 ### 3.7 Phone (Terrakotta) (P2 03:45–07:39)
 - **Thomas wants:**

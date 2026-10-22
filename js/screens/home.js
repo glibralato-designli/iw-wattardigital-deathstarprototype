@@ -1,6 +1,8 @@
 /* 01 Home: the overview. Greeting, today's Attack Plan, the pulse strip, metric tabs, Up next and meetings. */
 (() => {
   const { D, ui, esc, icon, href, params } = DS;
+  // Preset queued=1: a list was pushed to Phone from the Database (Home counts it under Outreach).
+  if (params.get('queued') === '1') DS.S().queues = [...DS.queues(), { name: 'Class A · Fully free market · Clicked 41 Ludlow St OM', ch: 'phone', n: 6 }];
   const st = { tile: Math.max(0, Math.min(10, Number(params.get('tile')) || 0)), planOpen: params.get('plan') !== 'min' };
   const layout = params.get('layout') === 'classic' ? 'classic' : 'focused';
   const lead = params.get('lead') === 'upnext' ? 'upnext' : 'plan';
@@ -30,7 +32,9 @@
   };
 
   const metrics = () => {
-    const tiles = D.tiles.map((t, i) => i === 0 ? { ...t, num: DS.callsDone() + ' / 40', vals: t.vals.map((v, j) => j === t.vals.length - 1 ? DS.callsDone() : v) } : t);
+    // Queues pushed from a list in the Database add to Outreach's "Queues ready".
+    const qs = DS.queues(), qn = qs.reduce((a, q) => a + q.n, 0);
+    const tiles = D.tiles.map((t, i) => i === 0 ? { ...t, num: DS.callsDone() + ' / 40', vals: t.vals.map((v, j) => j === t.vals.length - 1 ? DS.callsDone() : v) } : t.name === 'Outreach' && qs.length ? { ...t, num: String(3 + qs.length), head: DS.loc(1480 + qn), headL: 'in ' + (3 + qs.length) + ' ready queues · ' + qs.length + ' pushed today', vals: t.vals.map((v, j) => j === t.vals.length - 1 ? v + qn : v) } : t);
     const d = tiles[st.tile];
     return `<section class="ds-metrics" aria-label="Metrics">
       <div class="ds-metrics__strip" data-overflow-host><div class="ds-metrics__tabs" role="tablist" aria-label="Areas" id="metric-tabs" data-keep-scroll="metric-tabs" data-overflow-x>${tiles.map((t, i) => `<button type="button" class="ds-mtab" role="tab" aria-selected="${i === st.tile}" tabindex="${i === st.tile ? 0 : -1}" data-act="tile" data-arg="${i}"><span class="ds-mtab__name">${icon(t.icon)}${esc(t.name)}</span><span class="ds-meta">${esc(t.label)}</span><span class="ds-mtab__num"${i === 0 ? ' data-count="calls"' : ''}>${esc(t.num)}</span></button>`).join('')}</div>

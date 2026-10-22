@@ -27,7 +27,7 @@
     ['p118', '118 Ludlow St', 'Lower East Side', '10002', '1-00412-0033', 'marchetti', 37, 12, 25, 21400, 1910, '$9.4M', 'Jun 9, 2026', 4],
     ['p22h', '22 Hester St', 'Chinatown', '10002', '1-00301-0018', 'marchetti', 16, 10, 6, 9800, 1925, '$2.1M', 'Mar 2029', 1],
     ['p9l', '9 Ludlow St', 'Lower East Side', '10002', '1-00296-0041', 'marchetti', 12, 4, 8, 7200, 1920, 'Not on record', 'Not on record', 1],
-    ['p27o', '27 Orchard St', 'Lower East Side', '10002', '1-00297-0012', 'feld', 24, 9, 15, 14100, 1915, '$3.8M', 'Jan 2028', 2],
+    ['p27o', '27 Orchard St', 'Lower East Side', '10002', '1-00297-0012', 'feld', 24, 24, 0, 14100, 1915, '$3.8M', 'Jan 2028', 2],
     ['p90c', '90 Clinton St', 'Lower East Side', '10002', '1-00348-0025', 'okafor', 41, 20, 21, 26800, 1928, '$6.1M', 'Aug 2026', 3],
     ['p64e', '64 Essex St', 'Lower East Side', '10002', '1-00352-0007', 'adler', 20, 6, 14, 12400, 1905, '$1.4M', 'Dec 2030', 2],
     ['p155d', '155 Delancey St', 'Lower East Side', '10002', '1-00346-0031', 'chen', 30, 18, 12, 19600, 1931, '$4.9M', 'Feb 2027', 2],
@@ -37,7 +37,7 @@
     ['p19r', '19 Rivington St', 'Lower East Side', '10002', '1-00425-0036', 'greene', 10, 10, 0, 6400, 1925, '$1.1M', 'Jul 2031', 1],
     ['p7s', '7 Stanton St', 'Lower East Side', '10002', '1-00426-0003', 'morales', 8, 2, 6, 5100, 1910, 'Not on record', 'Not on record', 0],
     ['p120n', '120 Norfolk St', 'Lower East Side', '10002', '1-00354-0028', 'baum', 26, 14, 12, 16200, 1930, '$5.5M', 'May 2034', 0],
-    ['p311e', '311 E 82nd St', 'Upper East Side', '10028', '1-01545-0021', 'lindqvist', 30, 18, 12, 22600, 1920, '$7.8M', 'Mar 2027', 3],
+    ['p311e', '311 E 82nd St', 'Upper East Side', '10028', '1-01545-0021', 'lindqvist', 30, 30, 0, 22600, 1920, '$7.8M', 'Mar 2027', 3],
     ['p418w', '418 W 46th St', 'Midtown West', '10036', '1-01055-0034', 'osei', 20, 8, 12, 13200, 1910, '$1.6M', 'Sep 2030', 1],
     ['p236w', '236 W 22nd St', 'Chelsea', '10011', '1-00773-0045', 'brennan', 14, 9, 5, 9900, 1900, 'Not on record', 'Not on record', 1],
     ['p130w', '130 W 130th St', 'Central Harlem', '10027', '1-01914-0012', 'dubois', 16, 6, 10, 12100, 1905, '$2.6M', 'May 2027', 2],
@@ -80,7 +80,7 @@
   const antis = c => c.id === 'marchetti' ? ['Refinanced once, in 2016', 'Owns two other buildings, so less pressure to sell'] : ['None on record'];
 
   const baseTimeline = c => c.id === 'marchetti'
-    ? [['Call', 'No answer', 'Aug 21'], ['Email', 'Opened the Q3 market report', 'Aug 3'], ['Call', 'Voicemail', 'Jul 14'], ['Text', 'Sent the LES rent roll comps', 'Jul 2'], ['Broadcast', 'Q2 LES market report · opened', 'Jun 18'], ['Note', 'Met at the REBNY breakfast; open to talking next year', 'Jun 2']]
+    ? [['Email', 'Opened the Q3 market report again', 'Sep 28'], ['Call', 'No answer', 'Aug 21'], ['Email', 'Opened the Q3 market report', 'Aug 3'], ['Call', 'Voicemail', 'Jul 14'], ['Text', 'Replied: “Talk to me after the summer. I’ll know where the refi lands.”', 'Jul 2'], ['Broadcast', 'Q2 LES market report · opened', 'Jun 18'], ['Note', 'Met at the REBNY breakfast; open to talking next year', 'Jun 2', 'n3'], ['Note', 'The 2016 Brookline refi resets in 2026. He’s already worried about the rate.', 'Nov 4, 2021', 'n2'], ['Note', 'Would only sell into a 1031 upstate; his wife wants out of managing tenants.', 'Mar 12, 2019', 'n1']]
     : (c.last === 'Never called' ? [] : [['Call', c.last.split(' · ')[1] || 'Call', c.last.split(' · ')[0]]]);
 
   const contactPoints = c => {
@@ -142,7 +142,7 @@
   };
 
   const chats = [
-    { id: 'p1', g: 'Pinned', pin: true, t: 'LES owners with debt due before year end', m: [{ role: 'user', text: '/list LES owners with debt due before year end' }, { role: 'bot', text: '12 owners match: Lower East Side, debt due by Dec 31, 2026, Class A and B. Marchetti, Feld and Okafor are the top three.', acts: [['Open in Database', 'contacts', '', false]] }] },
+    { id: 'p1', g: 'Pinned', pin: true, t: 'LES owners with debt due before year end', m: [{ role: 'user', text: '/list LES owners with debt due before year end' }, { role: 'bot', text: '12 owners match: Lower East Side and East Village, debt due by Dec 31, 2026, Class A and B. Marchetti, Okafor and Kowalski are the top three.', acts: [['Open in builder', 'contacts', 'crit=hood:Lower East Side,East Village;debt:2026-12-31;cls:A,B&from=brain', false]] }] },
     { id: 'today', g: 'Today', t: 'Marchetti’s loan is due in June', m: null },
     { id: 'c1', g: 'Today', t: 'Who should I call first today?', m: [{ role: 'user', text: 'Who should I call first today?' }, { role: 'bot', text: 'Start with Daniel Marchetti. His $9.4M loan matures June 9, and he hasn’t had a call in 41 days. Then Aaron Feld and Grace Okafor.', trust: 'Verified · ACRIS, Aug 12', acts: [['Open record', 'contact', 'id=marchetti', true]] }] },
     { id: 'c2', g: 'Previous 7 days', t: 'Summarize the LES maturity list', m: [{ role: 'user', text: 'Summarize the LES maturity list' }, { role: 'bot', text: '12 Lower East Side owners have debt due before the end of 2026: $61.2M across 214 units. Five are Class A, and three of those haven’t been called this quarter.' }] },
@@ -171,6 +171,87 @@
   const listsOff = [['Professional grade', 1260], ['Portfolio sellers', 2140], ['Active buyers', 3480]];
   const hoods = [['Lower East Side', 4820], ['East Village', 3960], ['Upper East Side', 7140], ['Midtown West', 5310], ['Chelsea', 3220]];
   const customLists = ['Class A sellers', 'LES debt 2026', 'Estate watch', 'Q4 mail merge', 'Air rights', 'Callbacks this week'];
+
+
+  /* ───────── Lists and the criteria builder ─────────
+     Engagement per contact: what each owner received, opened, clicked, viewed or downloaded. Labels match the
+     Reporting, Listings and Web analytics rows, so "Turn into a list" on a row is the same chip in the builder. */
+  const Q3 = ['Received Q3 market report', 'Delivered Q3 market report'];
+  const engagement = {
+    marchetti: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked Q3 report PDF', 'Downloaded Q3 market report'],
+    feld: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St'],
+    okafor: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St', 'Downloaded 41 Ludlow St OM', 'Visited the website'],
+    adler: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Clicked Book a call', 'Viewed 41 Ludlow St', 'Downloaded 41 Ludlow St OM', 'Visited the website'],
+    rivera: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 88 Orchard St OM', 'Viewed 88 Orchard St', 'Downloaded 88 Orchard St OM', 'Visited the website'],
+    kowalski: [...Q3, 'Clicked Q3 market report email', 'Clicked 88 Orchard St OM', 'Viewed 88 Orchard St'],
+    chen: [...Q3, 'Viewed 41 Ludlow St'],
+    shah: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Clicked Listings page', 'Viewed 41 Ludlow St', 'Visited the website'],
+    greene: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Clicked Q3 report PDF', 'Clicked Listings page', 'Viewed 41 Ludlow St', 'Downloaded Q3 market report', 'Visited the website'],
+    morales: [...Q3, 'Viewed 41 Ludlow St'],
+    baum: ['Viewed 41 Ludlow St'],
+    lindqvist: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St', 'Downloaded 41 Ludlow St OM'],
+    osei: [...Q3, 'Viewed 41 Ludlow St'],
+    brennan: [...Q3, 'Opened Q3 market report', 'Clicked Q3 market report email', 'Clicked 41 Ludlow St OM', 'Viewed 41 Ludlow St'],
+    dubois: [...Q3],
+  };
+  // LinkedIn connections and this week's touches, for the Social connection and Last touch criteria.
+  const linkedin = ['marchetti', 'okafor', 'adler', 'rivera', 'greene', 'lindqvist', 'brennan'];
+  const touched = { 'Called this week': ['marchetti', 'okafor', 'adler', 'rivera', 'shah'], 'Emailed this week': ['adler', 'okafor', 'lindqvist', 'marchetti'], 'Texted this week': ['marchetti', 'adler'], 'Conversation this week': ['adler', 'rivera', 'okafor'] };
+
+  /* Team history: what the team did on each building, from the imported archive (OneDrive and Salesforce).
+     [property, year, event, team member, document]. Kept separate from the predictive score. */
+  const teamHistory = [
+    ['p118', 2004, 'Proposal', 'John Stewart', 'Proposal · 118 Ludlow St · 2004.pdf'],
+    ['p118', 2005, 'Listing', 'John Stewart', 'Exclusive listing agreement · 118 Ludlow St.pdf'],
+    ['p118', 2006, 'Sale', 'John Stewart', 'Closing statement · sold to Ludlow 118 Holdings LLC.pdf'],
+    ['p118', 2012, 'BOV', 'John Stewart', 'BOV · 118 Ludlow St · 2012.xlsx'],
+    ['p118', 2019, 'First meeting', 'Thomas Windels', 'Meeting notes · Marchetti · Mar 2019.docx'],
+    ['p22h', 2017, 'Proposal', 'Sarah Klein', 'Proposal · 22 Hester St · 2017.pdf'],
+    ['p90c', 2015, 'First meeting', 'John Stewart', 'Meeting notes · Okafor family · 2015.docx'],
+    ['p90c', 2018, 'Proposal', 'John Stewart', 'Proposal · 90 Clinton St · 2018.pdf'],
+    ['p90c', 2026, 'BOV', 'Thomas Windels', 'BOV · 90 Clinton St · Sep 2026.xlsx'],
+    ['p64e', 2011, 'BOV', 'John Stewart', 'BOV · 64 Essex St · 2011.xlsx'],
+    ['p64e', 2020, 'Proposal', 'Sarah Klein', 'Proposal · 64 Essex St · 2020.pdf'],
+    ['p27o', 2013, 'Proposal', 'David Ortiz', 'Proposal to the Feld estate · 27 Orchard St.pdf'],
+    ['p212e', 2020, 'Proposal', 'Thomas Windels', 'Air-rights proposal · 212 E 3rd St.pdf'],
+    ['p19r', 2016, 'First meeting', 'Thomas Windels', 'Meeting notes · Greene · 2016.docx'],
+    ['p311e', 2009, 'Listing', 'John Stewart', 'Exclusive listing agreement · 311 E 82nd St.pdf'],
+    ['p311e', 2009, 'Sale', 'John Stewart', 'Closing statement · sold to East 82nd Street Associates.pdf'],
+    ['p311e', 2018, 'Proposal', 'Sarah Klein', 'Proposal · 311 E 82nd St · 2018.pdf'],
+    ['p236w', 2012, 'Proposal', 'David Ortiz', 'Proposal · 236 W 22nd St · 2012.pdf'],
+    ['p236w', 2013, 'Listing', 'David Ortiz', 'Exclusive listing agreement · 236 W 22nd St.pdf'],
+    ['p236w', 2014, 'Sale', 'David Ortiz', 'Closing statement · sold to Chelsea 22 Realty LLC.pdf'],
+  ].map(([pid, year, type, who, doc]) => ({ pid, year, type, who, doc }));
+  const teamOf = pid => teamHistory.filter(e => e.pid === pid).sort((a, b) => b.year - a.year);
+
+  /* The relationship, distilled: touches since, the notes that matter (Brain-picked, ids of timeline entries),
+     the last reply, a suggested angle, the next touch and connected people (co-owners across buildings). */
+  const relationship = {
+    marchetti: { since: 2014, touches: 31, warmth: 64, notesOf: 14, notes: ['n1', 'n2', 'n3'], said: ['Talk to me after the summer. I’ll know where the refi lands.', 'Text reply · Jul 2'], angle: 'Lead with the refinance math: a BOV that shows what a sale nets against refinancing $9.4M at today’s rates, before the June maturity.', next: ['Opened the Q3 report 2 days ago', 'Suggest a text, then LinkedIn'], connected: [['Lucia Marchetti', 'Co-owner · 118 Ludlow St and 22 Hester St', null], ['Paul Reyes', 'Partner · 22 Hester St', null], ['Peter Kowalski', 'Fellow member · Avenue B Owners LLC', 'kowalski']] },
+    okafor: { since: 2015, touches: 22, warmth: 78, notesOf: 9, said: ['The family wants a number before the loan is due.', 'Lunch recap · Sep 30'], angle: 'Bring the 90 Clinton St BOV to lunch and walk through a recap versus a sale.', next: ['Lunch today at 12 PM', 'Suggest an email with the BOV after lunch'], connected: [['Daniel Okafor', 'Co-owner · Clinton Street Partners LP', null]] },
+    adler: { since: 2011, touches: 27, warmth: 71, notesOf: 11, said: ['Open to a pricing opinion on 64 Essex St.', 'Call · Sep 28'], angle: 'Send the Q3 comps she asked for, then book the BOV pitch on Thursday.', next: ['Viewed 41 Ludlow St 4 times this week', 'Suggest a call, then the comps by email'], connected: [['Samuel Adler', 'Co-trustee · Adler Family Trust', null]] },
+    feld: { since: 2013, touches: 4, warmth: 22, notesOf: 1, said: null, angle: 'Condolences first. The team proposed to his father in 2013; offer a valuation for the estate, not a pitch.', next: ['Clicked the 41 Ludlow St OM', 'Suggest a letter, then a call'], connected: [] },
+    lindqvist: { since: 2009, touches: 12, warmth: 55, notesOf: 5, said: ['Send me what 82nd St buildings traded for.', 'Email reply · Sep 11'], angle: 'John sold him the building in 2009. Open with that, then the March maturity.', next: ['Downloaded the 41 Ludlow St OM', 'Suggest a call, then LinkedIn'], connected: [] },
+  };
+
+  /* Database-wide counts behind each criterion, so a list's size reads at the scale of the real database.
+     The live count combines them (see DS.crit in js/product.js); the table shows the matching demo rows. */
+  const critCounts = {
+    cls: { A: 1140, B: 3860, C: 9420, D: 14950, LH: 10842 },
+    signal: { 'Loan maturity': 4200, 'Estate transition': 1300, 'Long hold': 9800, 'Unused FAR': 2100, 'Lis pendens': 380, 'Nearby sale': 3100, 'Recent refinance': 5200 },
+    trust: { verified: 22000, single: 11000, stale: 6000, disputed: 1200 },
+    btype: { fm: 9800, rs: 6200, mixed: 24200 },
+    hood: { 'Lower East Side': 4820, 'East Village': 3960, 'Upper East Side': 7140, 'Midtown West': 5310, Chelsea: 3220, 'Central Harlem': 3730 },
+    debt: { '2026-12-31': 140, '2027-06-30': 420, '2027-12-31': 910 },
+    team: { Proposal: 2400, BOV: 1100, 'First meeting': 3900, Listing: 640, Sale: 520 },
+    eng: { 'Received Q3 market report': 12400, 'Delivered Q3 market report': 11980, 'Opened Q3 market report': 5270, 'Clicked Q3 market report email': 712, 'Clicked 41 Ludlow St OM': 268, 'Clicked Q3 report PDF': 196, 'Clicked Book a call': 104, 'Clicked Listings page': 86, 'Clicked 88 Orchard St OM': 58, 'Viewed 41 Ludlow St': 11, 'Viewed 88 Orchard St': 2, 'Downloaded 41 Ludlow St OM': 18, 'Downloaded 88 Orchard St OM': 10, 'Downloaded Q3 market report': 19, 'Visited the website': 9 },
+    social: { yes: 5630, no: 34582 },
+    rel: { warm: 3310, cold: 36902 },
+    touch: { 'Called this week': 112, 'Emailed this week': 186, 'Texted this week': 64, 'Conversation this week': 9, 'Never called': 21000, 'No touch in 90 days': 9000 },
+  };
+  // Brain's /list answer and the lists it saves are criteria too.
+  const brainList = 'hood:Lower East Side,East Village;debt:2026-12-31;cls:A,B';
+  const listCrit = { all: '', A: 'cls:A', B: 'cls:B', C: 'cls:C', D: 'cls:D', LH: 'cls:LH', warm: 'rel:warm', cold: 'rel:cold' };
 
   /* Display-only Dashboard tabs. Content mirrors the client's portal tabs; drill-downs and logging are drawn but off. */
   const outreachPerf = {
@@ -202,10 +283,13 @@
   const listings = [
     { addr: '41 Ludlow St', sub: 'Lower East Side · 24 units · 18,600 SF · $14.5M', status: 'Active', photo: 'assets/listings/41-ludlow-st.svg',
       counts: [['Website views', 612, true], ['Blast views', 1019, true], ['LinkedIn post views', 1420, false], ['Tours', 6, false], ['Written offers', 1, false]],
-      viewers: [['adler', 4, 'Sep 29'], ['okafor', 3, 'Sep 28'], ['greene', 2, 'Sep 27'], ['shah', 1, 'Sep 25'], ['chen', 1, 'Sep 22'], ['feld', 1, 'Sep 21'], ['morales', 1, 'Sep 19'], ['baum', 1, 'Sep 12']] },
+      viewers: [['adler', 4, 'Sep 29'], ['okafor', 3, 'Sep 28'], ['lindqvist', 3, 'Sep 28'], ['greene', 2, 'Sep 27'], ['shah', 1, 'Sep 25'], ['brennan', 1, 'Sep 24'], ['chen', 1, 'Sep 22'], ['feld', 1, 'Sep 21'], ['osei', 1, 'Sep 20'], ['morales', 1, 'Sep 19'], ['baum', 1, 'Sep 12']],
+      // Written offers, for "we just reduced the price, any room to come up?"
+      offers: [['Halcyon Capital', '$13.2M', 'Sep 24', 'Below ask · 91%'], ['Tomas Ruiz', '$12.6M', 'Sep 9', 'Expired Sep 23']] },
     { addr: '88 Orchard St', sub: 'Lower East Side · 12 units · 9,200 SF · $6.9M', status: 'In contract', photo: 'assets/listings/88-orchard-st.svg',
       counts: [['Website views', 205, true], ['Blast views', 488, true], ['LinkedIn post views', 310, false], ['Tours', 4, false], ['Written offers', 2, false]],
-      viewers: [['rivera', 2, 'Sep 26'], ['kowalski', 1, 'Sep 24']] },
+      viewers: [['rivera', 2, 'Sep 26'], ['kowalski', 1, 'Sep 24']],
+      offers: [['Bowery Equities', '$6.7M', 'Sep 18', 'Accepted · in contract'], ['Leah Kim', '$6.4M', 'Sep 12', 'Declined'], ['Halcyon Capital', '$6.2M', 'Sep 3', 'Declined']] },
   ];
   // [name, form, email or phone, about, message, date, in database, new]
   const inquiries = [
@@ -296,5 +380,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { TODAY, addD, TERRITORY, DB, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { TODAY, addD, TERRITORY, DB, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

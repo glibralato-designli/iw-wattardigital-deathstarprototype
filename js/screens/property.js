@@ -4,7 +4,8 @@
   const { D, ui, esc, icon, href, params } = DS;
   const p = D.pById[params.get('id')] || D.pById.p118, c = D.cById[p.owner], lead = c.pid === p.id, f = D.propFacts(p);
   const S = DS.S();
-  const TABS = ['overview', 'violations', 'ownership', 'deals', 'evidence'];
+  const TABS = ['overview', 'violations', 'ownership', 'deals', 'evidence', 'team'];
+  const team = D.teamOf(p.id);
   const st = { tab: TABS.includes(params.get('tab')) ? params.get('tab') : 'overview', qNote: '' };
   const acc = (key, def) => { const a = DS.V.acc || {}; return key in a ? a[key] : def; };
   const fmt = DS.loc;
@@ -24,7 +25,7 @@
     return `<div class="ds-rnav"><a class="ds-back" href="${href('properties')}">${icon('caret-left')}Back to Properties</a></div>
       <div class="ds-rhead"><span class="ds-rhead__avatar" data-kind="property" aria-hidden="true">${icon('buildings')}</span>
         <div class="ds-rhead__body"><div class="ds-rhead__title"><h1>${esc(p.addr)}</h1>${ui.cls(c.cls, true)}</div>
-          <div class="ds-rhead__meta">${meta.map(([l, ic]) => `<span>${icon(ic)}${esc(l)}</span>`).join('')}</div>
+          <div class="ds-rhead__meta">${meta.map(([l, ic]) => `<span>${icon(ic)}${esc(l)}</span>`).join('')}${team.length ? `<button type="button" class="ds-teamchip" data-act="tab" data-arg="team" data-tip="From the team’s archive. Not part of the score.">${icon('users')}Team knows this building</button>` : ''}</div>
           <div class="ds-rhead__chips"><a class="ds-chip" data-tone="outline" href="${href('contact', 'id=' + c.id)}">${icon('user')}${esc(c.name)}${icon('caret-right')}</a>${ui.scoreChip('Owner score ' + c.score, c.score)}<span class="ds-chip" title="Call priority">Priority ${f.priority}</span></div></div>
         <div class="ds-rhead__actions"><div class="ds-rhead__primary">${ui.btn({ label: 'Call owner', ic: 'phone', link: href('contact', 'id=' + c.id + '&act=call') })}${ui.btn({ label: 'Open owner', variant: 'outline', link: href('contact', 'id=' + c.id) })}</div>
           <div class="ds-rhead__tools">${off('View on map', 'map-trifold')}${off('Find comps', 'magnifying-glass')}${off('Owner summary (PDF)', 'file-text')}${off('Add to list', 'plus')}${ui.btn({ ic: 'arrows-in-simple', aria: 'Show as side panel', tip: 'Show as side panel', variant: 'outline', link: href('properties', 'peek=' + p.id) })}</div></div>
@@ -78,6 +79,11 @@
     <div class="ds-toolbar">${ui.btn({ label: 'Copy safe lines', ic: 'copy', variant: 'outline', act: 'prep-copy' })}${ui.off('Owner summary (PDF)', 'file-text')}<span class="ds-grow"></span><span class="badge" data-status="success">${icon('seal-check')}${safe().length} safe to state</span></div>
     <div class="ds-stack" data-gap="2">${evidence().map(e => `<div class="ds-evidence"><div class="ds-row__body"><span><span class="font-medium">${esc(e.l)}</span><span class="muted"> · ${esc(e.v)}</span></span><span class="ds-meta">${esc(e.m)}</span></div>${ui.trust(e.k)}${e.canFlag ? ui.btn({ label: 'Flag as wrong', variant: 'ghost', size: 'sm', act: 'flag', arg: e.i }) : e.flagged ? '<span class="ds-evidence__flagged">Flagged</span>' : '<span></span>'}</div>`).join('')}</div>`;
 
+  // Team history: dated team events from the imported archive, newest first. Separate from the empirical model.
+  const teamTab = () => `<div class="ds-section-h"><h2>Team history</h2><span class="ds-meta">${team.length ? team.length + ' events · ' + [...new Set(team.map(e => e.who))].join(', ') : 'None on record'}</span></div>
+    <p class="ds-meta" style="max-width:42rem;text-wrap:pretty">What the team has done on this building, from the archive (OneDrive and Salesforce). It is kept separate from the predictive score.</p>
+    ${team.length ? `<div class="ds-card" data-pad="all"><div class="ds-teamlist">${team.map(e => `<div class="ds-teamrow"><span class="ds-teamrow__year">${e.year}</span><span class="ds-row__body"><span><span class="font-medium">${esc(e.type)}</span><span class="muted"> · ${esc(e.who)}</span></span><span class="ds-teamrow__doc">${icon('file-text')}${esc(e.doc)}</span></span><span class="ds-off-link" role="link" tabindex="0" aria-disabled="true" data-tip="${DS.OFF}">${icon('arrow-square-out')}Open</span></div>`).join('')}</div></div>` : '<div class="ds-dashed">No team history on this building yet. Proposals, BOVs, meetings, listings and sales from the archive show here.</div>'}`;
+
   /* ───────── Rail ───────── */
   const rail = () => {
     const notes = (S.pnotes || {})[p.id] || [], tl = DS.timelineOf(c).slice(0, 3);
@@ -94,8 +100,8 @@
     </aside>`;
   };
 
-  const tabs = () => ui.stateTabs([['overview', 'Overview'], ['violations', 'Violations (' + openVio() + ' open)'], ['ownership', 'Ownership (1)'], ['deals', 'Deals (0)'], ['evidence', 'Evidence'], ['oh', 'Ownership history', true], ['docs', 'Documents', true], ['permits', 'Permits', true]], st.tab, 'tab', 'Property');
-  const body = () => `<div class="ds-stack" data-gap="4" style="gap:var(--space-5)" data-anim="fade" data-key="ptab-${st.tab}">${({ overview, violations, ownership, deals, evidence: evTab })[st.tab]()}</div>`;
+  const tabs = () => ui.stateTabs([['overview', 'Overview'], ['violations', 'Violations (' + openVio() + ' open)'], ['ownership', 'Ownership (1)'], ['deals', 'Deals (0)'], ['evidence', 'Evidence'], ['team', 'Team history (' + team.length + ')'], ['docs', 'Documents', true], ['permits', 'Permits', true]], st.tab, 'tab', 'Property');
+  const body = () => `<div class="ds-stack" data-gap="4" style="gap:var(--space-5)" data-anim="fade" data-key="ptab-${st.tab}">${({ overview, violations, ownership, deals, evidence: evTab, team: teamTab })[st.tab]()}</div>`;
 
   DS.define({
     id: 'property', nav: 'database', brain: 'min',

@@ -36,6 +36,12 @@
   const portfolio = DS.portfolio(c);
   const first = c.name.split(' ')[0].toLowerCase(), lastN = c.name.split(' ')[1].toLowerCase();
   const nextCall = c.status === 'Engaged' ? 'Oct 2' : c.status === 'Do not contact' ? 'Not set' : (c.cls === 'A' || c.cls === 'B') ? 'Oct 6' : 'Not set';
+  /* The relationship, distilled (Overview), from D.relationship, the timeline and the team's archive. */
+  const team = portfolio.flatMap(x => D.teamOf(x.id).map(e => ({ ...e, addr: x.addr })));
+  const teamPid = (team[0] || {}).pid;
+  const rel = (() => { const r = D.relationship[id] || {}, tl = DS.timelineOf(c), notes = tl.filter(x => x.k === 'Note');
+    return { since: r.since || 2026 - Math.min(c.years, 6), touches: r.touches || tl.length + (n % 5), warmth: r.warmth || 30 + (n % 40), notesOf: r.notesOf || notes.length, notes: r.notes ? r.notes.map(k => tl.find(x => x.id === k)).filter(Boolean) : notes.slice(0, 3), said: r.said || null, angle: r.angle || null, next: r.next || null, connected: r.connected || [] }; })();
+  const teamChip = () => team.length ? `<a class="ds-teamchip" href="${href('property', 'id=' + teamPid + '&tab=team')}" data-tip="From the team’s archive. Not part of the score.">${icon('users')}Team knows this building</a>` : '';
   const ICON = { Call: 'phone', Email: 'envelope-simple', Note: 'note', Flag: 'warning-diamond', Text: 'chat-text', Broadcast: 'megaphone', Event: 'calendar-blank' };
 
   /* ───────── Header ───────── */
@@ -50,7 +56,7 @@
     return `<div class="ds-rnav"><button type="button" class="ds-back" data-act="back">${icon('caret-left')}${esc(backLabel())}</button>${ui.btn({ label: 'Next owner', variant: 'ghost', size: 'sm', act: 'next-owner', cls: 'ds-next' }).replace('Next owner</button>', 'Next owner' + icon('caret-right') + '</button>')}</div>
       <div class="ds-rhead"><span class="ds-rhead__avatar" aria-hidden="true">${esc(DS.initials(c.name))}</span>
         <div class="ds-rhead__body"><div class="ds-rhead__title"><h1>${esc(c.name)}</h1>${ui.cls(c.cls, true)}</div>
-          <div class="ds-rhead__meta">${meta.map(([l, ic]) => `<span>${icon(ic)}${esc(l)}</span>`).join('')}</div>
+          <div class="ds-rhead__meta">${meta.map(([l, ic]) => `<span>${icon(ic)}${esc(l)}</span>`).join('')}${teamChip()}</div>
           <div class="ds-rhead__chips">${ui.scoreChip('Score ' + c.score, c.score)}<span class="ds-chip" data-tone="outline"><span class="ds-dot" data-tone="${ui.statusDot(c.status)}"></span>${esc(c.status)}</span><span class="ds-chip" title="Lead stage">${esc(tier)}</span>${c.status === 'Do not contact' ? `<span class="ds-chip" data-tone="danger">${icon('warning-diamond')}Asked not to be contacted</span>` : ''}</div></div>
         <div class="ds-rhead__actions"><div class="ds-rhead__primary">${!onCall() && !oc ? ui.btn({ label: 'Call', ic: 'phone', act: 'start-call' }) : ''}${ui.btn({ label: 'Add note', ic: 'note', variant: 'outline', act: 'open-note' })}</div>
           <div class="ds-rhead__tools">${ui.btn({ ic: 'plus', aria: 'Add to queue', tip: 'Add to queue', variant: 'outline', act: 'queue' })}${ui.btn({ ic: 'chat-text', aria: 'Text', variant: 'outline', disabled: true })}${ui.btn({ ic: 'envelope-simple', aria: 'Email', variant: 'outline', disabled: true })}${ui.btn({ ic: 'arrows-in-simple', aria: 'Show as side panel', tip: 'Show as side panel', variant: 'outline', link: href('contacts', 'peek=' + id) })}</div></div>
@@ -122,13 +128,24 @@
     const body = `<div>${ns.map(x => `<div class="ds-stack" style="gap:var(--space-0-5);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--border-subtle)"><span style="text-wrap:pretty">${esc(x.t)}</span><span class="ds-meta">${esc(x.d)}</span></div>`).join('')}</div>${ns.length ? '' : '<span class="ds-meta">No notes yet.</span>'}<div>${ui.btn({ label: 'Add note', ic: 'plus', variant: 'outline', size: 'sm', act: 'open-note' })}</div>`;
     return ui.acc('notes', 'Notes', ns.length ? ns.length + (ns.length === 1 ? ' note' : ' notes') : 'No notes yet', body, acc('notes', false));
   };
-  const overview = () => whyCard() + `<div class="ds-acc">${reach()}${facts()}${recent()}${notes()}</div>`;
+  const relationship = () => {
+    const who = [...new Set(team.map(e => e.who))].map(w => { const es = team.filter(e => e.who === w).sort((a, b2) => a.year - b2.year); return [w, es.map(e => e.type + ' ' + e.year).join(', ') + ' · ' + [...new Set(es.map(e => e.addr))].join(', ')]; });
+    if (!who.some(x => x[0] === 'Thomas Windels') && c.last !== 'Never called') who.push(['Thomas Windels', 'Owner of the record · last touch ' + DS.lastOf(c).split(' · ')[0]]);
+    return `<section class="ds-rel" aria-label="Relationship"><div class="ds-rel__head">${icon('handshake')}<h2>Relationship</h2><span class="ds-chip" data-tone="outline" data-tip="Relationship warmth, 0–100. Tracked separately, never added to the predictive score.">Warmth ${rel.warmth}</span><span class="ds-meta">${rel.touches} touches since ${rel.since}</span><span class="ds-grow"></span>${teamChip()}</div>
+      <div class="ds-rel__grid"><div class="ds-rel__col"><h3>${icon('sparkle')} The notes that matter</h3>${rel.notes.length ? rel.notes.map(x => `<div class="ds-rel__note"><p>${esc(x.t)}</p><div class="ds-toolbar"><span class="ds-meta">${esc(x.d)}</span><a class="ds-link-btn" href="${href('contact', 'id=' + id + '&tab=activity' + (x.id ? '&hl=' + x.id : ''))}">Open in Activity${icon('caret-right')}</a></div></div>`).join('') + `<span class="ds-meta">Picked by Brain from ${rel.notesOf} ${rel.notesOf === 1 ? 'note' : 'notes'}. The rest stay in Activity.</span>` : '<span class="ds-meta">No notes yet. Brain picks the ones that matter as calls are logged.</span>'}</div>
+        <div class="ds-rel__col"><h3>Who on the team knew them</h3>${who.length ? who.map(([w, l]) => `<div class="ds-rel__who"><span class="avatar" data-size="sm">${esc(DS.initials(w))}</span><span class="ds-row__body"><span class="font-medium">${esc(w)}</span><span class="ds-row__sub" style="white-space:normal">${esc(l)}</span></span></div>`).join('') : '<span class="ds-meta">Nobody on the team yet.</span>'}
+          <h3>What they said</h3>${rel.said ? `<p class="ds-rel__quote">“${esc(rel.said[0])}”</p><span class="ds-meta">${esc(rel.said[1])}</span>` : '<span class="ds-meta">No reply on record.</span>'}</div></div>
+      ${rel.angle ? `<div class="ds-rel__line">${icon('sparkle')}<span><b>Suggested angle.</b> ${esc(rel.angle)}</span></div>` : ''}${nextTouch()}
+    </section>`;
+  };
+  const nextTouch = () => '';
+  const overview = () => whyCard() + relationship() + `<div class="ds-acc">${reach()}${facts()}${recent()}${notes()}</div>`;
 
   /* ───────── Intelligence ───────── */
   const mon = m => { const d = new Date(m); if (isNaN(d)) return null; return Math.round((d - D.TODAY) / (30.4 * 864e5)); };
   const intelligence = () => {
-    const access = 40 + (n % 50), mtm = c.id === 'marchetti' ? 8 : p.debt === 'Not on record' ? null : mon(p.mat), hot = mtm != null && mtm > 0 && mtm < 18;
-    const score = `<div style="display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap"><span class="ds-score-big">${c.score}</span><span class="ds-toolbar" style="gap:var(--space-1-5)">${ui.cls(c.cls, true)}<span class="ds-chip" title="Lead stage">${esc(tier)}</span><span class="ds-chip" title="Relationship strength. Tracked separately, never added to the predictive score.">Accessibility ${access}</span></span></div>${ui.kv([['Debt', p.debt], ['Maturity', p.mat], ['Months to maturity', mtm != null && mtm > 0 ? String(mtm) : 'Not on record', { hot }]])}<span class="ds-meta">Model v4 · scored Sep 29, 05:40 UTC</span>`;
+    const mtm = c.id === 'marchetti' ? 8 : p.debt === 'Not on record' ? null : mon(p.mat), hot = mtm != null && mtm > 0 && mtm < 18;
+    const score = `<div style="display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap"><span class="ds-score-big">${c.score}</span><span class="ds-toolbar" style="gap:var(--space-1-5)">${ui.cls(c.cls, true)}<span class="ds-chip" title="Lead stage">${esc(tier)}</span><span class="ds-chip" title="Relationship warmth, 0–100. Tracked separately, never added to the predictive score.">Warmth ${rel.warmth}</span></span></div>${ui.kv([['Debt', p.debt], ['Maturity', p.mat], ['Months to maturity', mtm != null && mtm > 0 ? String(mtm) : 'Not on record', { hot }]])}<span class="ds-meta">Model v4 · scored Sep 29, 05:40 UTC</span>`;
     const rank = { Critical: 3, Strong: 2, Moderate: 1 };
     const props = portfolio.map((x, i) => {
       const lead = x.id === c.pid, rows = [];
@@ -150,17 +167,20 @@
   };
 
   /* ───────── Ownership, Activity, Details, History ───────── */
-  const ownership = () => `<div class="ds-acc">${portfolio.map((x, i) => ui.acc('own-' + x.id, x.addr, x.units + ' units · ' + (x.debt === 'Not on record' ? 'No debt on record' : x.debt + ' due ' + x.mat), ui.kv([['Neighborhood', x.hood + ' · ' + x.zip], ['Units', x.units + ' · ' + x.fm + ' FM · ' + x.rs + ' RS'], ['Gross SF', DS.loc(x.sf)], ['Year built', String(x.built)], ['Debt', x.debt], ['Maturity', x.mat], ['BBL', x.bbl], ['Role', x.id === c.pid ? 'Lead property' : 'Portfolio']]) + `<button type="button" class="ds-link-btn" style="align-self:flex-start" data-act="peek" data-arg="p:${x.id}">Open property${icon('caret-right')}</button>`, acc('own-' + x.id, i === 0), ui.cls(c.cls))).join('')}</div>`;
+  const ownership = () => `<div class="ds-acc">${portfolio.map((x, i) => ui.acc('own-' + x.id, x.addr, x.units + ' units · ' + (x.debt === 'Not on record' ? 'No debt on record' : x.debt + ' due ' + x.mat), ui.kv([['Neighborhood', x.hood + ' · ' + x.zip], ['Units', x.units + ' · ' + x.fm + ' FM · ' + x.rs + ' RS'], ['Gross SF', DS.loc(x.sf)], ['Year built', String(x.built)], ['Debt', x.debt], ['Maturity', x.mat], ['BBL', x.bbl], ['Role', x.id === c.pid ? 'Lead property' : 'Portfolio']]) + `<button type="button" class="ds-link-btn" style="align-self:flex-start" data-act="peek" data-arg="p:${x.id}">Open property${icon('caret-right')}</button>`, acc('own-' + x.id, i === 0), ui.cls(c.cls))).join('')}</div>
+    <section class="ds-stack" data-gap="2" aria-label="Connected people"><div class="ds-section-h"><h2>Connected people</h2><span class="ds-meta">Co-owners and partners across ${esc(c.name.split(' ')[0])}’s buildings · NY DOS and ACRIS</span></div>
+      ${rel.connected.length ? `<div>${rel.connected.map(([nm, how, cid]) => `<div class="ds-conn"><span class="avatar" data-size="sm">${esc(DS.initials(nm))}</span><span class="ds-row__body">${cid ? `<a class="font-medium" href="${href('contact', 'id=' + cid)}">${esc(nm)}</a>` : `<span class="font-medium">${esc(nm)}</span>`}<span class="ds-row__sub">${esc(how)}</span></span>${cid ? ui.cls(D.cById[cid].cls) : '<span class="badge">Not in the database</span>'}</div>`).join('')}</div>` : '<div class="ds-dashed">No co-owners or partners on record.</div>'}</section>`;
   const MON = { Jan: 'January', Feb: 'February', Mar: 'March', Apr: 'April', May: 'May', Jun: 'June', Jul: 'July', Aug: 'August', Sep: 'September', Oct: 'October', Nov: 'November', Dec: 'December' };
   const activity = () => {
     const all = DS.timelineOf(c), tl = st.actF === 'All' ? all : all.filter(x => x.k + 's' === st.actF);
-    const groups = []; tl.forEach(x => { const m = MON[(x.d || '').slice(0, 3)] ? MON[x.d.slice(0, 3)] + ' 2026' : 'September 2026'; let g = groups.find(y => y.m === m); if (!g) groups.push(g = { m, items: [] }); g.items.push(x); });
+    const groups = []; tl.forEach(x => { const yr = ((x.d || '').match(/\b(19|20)\d\d\b/) || ['2026'])[0], m = MON[(x.d || '').slice(0, 3)] ? MON[x.d.slice(0, 3)] + ' ' + yr : 'September 2026'; let g = groups.find(y => y.m === m); if (!g) groups.push(g = { m, items: [] }); g.items.push(x); });
+    const hl = params.get('hl');
     const tone = t => /Connected|Callback|replied|opened/i.test(t) ? 'good' : /Voicemail|No answer/i.test(t) ? 'warn' : /Not interested|Bad/i.test(t) ? 'bad' : '';
     const filters = ['All', 'Calls', 'Emails', 'Texts', 'Notes', 'Events'].map(l => `<button type="button" class="ds-pill-btn" aria-pressed="${st.actF === l}" data-act="act-f" data-arg="${l}">${l}</button>`).join('');
     const upcoming = [...DS.eventsOf(c).filter(e => !e.past).map(e => [e.t + ' · ' + D.calendars[e.cal], e.when]), ...(nextCall !== 'Not set' ? [[c.name + ' · Follow-up call', nextCall]] : [])];
     return `${upcoming.length ? `<div class="ds-note--info ds-note">${icon('calendar-blank')}<span class="ds-row__body"><span class="ds-meta font-semibold" style="color:inherit">Upcoming and overdue</span>${upcoming.map(([t, w]) => `<span style="display:flex;gap:var(--space-3);justify-content:space-between;flex-wrap:wrap"><span>${esc(t)}</span><b class="num">${esc(w)}</b></span>`).join('')}</span></div>` : ''}
-      <div class="ds-toolbar"><div class="ds-card__title" style="min-width:12.5rem"><h2>Every touch</h2><span class="ds-meta">Calls, emails, texts, broadcasts and notes, newest first</span></div>${filters}${ui.btn({ label: 'Log a call', ic: 'plus', variant: 'outline', size: 'sm', act: 'log-call' })}</div>
-      ${tl.length ? `<div class="ds-acc">${groups.map((g, gi) => ui.acc('tl-' + g.m, g.m, g.items.length + (g.items.length === 1 ? ' touch' : ' touches'), `<div>${g.items.map(x => { const isCall = x.k === 'Call'; return `<div class="ds-tl"><span class="ds-tl__when">${icon(ICON[x.k] || 'note')}${esc(x.d)}</span><span class="ds-row__body"><span class="font-medium">${isCall ? 'Call · outbound' : x.k === 'Text' ? 'Text · outbound' : x.k === 'Event' ? 'Calendar' : esc(x.k)}</span><span class="muted" style="text-wrap:pretty">${esc(isCall ? 'Outcome logged by Thomas W.' : x.t)}</span></span><span class="ds-tl__o" data-tone="${tone(x.t)}">${esc(isCall ? x.t : /opened/.test(x.t) ? 'opened' : '')}</span></div>`; }).join('')}</div>`, acc('tl-' + g.m, gi === 0))).join('')}</div>` : '<div class="ds-dashed">No touches logged yet. Calls, emails and notes show up here.</div>'}`;
+      <div class="ds-toolbar"><div class="ds-card__title" style="min-width:12.5rem"><h2>Every touch</h2><span class="ds-meta">${rel.touches} touches since ${rel.since}. Recent ones and the notes that matter are shown, newest first</span></div>${filters}${ui.btn({ label: 'Log a call', ic: 'plus', variant: 'outline', size: 'sm', act: 'log-call' })}</div>
+      ${tl.length ? `<div class="ds-acc">${groups.map((g, gi) => ui.acc('tl-' + g.m, g.m, g.items.length + (g.items.length === 1 ? ' touch' : ' touches'), `<div>${g.items.map(x => { const isCall = x.k === 'Call'; return `<div class="ds-tl${hl && x.id === hl ? ' ds-hl' : ''}"${x.id ? ` id="tl-${esc(x.id)}"` : ''}><span class="ds-tl__when">${icon(ICON[x.k] || 'note')}${esc(x.d)}</span><span class="ds-row__body"><span class="font-medium">${isCall ? 'Call · outbound' : x.k === 'Text' ? 'Text · outbound' : x.k === 'Event' ? 'Calendar' : esc(x.k)}</span><span class="muted" style="text-wrap:pretty">${esc(isCall ? 'Outcome logged by Thomas W.' : x.t)}</span></span><span class="ds-tl__o" data-tone="${tone(x.t)}">${esc(isCall ? x.t : /opened/.test(x.t) ? 'opened' : '')}</span></div>`; }).join('')}</div>`, acc('tl-' + g.m, gi === 0 || (!!hl && g.items.some(x => x.id === hl))))).join('')}</div>` : '<div class="ds-dashed">No touches logged yet. Calls, emails and notes show up here.</div>'}`;
   };
   const togState = () => ({ emailOut: false, unsub: false, dnc: c.status === 'Do not contact', buy: false, sell: c.cls === 'A', hold: c.cls === 'LH' || c.id === 'marchetti', fin: c.id === 'marchetti', x1031: c.cls === 'A' && n % 2 === 0, ...(S.ctog[id] || {}) });
   const details = () => {
@@ -227,7 +247,7 @@
     scope: () => c.name,
     peekList: () => portfolio.map(x => ['p', x.id]),
     render: () => `${liveBar()}<div class="ds-record"><div class="ds-record__main">${header()}${noteBox()}${outcomeBar()}${tabs()}${body()}</div>${rail()}</div>`,
-    after: () => { if (st.focusNotes) { st.focusNotes = false; const el = document.getElementById('out-notes'); if (el) el.focus(); } },
+    after: () => { if (params.get('hl') && st.tab === 'activity' && !st.hlDone) { st.hlDone = true; const el = document.getElementById('tl-' + params.get('hl')); if (el) el.scrollIntoView({ block: 'center' }); } if (st.focusNotes) { st.focusNotes = false; const el = document.getElementById('out-notes'); if (el) el.focus(); } },
     acts: {
       back: () => { try { const r = new URL(DS.referrer || document.referrer); if (r.origin === location.origin && history.length > 1) { history.back(); return; } } catch (_) {} Nav.go('contacts'); },
       tab: (el, k) => { st.tab = k; DS.render(); },

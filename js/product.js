@@ -23,11 +23,11 @@
 
   /* ───────── Store: demo data in local storage, session UI in session storage ───────── */
   const STORE = 'ds-proto-v2', UI = 'ds-ui-v2';
-  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, blastOut: {} });
+  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, blastOut: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
-  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'blasts'].some(k => params.has(k)) && params.get('reset') !== '1';
+  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'blasts', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued'].some(k => params.has(k)) && params.get('reset') !== '1';
   let snapshot = isSnapshot();
   let S = { ...fresh(), ...(read(localStorage, STORE) || {}) };
   if (params.get('reset') === '1') { S = fresh(); write(localStorage, STORE, S); try { sessionStorage.removeItem(UI); } catch (_) {} }
@@ -81,7 +81,7 @@
     const goal = o.goal ? `<div class="ds-goal" style="bottom:${Math.round(o.goal / max * 120) + 22}px"><span>Goal ${o.goal}</span></div>` : '';
     return `<div class="ds-bars" role="img" aria-label="${esc(o.aria || 'Bar chart')}"${o.key ? ` data-anim="bars" data-key="bars-${esc(o.key)}"` : ''}>${goal}${vals.map((v, i) => `<div class="ds-bar"><span class="ds-bar__v"${v ? '' : ' data-zero'}>${v ? f(v) : esc(o.zero || 'None')}</span><span class="ds-bar__fill"${!v ? ' data-zero' : (i === last && !o.flat && labels.length === 7) ? ' data-today' : ''} style="--i:${i};height:${v ? Math.max(4, Math.round(v / max * 120)) : 3}px"></span><span class="ds-bar__d">${esc(labels[i])}</span></div>`).join('')}</div>`;
   };
-  ui.hbars = (rows, o = {}) => { const max = o.max || Math.max(...rows.map(r => r[1])) || 1, f = typeof o.fmt === 'function' ? o.fmt : o.fmt === 'pct' ? pct : o.fmt === 'loc' ? loc : String; return `<div class="ds-hbars"${o.wide ? ' data-wide' : ''}>${rows.map(([l, v, tone]) => `<div class="ds-hbar"><span class="ds-ellipsis">${esc(l)}</span><span class="ds-hbar__track"><span${tone || o.tone ? ` data-tone="${tone || o.tone}"` : ''} style="width:${Math.max(2, Math.round(v / max * 100))}%"></span></span><span class="ds-hbar__n${v ? '' : ' muted'}">${f(v, l)}</span></div>`).join('')}</div>`; };
+  ui.hbars = (rows, o = {}) => { const max = o.max || Math.max(...rows.map(r => r[1])) || 1, f = typeof o.fmt === 'function' ? o.fmt : o.fmt === 'pct' ? pct : o.fmt === 'loc' ? loc : String; return `<div class="ds-hbars"${o.wide ? ' data-wide' : ''}${o.tail ? ' data-tail' : ''}>${rows.map(([l, v, tone]) => `<div class="ds-hbar"><span class="ds-ellipsis">${esc(l)}</span><span class="ds-hbar__track"><span${tone || o.tone ? ` data-tone="${tone || o.tone}"` : ''} style="width:${Math.max(2, Math.round(v / max * 100))}%"></span></span><span class="ds-hbar__n${v ? '' : ' muted'}">${f(v, l)}</span>${o.tail ? o.tail(l, v) : ''}</div>`).join('')}</div>`; };
   ui.line = (points, o = {}) => {
     // Lines and area are SVG (non-scaling strokes); dots and labels are HTML so text never stretches.
     const W = 1000, H = 160, max = Math.max(...points.map(p => p[1])) * 1.08, min = Math.min(...points.map(p => p[1])) * 0.82;
@@ -109,18 +109,78 @@
      Past ones join the contact's timeline; today's (from the 10:30 AM now line) and later ones are upcoming. */
   const eventsOf = c => [...D.events.filter(e => e[6] === c.id).map(e => ({ off: e[0] - 2, s: e[1], dur: e[2], cal: e[3], t: e[4] })), ...(S.calNew || []).filter(x => x.cid === c.id).map(x => ({ off: x.off, s: x.s, dur: x.dur, cal: x.cal, t: x.t }))]
     .map(e => ({ ...e, past: e.off < 0 || (e.off === 0 && e.s + e.dur <= 10.5), when: fmtMD(D.addD(e.off)) + ', ' + tFmt(e.s) })).sort((a, b) => a.off - b.off || a.s - b.s);
-  const timelineOf = c => [...(S.tl[c.id] || []), ...eventsOf(c).filter(e => e.past).reverse().map(e => ({ k: 'Event', t: e.t + ' · ' + D.calendars[e.cal] + ' · ' + tFmt(e.s), d: fmtMD(D.addD(e.off)) })), ...D.baseTimeline(c).map(([k, t, d]) => ({ k, t, d }))];
+  const timelineOf = c => [...(S.tl[c.id] || []), ...eventsOf(c).filter(e => e.past).reverse().map(e => ({ k: 'Event', t: e.t + ' · ' + D.calendars[e.cal] + ' · ' + tFmt(e.s), d: fmtMD(D.addD(e.off)) })), ...D.baseTimeline(c).map(([k, t, d, id]) => ({ k, t, d, id }))];
   // Every email on the record, lower case: the contact points plus the business address on the entity's domain (as the case file shows them).
   const emailsOf = c => { const [f, l] = c.name.toLowerCase().split(' '), dom = c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com'; return [...D.contactPoints(c).filter(x => x[0] === 'envelope-simple').map(x => x[1].toLowerCase()), f[0] + l + '@' + dom]; };
   const portfolio = c => P.filter(p => p.owner === c.id);
   const addTimeline = (id, entry) => { S.tl[id] = [entry, ...(S.tl[id] || [])]; };
   const remember = id => { S.recent = [id, ...(S.recent || []).filter(x => x !== id)].slice(0, 4); save(); };
 
+  /* ───────── Criteria: one object for the Database builder, Brain's lists and every "Turn into a list" ─────────
+     A list is a stack of chips, AND across chips and OR within one. Serialised for URLs and saved lists as
+     "key:value,value;key:value" (a team chip adds "@from-to"). Building chips (type, size, place, debt, team
+     history) must hold on the same building; the rest test the contact. */
+  const CC = D.critCounts, NDB = D.DB.contacts;
+  const yrs = Array.from({ length: 22 }, (_, i) => 2005 + i);
+  const rangeOk = (v, x) => { const [a, b] = String(x).split('-'); return (a === '' || v >= +a) && (b === undefined || b === '' || v <= +b); };
+  const rangeL = (x, unit) => { const [a, b] = String(x).split('-'); return a && b ? loc(a) + '–' + loc(b) + unit : a ? loc(a) + unit + ' or more' : 'Up to ' + loc(b) + unit; };
+  const share = (vals, table) => vals.reduce((t, v) => t + (table[v] || 0), 0);
+  const propShare = test => Math.max(0.04, P.filter(test).length / P.length);
+  const ENG = Object.keys(CC.eng);
+  const CRIT = {
+    cls: { l: 'Class', ic: 'target', opts: ['A', 'B', 'C', 'D', 'LH'].map(k => [k, k === 'LH' ? 'Likely holder' : 'Class ' + k]), n: it => share(it.v, CC.cls), c: (c, v) => v.includes(c.cls) },
+    signal: { l: 'Signal', ic: 'pulse', opts: Object.keys(CC.signal).map(k => [k, k]), n: it => share(it.v, CC.signal), c: (c, v) => v.includes(c.signal) },
+    trust: { l: 'Trust', ic: 'seal-check', opts: Object.entries(D.TRUST).map(([k, t]) => [k, t.word]), n: it => share(it.v, CC.trust), c: (c, v) => v.includes(c.trust) },
+    btype: { l: 'Building type', ic: 'buildings', opts: [['fm', 'Fully free market'], ['rs', 'Rent stabilized'], ['mixed', 'Mixed']], n: it => share(it.v, CC.btype), p: (p, v) => v.includes(p.rs === 0 ? 'fm' : p.fm === 0 ? 'rs' : 'mixed') },
+    units: { l: 'Units', ic: 'stack', range: ' units', picks: [['-10', 'Under 10'], ['10-25', '10–25'], ['25-50', '25–50'], ['50-', '50 or more']], n: it => NDB * propShare(p => rangeOk(p.units, it.v[0])), p: (p, v) => rangeOk(p.units, v[0]) },
+    sf: { l: 'Gross SF', ic: 'ruler', range: ' SF', picks: [['-10000', 'Under 10,000'], ['10000-', '10,000 or more'], ['10000-20000', '10,000–20,000'], ['20000-', '20,000 or more']], n: it => NDB * propShare(p => rangeOk(p.sf, it.v[0])), p: (p, v) => rangeOk(p.sf, v[0]) },
+    hood: { l: 'Owns in', ic: 'map-pin', opts: [...Object.keys(CC.hood).map(k => [k, k]), ...D.reporting.zips.map(z => [z[0], 'ZIP ' + z[0]])], n: it => it.v.reduce((t, v) => t + (CC.hood[v] || ((D.reporting.zips.find(z => z[0] === v) || [])[2]) || 1500), 0), p: (p, v) => v.includes(p.hood) || v.includes(p.zip) },
+    terr: { l: 'In territory', ic: 'map-trifold', fixed: D.TERRITORY.name, n: () => D.DB.inTerritory, p: p => p.terr },
+    debt: { l: 'Debt due by', ic: 'currency-circle-dollar', one: true, opts: [['2026-12-31', 'Dec 31, 2026'], ['2027-06-30', 'Jun 30, 2027'], ['2027-12-31', 'Dec 31, 2027']], n: it => share(it.v, CC.debt), p: (p, v) => { const d = new Date(p.mat); return !isNaN(d) && p.debt !== 'Not on record' && d <= new Date(v[0] + 'T23:59'); } },
+    team: { l: 'Team history', ic: 'users', opts: Object.keys(CC.team).map(k => [k, k]), years: true, n: it => share(it.v, CC.team) * (it.yr ? Math.min(1, (it.yr[1] - it.yr[0] + 1) / 20) : 1), p: (p, v, it) => D.teamOf(p.id).some(e => v.includes(e.type) && (!it.yr || (e.year >= it.yr[0] && e.year <= it.yr[1]))) },
+    eng: { l: 'Engagement', ic: 'envelope-simple', opts: ENG.map(k => [k, k]), groups: ['Received', 'Delivered', 'Opened', 'Clicked', 'Viewed', 'Downloaded', 'Visited'], n: it => it.v.reduce((m, v) => Math.max(m, CC.eng[v] || 0), 0) * (1 + 0.4 * (it.v.length - 1)), c: (c, v) => (D.engagement[c.id] || []).some(x => v.includes(x)) },
+    social: { l: 'LinkedIn', ic: 'linkedin-logo', one: true, opts: [['yes', 'Connected'], ['no', 'Not connected']], n: it => share(it.v, CC.social), c: (c, v) => v.includes(D.linkedin.includes(c.id) ? 'yes' : 'no') },
+    rel: { l: 'Relationship', ic: 'handshake', one: true, opts: [['warm', 'Warm'], ['cold', 'Cold']], n: it => share(it.v, CC.rel), c: (c, v) => v.includes(c.warm ? 'warm' : 'cold') },
+    touch: { l: 'Last touch', ic: 'clock', opts: Object.keys(CC.touch).map(k => [k, k]), n: it => share(it.v, CC.touch), c: (c, v) => v.some(x => x === 'Never called' ? lastOf(c) === 'Never called' : x === 'No touch in 90 days' ? /mo ago|9\dd|\d{3}d/.test(lastOf(c)) : (D.touched[x] || []).includes(c.id) || (x === 'Called this week' && /^Just now|^\dd ago/.test(lastOf(c)))) },
+  };
+  const ORDER = ['cls', 'signal', 'trust', 'btype', 'units', 'sf', 'hood', 'terr', 'debt', 'team', 'eng', 'social', 'rel', 'touch'];
+  const crit = {
+    DEF: CRIT, ORDER,
+    parse: str => String(str || '').split(';').map(x => x.trim()).filter(Boolean).map(x => { const i = x.indexOf(':'), k = i < 0 ? x : x.slice(0, i); let rest = i < 0 ? '' : x.slice(i + 1), yr = null; if (rest.includes('@')) { const [a, b] = rest.split('@'); rest = a; yr = b.split('-').map(Number); } return CRIT[k] ? { k, v: k === 'terr' ? ['1'] : rest.split(',').filter(Boolean), yr } : null; }).filter(Boolean).sort((a, b) => ORDER.indexOf(a.k) - ORDER.indexOf(b.k)),
+    str: items => items.filter(it => it.v.length).map(it => it.k + ':' + (it.k === 'terr' ? '1' : it.v.join(',')) + (it.yr ? '@' + it.yr.join('-') : '')).join(';'),
+    on: items => items.filter(it => it.v.length),
+    test: (c, items) => { const on = crit.on(items), cs = on.filter(it => CRIT[it.k].c), ps = on.filter(it => CRIT[it.k].p); return cs.every(it => CRIT[it.k].c(c, it.v, it)) && (!ps.length || portfolio(c).some(p => ps.every(it => CRIT[it.k].p(p, it.v, it)))); },
+    rows: items => C.filter(c => crit.test(c, items)),
+    // The database-wide size: each chip's own count, combined (owners who match one chip match others more often than chance).
+    count: items => { const on = crit.on(items); if (!on.length) return NDB; const ns = on.map(it => CRIT[it.k].n(it)); const k = on.filter(it => it.k !== 'terr').length; const est = ns.reduce((r, n) => r * n / NDB, NDB) * Math.pow(1.8, Math.max(0, k - 1)); return Math.max(crit.rows(items).length, Math.round(Math.min(est, ...ns))); },
+    value: (it, v) => { const d = CRIT[it.k]; if (d.range) return rangeL(v, d.range); const o = (d.opts || []).find(x => x[0] === v); return o ? o[1] : v; },
+    label: it => { const d = CRIT[it.k]; if (d.fixed) return d.fixed; if (!it.v.length) return 'Any'; const vs = it.v.map(v => crit.value(it, v)); return (vs.length > 2 ? vs.slice(0, 2).join(', ') + ' +' + (vs.length - 2) : vs.join(it.k === 'cls' ? ', ' : ' or ')) + (it.yr ? ' · ' + it.yr.join('–') : ''); },
+    name: items => crit.on(items).filter(it => it.k !== 'terr').map(it => (['cls', 'btype', 'eng', 'signal', 'touch', 'trust'].includes(it.k) ? '' : CRIT[it.k].l + ' ') + crit.label(it)).join(' · ') || 'All contacts',
+    href: (str, extra = '') => href('contacts', 'crit=' + str + (extra ? '&' + extra : '')),
+    years: yrs,
+  };
+  // A chip: the criterion's name and its values. Editable chips open their editor; static ones (Brain, suggestions) don't.
+  ui.critChip = (it, o = {}) => { const d = CRIT[it.k], inner = `${icon(d.ic)}<span class="ds-crit__k">${esc(d.l)}</span><span class="ds-crit__v">${esc(crit.label(it))}</span>`;
+    if (o.static) return `<span class="ds-crit" data-static>${inner}</span>`;
+    if (o.suggest) return `<button type="button" class="ds-crit" data-suggest data-act="crit-suggest" data-arg="${esc(crit.str([it]))}">${icon('plus')}<span class="ds-crit__k">${esc(d.l)}</span><span class="ds-crit__v">${esc(crit.label(it))}</span></button>`;
+    return `<span class="ds-crit"${o.editing ? ' data-editing' : ''}>${d.fixed ? `<span class="ds-crit__main" data-tip="${esc(D.TERRITORY.name + ' · ' + D.TERRITORY.sub)}">${inner}</span>` : `<button type="button" class="ds-crit__main" aria-expanded="${!!o.editing}" data-act="crit-edit" data-arg="${it.k}">${inner}${icon('caret-down')}</button>`}<button type="button" class="ds-crit__x" aria-label="Remove ${esc(d.l)}" data-act="crit-rm" data-arg="${it.k}">${icon('x')}</button></span>`; };
+  // "Turn into a list": a real link into the Database builder with these chips.
+  ui.toList = (str, o = {}) => o.icon ? `<a class="ds-icon-btn ds-tolist" href="${crit.href(str, o.q)}" aria-label="${esc(o.aria || 'Turn into a list')}" data-tip="${esc(o.aria || 'Turn into a list')}">${icon('list-bullets')}</a>` : `<a class="button" data-variant="${o.variant || 'outline'}" data-size="${o.size || 'sm'}" href="${crit.href(str, o.q)}">${icon('list-bullets')}${esc(o.label || 'Turn into a list')}</a>`;
+  /* Approvals: Brain proposes, Thomas approves. One bar for saved lists, suggested lists, drafts and what Brain learns. */
+  ui.approval = ({ text, yes, no, more = '', tone }) => `<div class="ds-approve"${tone ? ` data-tone="${tone}"` : ''}>${icon('seal-check')}<span>${text}</span>${more}${ui.btn({ label: yes[0], size: 'sm', act: yes[1], arg: yes[2] })}${no ? ui.btn({ label: no[0], size: 'sm', variant: 'outline', act: no[1], arg: no[2] }) : ''}</div>`;
+  ui.approved = text => `<span class="ds-saved" role="status">${icon('check-circle')}${esc(text)}</span>`;
+  // Saved lists (S.lists): {id, name, crit}. Older saves were plain names from Brain.
+  const savedLists = () => (S.lists || []).map((l, i) => typeof l === 'string' ? { id: 'brain', name: l, crit: D.brainList } : { ...l, id: l.id || 'l' + i });
+  const saveList = (name, str) => { const id = 'l' + Date.now().toString(36); S.lists = [...(S.lists || []).filter(l => (typeof l === 'string' ? D.brainList : l.crit) !== str), { id, name, crit: str }]; save(); return id; };
+  // Queues pushed from a list: Home's "Queues ready" counts them.
+  const queues = () => S.queues || [];
+
   /* ───────── Screen registry ───────── */
   const DS = { D, S: () => S, U: () => U, V, ui, esc, icon, href, params, OFF, loc, pct, fmtL, fmtS, fmtMD, tFmt, initials, isEmptyVal, lastOf, callIds, callsDone, evidenceOf, contactPointsOf, bestPhone, badOf, eventsOf, emailsOf, timelineOf, portfolio, addTimeline, remember, save, attrs, acts: {}, inputs: {}, screen: null };
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
+  Object.assign(DS, { crit, savedLists, saveList, queues });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
@@ -250,7 +310,7 @@
     const q = text.toLowerCase();
     const c = C.find(x => q.includes(x.name.toLowerCase()) || q.includes(x.name.split(' ')[1].toLowerCase()));
     if (c && (q.includes('why') || q.includes(c.name.toLowerCase()))) return { kind: 'why', cid: c.id, text: c.whyFull, src: c.id === 'marchetti' ? [['ACRIS', 'Mortgage recorded Jun 2016 · $9.4M'], ['NY DOS', 'Ludlow 118 Holdings LLC · principal'], ['DOF', '37 units · 25 rent stabilized']] : [['ACRIS', 'Deed and mortgage history'], ['NY DOS', c.entity]] };
-    if (q.startsWith('/list') || q.includes('list')) return { kind: 'list', text: 'I found 12 owners in the Lower East Side with debt due before year end. Marchetti, Okafor and Kowalski are the top three by score.', listName: 'LES debt due 2026 · 12 owners', pending: true, src: [['ACRIS', 'Mortgages maturing by Dec 31, 2026'], ['Model v4', 'Class A and B only']] };
+    if (q.startsWith('/list') || q.includes('list')) return { kind: 'list', text: 'I found 12 owners on the Lower East Side and in the East Village with debt due before year end. Marchetti, Okafor and Kowalski are the top three by score. The criteria are below; open them in the builder to change any.', listName: 'LES debt due 2026', crit: D.brainList, pending: true, src: [['ACRIS', 'Mortgages maturing by Dec 31, 2026'], ['Model v4', 'Class A and B only']] };
     if (q.includes('ludlow') || q.startsWith('/lookup') || q.includes('look up') || q.includes('lookup')) return { kind: 'lookup', pid: 'p118', text: '118 Ludlow St is a 37-unit walk-up owned by Daniel Marchetti. Its $9.4M loan matures June 9, 2026.', src: [['DOF', 'Units and building class'], ['ACRIS', 'Mortgage · Aug 12']] };
     if (q.includes('who should i call') || q.includes('call first')) return { text: 'Start with Daniel Marchetti. His $9.4M loan matures June 9, and he hasn’t had a call in 41 days. Then Aaron Feld and Grace Okafor.', trust: 'Verified · ACRIS, Aug 12', acts: [['Open record', 'contact', 'id=marchetti', true]] };
     return { text: 'I can explain why an owner is worth calling now, build a list of owners, or look up a property. Try “Why now for Daniel Marchetti?”.' };
@@ -280,6 +340,7 @@
     U.chatTitle = t;
     if (stage === 'thinking') { V.thinking = true; V.thinkSteps = stepsFor(t.toLowerCase()); V.thinkI = 1; return; }
     U.msgs.push({ role: 'bot', ...rp, ...(params.get('approved') ? { pending: false, approved: true } : {}) });
+    if (params.get('approved') && rp.kind === 'list') saveList(rp.listName, rp.crit);
     if (stage === 'streaming') V.stream = { i: U.msgs.length - 1, n: Math.round(rp.text.length * 0.55) };
   };
   function messageHTML(m, i, page) {
@@ -289,8 +350,10 @@
     if (!streaming) {
       if (m.kind === 'why') { const c = cById[m.cid]; blocks += `<div class="ds-answer"><div style="display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap">${ui.cls(c.cls)}<b class="ds-grow font-semibold">${esc(c.name)}</b>${ui.trust(c.trust)}</div><span class="ds-meta-strong" style="font-size:var(--text-sm);line-height:var(--line-height-sm);color:var(--fg-secondary)">${esc(c.why)}</span><div class="ds-toolbar">${ui.btn({ label: 'Call', ic: 'phone', size: 'sm', link: href('contact', 'id=' + c.id + '&act=call') })}${ui.btn({ label: 'Open record', size: 'sm', variant: 'outline', link: href('contact', 'id=' + c.id) })}</div></div>`; }
       if (m.kind === 'list') {
-        const rows = ['marchetti', 'okafor', 'kowalski'].map(id => { const c = cById[id]; return `<a class="ds-answer__row" href="${href('contact', 'id=' + id)}">${ui.cls(c.cls)}<span class="ds-row__body"><span class="font-medium">${esc(c.name)}</span><span class="ds-row__sub">${esc(pById[c.pid].addr + ' · ' + c.why)}</span></span></a>`; }).join('');
-        blocks += `<div class="ds-answer"><div class="ds-toolbar" style="gap:var(--space-1-5)">${['Lower East Side', 'Debt due by Dec 31, 2026', 'Class A and B'].map(f => `<span class="ds-filter-chip">${icon('funnel-simple')}${esc(f)}</span>`).join('')}</div><b class="font-semibold">12 owners match</b><div>${rows}</div>${m.pending ? `<div class="ds-approve"><span>Save as <b>${esc(m.listName)}</b>?</span>${ui.btn({ label: 'Save list', size: 'sm', act: 'approve-list', arg: i })}${ui.btn({ label: 'Not now', size: 'sm', variant: 'outline', act: 'decline-list', arg: i })}</div>` : ''}${m.approved ? `<span class="ds-saved">${icon('check-circle')}Saved to Lists · ${esc(m.listName)}</span>` : ''}</div>`;
+        // The answer is a list in the builder's terms: the same chips, count and rows as Database › Contacts.
+        const str = m.crit || D.brainList, items = crit.parse(str), n = crit.count(items);
+        const rows = crit.rows(items).slice(0, 3).map(c => `<a class="ds-answer__row" href="${href('contact', 'id=' + c.id)}">${ui.cls(c.cls)}<span class="ds-row__body"><span class="font-medium">${esc(c.name)}</span><span class="ds-row__sub">${esc(pById[c.pid].addr + ' · ' + c.why)}</span></span></a>`).join('');
+        blocks += `<div class="ds-answer"><div class="ds-toolbar" style="gap:var(--space-1-5)">${items.map(it => ui.critChip(it, { static: true })).join('')}</div><div class="ds-toolbar" style="justify-content:space-between"><b class="font-semibold">${loc(n)} owners match</b>${ui.btn({ label: 'Open in builder', ic: 'list-bullets', variant: 'outline', size: 'sm', link: crit.href(str, 'from=brain') })}</div><div>${rows}</div>${m.pending ? ui.approval({ text: `Save as <b>${esc(m.listName)}</b>?`, yes: ['Save list', 'approve-list', i], no: ['Not now', 'decline-list', i] }) : ''}${m.approved ? ui.approved('Saved to Lists · ' + m.listName) : ''}</div>`;
       }
       if (m.kind === 'lookup') { const p = pById[m.pid], c = cById[p.owner]; blocks += `<div class="ds-answer"><div style="display:flex;align-items:center;gap:var(--space-2-5)"><span class="ds-tile-icon" style="border:0;background:var(--bg-muted);color:var(--fg-muted)">${icon('buildings')}</span><span class="ds-row__body"><b class="font-semibold">${esc(p.addr)}</b><span class="ds-row__sub">${esc(p.hood + ' · ' + p.zip + ' · BBL ' + p.bbl)}</span></span></div>${ui.kv([['Units', p.units + ' · ' + p.fm + ' FM · ' + p.rs + ' RS'], ['Owner', c.name + ' · Class ' + c.cls], ['Debt', p.debt + ' due ' + p.mat]], { cols: 1 })}<div>${ui.btn({ label: 'Open property', size: 'sm', variant: 'outline', link: href('property', 'id=' + p.id) })}</div></div>`; }
       if (m.src) blocks += `<div class="ds-sources"><span class="ds-meta font-medium">Sources</span>${m.src.map(([l, d]) => `<span class="ds-source">${icon('link-simple')}<b class="font-medium">${esc(l)}</b><span aria-hidden="true">·</span><span>${esc(d)}</span></span>`).join('')}</div>`;
@@ -656,7 +719,7 @@
     send: () => DS.sendText(V.draft),
     ask: (el, t) => DS.ask(t),
     'ask-nudge': (el, t) => DS.ask('Tell me more: ' + t),
-    'approve-list': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false, approved: true }; S.lists = [...(S.lists || []), 'LES debt due 2026']; save(); render(); DS.toast('List saved · 12 owners'); },
+    'approve-list': (el, i) => { const m = U.msgs[+i], str = m.crit || D.brainList; U.msgs[+i] = { ...m, pending: false, approved: true }; saveList(m.listName, str); render(); DS.toast('Saved to Lists · ' + loc(crit.count(crit.parse(str))) + ' owners'); },
     'decline-list': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false }; save(); render(); },
     'dismiss-acts': (el, i) => { const list = U.msgs || [D.proactive]; U.msgs = list.map((m, j) => j === +i ? { ...m, acts: [] } : m); save(); render(); },
     palette: (el, mode) => DS.openPalette(mode || 'search'),
