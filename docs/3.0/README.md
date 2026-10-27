@@ -188,7 +188,7 @@ The screens the brief describes in the most detail, and the ones every scenario 
 
 ### 2.2 The complete call card
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** Case file Overview (web and app), live call state
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** Case file Overview (web and app), live call state
 
 - **The brief:** Before dialing, one screen holds why now, which building, team history in date order, three to five buyers who fit, the opener in Thomas's voice (never a price), and the next step. (Doc 2 §5)
 - **Today:** The case file has the why now with evidence and a Relationship block with a suggested angle and Next touch. Missing: which building, buyers who fit, the opener.

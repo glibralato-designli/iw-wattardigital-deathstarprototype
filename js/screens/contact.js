@@ -6,7 +6,7 @@
   const S = DS.S(), U = DS.U();
   const dnc = () => c.status === 'Do not contact';
   const TABS = ['overview', 'intelligence', 'ownership', 'activity', 'details', 'history'];
-  const st = { tab: TABS.includes(params.get('tab')) ? params.get('tab') : 'overview', whyOpen: params.get('why') === 'open', noteOpen: params.get('note') === '1', noteDraft: '', qNote: '', listPick: '', actF: 'All', othersOpen: false, saving: params.get('call') === 'saving' };
+  const st = { tab: TABS.includes(params.get('tab')) ? params.get('tab') : 'overview', whyOpen: params.get('why') === 'open', noteOpen: params.get('note') === '1', noteDraft: '', qNote: '', listPick: '', actF: 'All', othersOpen: false, saving: params.get('call') === 'saving', openerOpen: params.get('opener') === 'open', buyersOpen: params.get('buyers') === 'all' };
   const acc = (key, def) => { const a = DS.V.acc || {}; return key in a ? a[key] : def; };
 
   /* Presets: call=live|outcome|saving|logged|log, choice=<outcome>, res=<results, comma-separated>, flag=<evidence index>. */
@@ -89,8 +89,10 @@
       <div class="ds-why__head">${icon('sparkle')}<h2>Why now</h2>${ui.trust(trustK)}<span class="ds-grow"></span><span class="ds-meta">Updated 2d ago</span></div>
       ${disputed() ? (() => { const d = ev.filter(e => e.k === 'disputed'), what = d.length === 1 ? d[0].l + ' is disputed.' : d.length + ' facts are disputed.'; return trustK === 'disputed' ? `<div class="alert" data-status="danger" role="alert">${icon('warning-diamond')}<span>${esc(what)} Check before you say it.</span></div>` : `<div class="alert" data-status="warning">${icon('warning-diamond')}<span>${esc(what)} It isn’t part of this why now.</span></div>`; })() : ''}
       <p class="ds-why__text">${esc(c.whyFull)}</p>
+      <p class="ds-why__which"><span class="ds-meta">Which building</span><a href="${href('property', 'id=' + p.id)}">${esc(p.addr)}</a><span class="num">· ${p.score}</span></p>
       <div class="ds-toolbar" style="gap:var(--space-1-5)"><span class="ds-chip">${esc(c.narrative)}</span><span class="ds-chip">Momentum: ${esc(c.momentum)}</span></div>
       <div class="ds-why__actions">${!onCall() && !outcome() && !dnc() ? ui.btn({ label: 'Next: Call ' + DS.bestPhone(c), ic: 'phone', variant: 'subtle', shape: 'pill', act: 'start-call' }) : ''}<span class="ds-grow"></span>${ui.btn({ label: 'Why this?', variant: 'outline', act: 'toggle-why', expanded: st.whyOpen }).replace('Why this?</button>', 'Why this?' + icon(st.whyOpen ? 'caret-up' : 'caret-down') + '</button>')}${ui.btn({ label: 'Ask Brain', ic: 'sparkle', variant: 'outline', act: 'ask', arg: 'Why now for ' + c.name + '?' })}</div>
+      ${rel.next && !dnc() ? `<p class="ds-why__next">${icon('arrow-right')}<span><b>Next touch.</b> ${esc(rel.next[0])} · ${esc(rel.next[1].replace(/^Suggest/, 'suggest'))}.</span></p>` : ''}
       ${st.whyOpen ? `<div class="ds-why__more" data-anim="grow" data-key="why-more">
         <div class="ds-stack" data-gap="2"><h3>Top drivers</h3>${D.drivers(c).map(([l, pp], i) => `<div class="ds-driver"><span>${i + 1}</span><span>${esc(l)}</span><span class="ds-meta-strong num">${pp}</span></div>`).join('')}</div>
         <div class="ds-stack" data-gap="2"><h3>Evidence</h3>${ev.map(e => `<div class="ds-evidence"><div class="ds-row__body"><span><span class="font-medium">${esc(e.l)}</span><span class="muted"> · ${esc(e.v)}</span></span><span class="ds-meta">${esc(e.m)}</span></div>${ui.trust(e.k)}${e.canFlag ? ui.btn({ label: 'Flag as wrong', variant: 'ghost', size: 'sm', act: 'flag', arg: e.i }) : e.flagged ? '<span class="ds-evidence__flagged">Flagged</span>' : '<span></span>'}</div>`).join('')}${ui.freshness(ev)}</div>
@@ -135,11 +137,17 @@
       <div class="ds-rel__grid"><div class="ds-rel__col"><h3>${icon('sparkle')} The notes that matter</h3>${rel.notes.length ? rel.notes.map(x => `<div class="ds-rel__note"><p>${esc(x.t)}</p><div class="ds-toolbar"><span class="ds-meta">${esc(x.d)}</span><a class="ds-link-btn" href="${href('contact', 'id=' + id + '&tab=activity' + (x.id ? '&hl=' + x.id : ''))}">Open in Activity${icon('caret-right')}</a></div></div>`).join('') + `<span class="ds-meta">Picked by Brain from ${rel.notesOf} ${rel.notesOf === 1 ? 'note' : 'notes'}. The rest stay in Activity.</span>` : '<span class="ds-meta">No notes yet. Brain picks the ones that matter as calls are logged.</span>'}</div>
         <div class="ds-rel__col"><h3>Who on the team knew them</h3>${who.length ? who.map(([w, l]) => `<div class="ds-rel__who"><span class="avatar" data-size="sm">${esc(DS.initials(w))}</span><span class="ds-row__body"><span class="font-medium">${esc(w)}</span><span class="ds-row__sub" style="white-space:normal">${esc(l)}</span></span></div>`).join('') : '<span class="ds-meta">Nobody on the team yet.</span>'}
           <h3>What they said</h3>${rel.said ? `<p class="ds-rel__quote">“${esc(rel.said[0])}”</p><span class="ds-meta">${esc(rel.said[1])}</span>` : '<span class="ds-meta">No reply on record.</span>'}</div></div>
-      ${rel.angle ? `<div class="ds-rel__line">${icon('sparkle')}<span><b>Suggested angle.</b> ${esc(rel.angle)}</span></div>` : ''}${nextTouch()}
     </section>`;
   };
-  const nextTouch = () => rel.next ? `<div class="ds-rel__line">${icon('arrow-right')}<span class="ds-grow"><b>Next touch.</b> ${esc(rel.next[0])} · ${esc(rel.next[1].replace(/^Suggest/, 'suggest'))}.</span>${ui.btn({ label: 'Text', ic: 'chat-text', variant: 'outline', size: 'sm', disabled: true })}${ui.btn({ label: 'LinkedIn', ic: 'linkedin-logo', variant: 'outline', size: 'sm', disabled: true })}</div>` : '';
-  const overview = () => whyCard() + relationship() + `<div class="ds-acc">${reach()}${facts()}${recent()}${notes()}</div>`;
+  /* Before you dial (3.0 · 2.2): the opener in Thomas's voice (two lines, the rest on request; never a price) and buyers who fit the building (three, the rest on request). */
+  const callPrep = () => {
+    const op = DS.openerOf(c), bs = D.buyersFor(p), shown = st.buyersOpen ? bs : bs.slice(0, 3);
+    return `<section class="ds-card ds-callprep" data-pad="all" aria-label="Before you dial"><div class="ds-two">
+      <div class="ds-stack" data-gap="2"><div class="ds-callprep__h"><h3>Opener</h3><span class="ds-meta">In your voice · never a price</span></div>${(st.openerOpen ? op : op.slice(0, 2)).map(l => `<p class="ds-callprep__line">${esc(l)}</p>`).join('')}${op.length > 2 ? `<button type="button" class="ds-link-btn" style="align-self:flex-start" aria-expanded="${st.openerOpen}" data-act="toggle-opener">${st.openerOpen ? 'Show less' : 'Show the full opener'}${icon(st.openerOpen ? 'caret-up' : 'caret-down')}</button>` : ''}</div>
+      <div class="ds-stack" data-gap="2"><div class="ds-callprep__h"><h3>Buyers who fit</h3><span class="ds-meta">For ${esc(p.addr)}</span></div>${shown.length ? shown.map(b => `<div class="ds-callprep__buyer"><span class="font-medium">${esc(b.name)}</span><span class="ds-meta">${esc(b.box)} · ${esc(b.when)}</span></div>`).join('') : '<span class="ds-meta">No buyers on record for this area yet.</span>'}${bs.length > 3 ? `<button type="button" class="ds-link-btn" style="align-self:flex-start" aria-expanded="${st.buyersOpen}" data-act="toggle-buyers">${st.buyersOpen ? 'Show fewer' : 'Show ' + (bs.length - 3) + ' more'}${icon(st.buyersOpen ? 'caret-up' : 'caret-down')}</button>` : ''}</div></div></section>`;
+  };
+  // During a live call the lower sections fold away, so the card is all that's left.
+  const overview = () => whyCard() + callPrep() + (onCall() ? '<p class="ds-meta">Relationship, reach and facts are folded during the call.</p>' : relationship() + `<div class="ds-acc">${reach()}${facts()}${recent()}${notes()}</div>`);
 
   /* ───────── Intelligence ───────── */
   const mon = m => { const d = new Date(m); if (isNaN(d)) return null; return Math.round((d - D.TODAY) / (30.4 * 864e5)); };
@@ -252,6 +260,8 @@
       'pick-num': (el, x) => { DS.setUI({ outcome: { ...outcome(), num: x } }); DS.render(); },
       'toggle-res': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, res: { ...oc.res, [k]: !(oc.res || {})[k] } } }); DS.render(); },
       'toggle-cb': () => { const oc = outcome(); DS.setUI({ outcome: { ...oc, follow: oc.follow ? '' : '2026-10-02' } }); DS.render(); },
+      'toggle-opener': () => { st.openerOpen = !st.openerOpen; DS.render(); },
+      'toggle-buyers': () => { st.buyersOpen = !st.buyersOpen; DS.render(); },
       'toggle-oact': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, acts: { ...oc.acts, [k]: !oc.acts[k] } } }); DS.render(); },
       'save-outcome': () => { if (st.saving) return; st.saving = true; DS.render(); setTimeout(() => DS.collapse(document.querySelector('.ds-outcome'), doSave), 520); },
       'skip-outcome': () => DS.collapse(document.querySelector('.ds-outcome'), () => { DS.setUI({ outcome: null }); DS.render(); }),

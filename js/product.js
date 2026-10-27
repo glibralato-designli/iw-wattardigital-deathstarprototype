@@ -190,7 +190,7 @@
     const team = portfolio(c).flatMap(x => D.teamOf(x.id).map(e => ({ ...e, addr: x.addr })));
     const who = [...new Set(team.map(e => e.who))].map(w => { const es = team.filter(e => e.who === w).sort((a, b) => a.year - b.year); return [w, es.map(e => e.type + ' ' + e.year).join(', ') + ' · ' + [...new Set(es.map(e => e.addr))].join(', ')]; });
     if (!who.some(x => x[0] === 'Thomas Windels') && c.last !== 'Never called') who.push(['Thomas Windels', 'Owner of the record · last touch ' + lastOf(c).split(' · ')[0]]);
-    return { since: r.since || 2026 - Math.min(c.years, 6), touches: r.touches || tl.length + (h % 5), warmth: r.warmth || 30 + (h % 40), notesOf: r.notesOf || notes.length, notes: r.notes ? r.notes.map(k => tl.find(x => x.id === k)).filter(Boolean) : notes.slice(0, 3), said: (S.said || {})[c.id] || r.said || null, angle: r.angle || null, next: r.next || null, connected: r.connected || [], team, teamPid: (team[0] || {}).pid, who };
+    return { since: r.since || 2026 - Math.min(c.years, 6), touches: r.touches || tl.length + (h % 5), warmth: r.warmth || 30 + (h % 40), notesOf: r.notesOf || notes.length, notes: r.notes ? r.notes.map(k => tl.find(x => x.id === k)).filter(Boolean) : notes.slice(0, 3), said: (S.said || {})[c.id] || r.said || null, next: r.next || null, connected: r.connected || [], team, teamPid: (team[0] || {}).pid, who };
   };
   /* The client's call outcomes (Orientation doc 2 §5, doc 4 §11), web tray and app sheet: one main outcome on a reached call, then
      what came out of it (several at once, only on a reached call). No answer and Voicemail are quick links, since most dials end there.
@@ -202,6 +202,8 @@
   // A preset: choice=<outcome>, res=meeting,bov,texts.
   OUT.preset = (id, dur) => { const ch = params.get('choice') || (params.get('call') === 'saving' ? 'No answer' : null), oc = OUT.blank(id, dur); if (!ch) return oc;
     const p = OUT.pick(oc, ch); (params.get('res') || '').split(',').filter(k => OUT.results.some(r => r[0] === k)).forEach(k => { if (OUT.reached(ch)) p.res[k] = true; }); return p; };
+  // The opener (3.0 · 2.2): Thomas's first lines, from the fixtures or written from the why now. It never names a price.
+  const openerOf = c => { const p = pById[c.pid], first = c.name.split(' ')[0]; return D.openers[c.id] || [first + ', it’s Thomas Windels at Stewart Group. I work with owners around ' + p.hood + '.', 'I’m calling about ' + p.addr + ': ' + c.signal.toLowerCase() + ' is the kind of moment where owners like a second view.', 'No pitch. Would fifteen minutes this week be useful?']; };
   // The north-star number (Orientation doc 1 §2): owner meetings scheduled this week. The calendar holds 3 (Okafor lunch, Adler BOV pitch,
   // 90 Clinton St tour); each Meeting set from a call adds one. Last week: 1.
   const meetingsWeek = () => 3 + (S.meetings || 0);
@@ -279,7 +281,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, openerOf, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;

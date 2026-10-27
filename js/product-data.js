@@ -241,12 +241,37 @@
   /* The relationship, distilled: touches since, the notes that matter (Brain-picked, ids of timeline entries),
      the last reply, a suggested angle, the next touch and connected people (co-owners across buildings). */
   const relationship = {
-    marchetti: { since: 2014, touches: 31, warmth: 64, notesOf: 14, notes: ['n1', 'n2', 'n3'], said: ['Talk to me after the summer. I’ll know where the refi lands.', 'Text reply · Jul 2'], angle: 'Lead with the refinance math: a BOV that shows what a sale nets against refinancing $9.4M at today’s rates, before the June maturity.', next: ['Opened the Q3 report 2 days ago', 'Suggest a text, then LinkedIn'], connected: [['Lucia Marchetti', 'Co-owner · 118 Ludlow St and 22 Hester St', null], ['Paul Reyes', 'Partner · 22 Hester St', null], ['Peter Kowalski', 'Fellow member · Avenue B Owners LLC', 'kowalski']] },
-    okafor: { since: 2015, touches: 22, warmth: 78, notesOf: 9, said: ['The family wants a number before the loan is due.', 'Lunch recap · Sep 30'], angle: 'Bring the 90 Clinton St BOV to lunch and walk through a recap versus a sale.', next: ['Lunch today at 12 PM', 'Suggest an email with the BOV after lunch'], connected: [['Daniel Okafor', 'Co-owner · Clinton Street Partners LP', null]] },
-    adler: { since: 2011, touches: 27, warmth: 71, notesOf: 11, said: ['Open to a pricing opinion on 64 Essex St.', 'Call · Sep 28'], angle: 'Send the Q3 comps she asked for, then book the BOV pitch on Thursday.', next: ['Viewed 41 Ludlow St 4 times this week', 'Suggest a call, then the comps by email'], connected: [['Samuel Adler', 'Co-trustee · Adler Family Trust', null]] },
-    feld: { since: 2013, touches: 4, warmth: 22, notesOf: 1, said: null, angle: 'Condolences first. The team proposed to his father in 2013; offer a valuation for the estate, not a pitch.', next: ['Clicked the 41 Ludlow St OM', 'Suggest a letter, then a call'], connected: [] },
-    lindqvist: { since: 2009, touches: 12, warmth: 55, notesOf: 5, said: ['Send me what 82nd St buildings traded for.', 'Email reply · Sep 11'], angle: 'John sold him the building in 2009. Open with that, then the March maturity.', next: ['Downloaded the 41 Ludlow St OM', 'Suggest a call, then LinkedIn'], connected: [] },
+    marchetti: { since: 2014, touches: 31, warmth: 64, notesOf: 14, notes: ['n1', 'n2', 'n3'], said: ['Talk to me after the summer. I’ll know where the refi lands.', 'Text reply · Jul 2'], next: ['Opened the Q3 report 2 days ago', 'Suggest a text, then LinkedIn'], connected: [['Lucia Marchetti', 'Co-owner · 118 Ludlow St and 22 Hester St', null], ['Paul Reyes', 'Partner · 22 Hester St', null], ['Peter Kowalski', 'Fellow member · Avenue B Owners LLC', 'kowalski']] },
+    okafor: { since: 2015, touches: 22, warmth: 78, notesOf: 9, said: ['The family wants a number before the loan is due.', 'Lunch recap · Sep 30'], next: ['Lunch today at 12 PM', 'Suggest an email with the BOV after lunch'], connected: [['Daniel Okafor', 'Co-owner · Clinton Street Partners LP', null]] },
+    adler: { since: 2011, touches: 27, warmth: 71, notesOf: 11, said: ['Open to a pricing opinion on 64 Essex St.', 'Call · Sep 28'], next: ['Viewed 41 Ludlow St 4 times this week', 'Suggest a call, then the comps by email'], connected: [['Samuel Adler', 'Co-trustee · Adler Family Trust', null]] },
+    feld: { since: 2013, touches: 4, warmth: 22, notesOf: 1, said: null, next: ['Clicked the 41 Ludlow St OM', 'Suggest a letter, then a call'], connected: [] },
+    lindqvist: { since: 2009, touches: 12, warmth: 55, notesOf: 5, said: ['Send me what 82nd St buildings traded for.', 'Email reply · Sep 11'], next: ['Downloaded the 41 Ludlow St OM', 'Suggest a call, then LinkedIn'], connected: [] },
   };
+
+  /* The opener (3.0 · 2.2, Orientation doc 2 §5): what Thomas says first, in his voice. Never a price for the owner's own building. */
+  const openers = {
+    marchetti: ['Daniel, it’s Thomas Windels at Stewart Group. You told me to call after the summer, once the refi picture was clearer.', 'With the June maturity on 118 Ludlow, I’ve put the refinance math next to what a sale would net, so you can compare the two.', 'No pitch. If it helps, I can walk you through it in fifteen minutes this week.'],
+    okafor: ['Grace, it’s Thomas. Looking forward to lunch today.', 'I’ll bring the 90 Clinton St BOV so the family can see a recap and a sale side by side before August.', 'Whatever you decide, you’ll have the numbers in hand.'],
+    adler: ['Ruth, it’s Thomas Windels. I have the Q3 comps you asked for on 64 Essex.', 'I’ll email them today. They show what’s trading around you, not a number for your building.', 'Could we keep Thursday at 11 for the pricing opinion?'],
+    feld: ['Mr. Feld, it’s Thomas Windels at Stewart Group. I’m sorry for your loss.', 'Our team knew your father; we worked with him on 27 Orchard in 2013.', 'If a valuation would help the estate, I’m glad to put one together, with no obligation.'],
+    lindqvist: ['Erik, it’s Thomas Windels. John Stewart sold you 311 East 82nd back in 2009.', 'With the March maturity coming, I can show you what similar buildings on 82nd have traded for.', 'Would a short call this week be useful?'],
+  };
+
+  /* Buyers who fit (fictional): [name, buy box, timing, neighborhoods]. The call card shows three, then the rest on request. */
+  const buyers = [
+    ['Hudson Row Capital', 'LES and East Village walk-ups, 20–40 units', '1031 deadline Mar 14', ['Lower East Side', 'East Village', 'Chinatown']],
+    ['Kessler Family Office', 'Rent-stabilized buildings below 14th St', 'Cash, closes in 45 days', ['Lower East Side', 'East Village', 'Chinatown']],
+    ['Grand & Orchard Partners', 'Mixed free-market walk-ups', 'Bought 2 on Orchard St this year', ['Lower East Side', 'Chinatown']],
+    ['Bowery Lane Investors', 'Walk-ups with unused air rights', '1031 deadline Jan 30', ['East Village', 'Lower East Side']],
+    ['Rye Street Residential', '20–50 unit multifamily in Manhattan', 'Fund II, buying through 2027', ['Lower East Side', 'East Village', 'Chinatown', 'Upper East Side', 'Midtown West', 'Chelsea', 'Central Harlem']],
+    ['Yorkville Holdings', 'UES walk-ups, 15–35 units', 'Bought on E 81st St in June', ['Upper East Side']],
+    ['Carnegie Hill Realty', 'Pre-war walk-ups above 72nd St', 'Cash, closes in 60 days', ['Upper East Side']],
+    ['Park & Lex Family Office', 'Low-leverage multifamily, long hold', 'Looking since spring', ['Upper East Side', 'Midtown West']],
+    ['Clinton West Partners', 'Midtown West and Chelsea walk-ups', '1031 deadline Feb 20', ['Midtown West', 'Chelsea']],
+    ['Eighth Avenue Capital', 'Mixed-use with retail on the ground floor', 'Cash, closes in 60 days', ['Chelsea', 'Midtown West']],
+    ['Tenth Street Capital', 'Value-add walk-ups, any size', 'Bought 3 buildings this year', ['East Village', 'Chelsea', 'Midtown West', 'Upper East Side', 'Central Harlem']],
+  ].map(([name, box, when, hoods]) => ({ name, box, when, hoods }));
+  const buyersFor = p => buyers.filter(b => b.hoods.includes(p.hood)).slice(0, 5);
 
   /* Database-wide counts behind each criterion, so a list's size reads at the scale of the real database.
      The live count combines them (see DS.crit in js/product.js); the table shows the matching demo rows. */
@@ -451,5 +476,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

@@ -32,6 +32,7 @@ This document is the source of truth for the Death Star design system. CSS imple
 - The prototype guide's "Check the why now" flow is a state set of the case file on the portal (a portal flow needs its own screen).
 - The case file's Home step reads "Call Ruth Adler back" (the concept said "Samuel Adler"; the contact is Ruth Adler).
 - Today replaced Home as the first page (3.0 · 2.1): the greeting with this week's meetings (`.ds-dayhead`, the number in `--brand-primary-text`), Brain's line, then the ranked list. Home's blocks became Dashboard › Overview, the Dashboard's first tab.
+- The call card (3.0 · 2.2): `.ds-why__which` names the building inside the why now, `.ds-why__next` puts Next touch under the Call pill, and `.ds-callprep` (a bordered card, `.ds-two`) pairs the Opener with Buyers who fit; the rest of the Overview folds during a live call.
 - Every Dashboard tab carries one Brain nudge line under the tabs (IA §4.2); the concept had none drawn.
 - Dashboard tab labels follow Thomas's current portal and its order (designer request, Oct 22, from his walkthrough video): Today, Activity, Who to call, Calendar | Performance, Listings, Website, in the direction's sentence case. Who to call is the Reporting screen reframed (sections "Who we haven’t reached" and "Who engaged").
 - The four display Dashboard tabs (Performance, Who to call, Listings, Website) were `specified` in the handoff; they are designed here from the IA and PRD §6.4.

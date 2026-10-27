@@ -5,7 +5,7 @@
   const c = D.cById[id], p = D.pById[c.pid];
   const S = DS.S(), U = DS.U();
   const TABS = [['overview', 'Overview'], ['intelligence', 'Intelligence'], ['ownership', 'Ownership'], ['activity', 'Activity'], ['details', 'Details'], ['history', 'History']];
-  const st = { tab: TABS.some(t => t[0] === params.get('tab')) ? params.get('tab') : 'overview', noteDraft: '', saving: params.get('call') === 'saving', logged: params.get('call') === 'logged' ? 'No answer' : null };
+  const st = { tab: TABS.some(t => t[0] === params.get('tab')) ? params.get('tab') : 'overview', noteDraft: '', saving: params.get('call') === 'saving', logged: params.get('call') === 'logged' ? 'No answer' : null, openerOpen: params.get('opener') === 'open', buyersOpen: params.get('buyers') === 'all' };
   const dnc = () => c.status === 'Do not contact';
 
   /* Presets: call=live|outcome|saving|logged|log, choice=<outcome>, res=<results, comma-separated>, why=open, note=1, flag=<evidence index>. */
@@ -64,8 +64,10 @@
     const alert = disputed() ? (() => { const d = ev.filter(e => e.k === 'disputed'), what = d.length === 1 ? d[0].l + ' is disputed.' : d.length + ' facts are disputed.'; return trustK === 'disputed' ? `<div class="alert" data-status="danger" role="alert">${icon('warning-diamond')}<span>${esc(what)} Check before you say it.</span></div>` : `<div class="alert" data-status="warning">${icon('warning-diamond')}<span>${esc(what)} It isn’t part of this why now.</span></div>`; })() : '';
     return `<section class="ds-why" aria-label="Why now"><div class="ds-why__head">${icon('sparkle')}<h2>Why now</h2>${ui.trust(trustK)}<span class="ds-grow"></span><span class="ds-meta">2d ago</span></div>${alert}
       <p class="ds-why__text">${esc(c.whyFull)}</p>
+      <p class="ds-why__which"><span class="ds-meta">Which building</span><a href="${href('property', 'id=' + p.id)}">${esc(p.addr)}</a><span class="num">· ${p.score}</span></p>
       <div class="ds-toolbar" style="gap:var(--space-1-5)"><span class="ds-chip">${esc(c.narrative)}</span><span class="ds-chip">Momentum: ${esc(c.momentum)}</span></div>
-      <div class="ds-why__actions" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr))">${ui.btn({ label: 'Why this?', variant: 'outline', act: 'sheet', arg: 'why' })}${ui.btn({ label: 'Ask Brain', ic: 'sparkle', variant: 'outline', act: 'ask', arg: 'Why now for ' + c.name + '?' })}</div></section>`;
+      <div class="ds-why__actions" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr))">${ui.btn({ label: 'Why this?', variant: 'outline', act: 'sheet', arg: 'why' })}${ui.btn({ label: 'Ask Brain', ic: 'sparkle', variant: 'outline', act: 'ask', arg: 'Why now for ' + c.name + '?' })}</div>
+      ${rel.next && !dnc() ? `<p class="ds-why__next">${icon('arrow-right')}<span><b>Next touch.</b> ${esc(rel.next[0])} · ${esc(rel.next[1].replace(/^Suggest/, 'suggest'))}.</span></p>` : ''}</section>`;
   };
   const whySheet = () => { const ev = evidence();
     return ui.sheet({ key: 'why', title: 'Why this?', size: 'full', body: `<div class="ds-stack" data-gap="4">
@@ -88,8 +90,12 @@
       ${rel.notes.length ? `<div class="ds-stack" style="gap:var(--space-2)"><span class="ds-meta-strong">${icon('sparkle')} The notes that matter</span>${rel.notes.map(x => `<a class="ds-rel__note" href="${href('contact', 'id=' + id + '&tab=activity' + (x.id ? '&hl=' + x.id : ''))}" style="color:inherit;text-decoration:none"><p>${esc(x.t)}</p><span class="ds-meta">${esc(x.d)} · Open in Activity</span></a>`).join('')}<span class="ds-meta">Picked by Brain from ${rel.notesOf} notes.</span></div>` : ''}
       ${rel.who.length ? `<div class="ds-stack" style="gap:var(--space-2)"><span class="ds-meta-strong">Who on the team knew them</span>${rel.who.map(([w, l]) => `<div class="ds-rel__who"><span class="avatar" data-size="sm">${esc(DS.initials(w))}</span><span class="ds-row__body"><span class="font-medium">${esc(w)}</span><span class="ds-row__sub" style="white-space:normal">${esc(l)}</span></span></div>`).join('')}</div>` : ''}
       ${rel.said ? `<div class="ds-stack" style="gap:var(--space-1)"><span class="ds-meta-strong">What they said</span><p class="ds-rel__quote">“${esc(rel.said[0])}”</p><span class="ds-meta">${esc(rel.said[1])}</span></div>` : ''}
-      ${rel.angle ? `<div class="ds-rel__line">${icon('sparkle')}<span><b>Suggested angle.</b> ${esc(rel.angle)}</span></div>` : ''}${rel.next ? `<div class="ds-rel__line">${icon('arrow-right')}<span><b>Next touch.</b> ${esc(rel.next[0])} · ${esc(rel.next[1].replace(/^Suggest/, 'suggest'))}.</span></div>` : ''}</div></section>`;
-  const overview = () => `${whyCard()}${relationship()}${reach()}${facts()}<section class="ds-asec" aria-label="Recent activity"><div class="ds-ahead"><h2>Recent activity</h2><button type="button" class="ds-link-btn" data-act="tab" data-arg="activity">View all</button></div>${timeline(3)}</section>`;
+</div></section>`;
+  // Before you dial (3.0 · 2.2), in the web's order: the opener (two lines, never a price), then buyers who fit (three).
+  const callPrep = () => { const op = DS.openerOf(c), bs = D.buyersFor(p), shown = st.buyersOpen ? bs : bs.slice(0, 3);
+    return `<section class="ds-asec" aria-label="Opener"><div class="ds-ahead"><h2>Opener</h2><span class="ds-meta">In your voice · never a price</span></div><div class="ds-acard ds-arel">${(st.openerOpen ? op : op.slice(0, 2)).map(l => `<p class="ds-callprep__line">${esc(l)}</p>`).join('')}${op.length > 2 ? `<button type="button" class="ds-link-btn" style="align-self:flex-start" aria-expanded="${st.openerOpen}" data-act="toggle-opener">${st.openerOpen ? 'Show less' : 'Show the full opener'}</button>` : ''}</div></section>
+      <section class="ds-asec" aria-label="Buyers who fit"><div class="ds-ahead"><h2>Buyers who fit</h2>${bs.length > 3 ? `<button type="button" class="ds-link-btn" aria-expanded="${st.buyersOpen}" data-act="toggle-buyers">${st.buyersOpen ? 'Show fewer' : 'Show ' + (bs.length - 3) + ' more'}</button>` : ''}</div><div class="ds-alist">${shown.length ? shown.map(b => `<div class="ds-arow"><span class="ds-arow__body"><span class="ds-arow__title">${esc(b.name)}</span><span class="ds-arow__sub">${esc(b.box)} · ${esc(b.when)}</span></span></div>`).join('') : '<div class="ds-arow"><span class="ds-arow__sub">No buyers on record for this area yet.</span></div>'}</div></section>`; };
+  const overview = () => onCall() ? `${whyCard()}${callPrep()}<p class="ds-meta">Relationship, reach and facts are folded during the call.</p>` : `${whyCard()}${callPrep()}${relationship()}${reach()}${facts()}<section class="ds-asec" aria-label="Recent activity"><div class="ds-ahead"><h2>Recent activity</h2><button type="button" class="ds-link-btn" data-act="tab" data-arg="activity">View all</button></div>${timeline(3)}</section>`;
   const intelligence = () => {
     return `<section class="ds-acard" style="padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3)" aria-label="Predictive score"><span class="ds-meta-strong">Predictive score · ${esc(p.addr)}</span><span class="ds-score-big">${p.score}</span><div class="ds-toolbar" style="gap:var(--space-1-5)">${ui.cls(p.cls, true)}<span class="ds-chip">${esc(D.TIER[c.cls])}</span><span class="ds-chip" title="Relationship warmth, 0–100. Never added to the predictive score.">Warmth ${rel.warmth}</span></div><span class="ds-meta">Sets Rank ${c.rank} · Model v4 · scored Sep 29, 05:40 UTC</span></section>
       <section class="ds-asec" aria-label="Drivers"><div class="ds-ahead"><h2>Top drivers</h2></div><div class="ds-acard" style="padding:var(--space-2) var(--space-4)">${D.drivers(c).map(([l, pp], i) => `<div class="ds-driver"><span>${i + 1}</span><span>${esc(l)}</span><span class="ds-meta-strong num">${pp}</span></div>`).join('')}</div></section>
@@ -136,6 +142,8 @@
       'start-call': () => { if (dnc()) return; st.logged = null; DS.setUI({ call: { id, t0: Date.now() }, outcome: null }); DS.render(); },
       'end-call': () => { const dur = callTime(); DS.setUI({ call: null, outcome: DS.OUT.blank(id, dur) }); DS.render(); },
       'pick-outcome': (el, o) => { DS.setUI({ outcome: DS.OUT.pick(outcome(), o) }); DS.render(); },
+      'toggle-opener': () => { st.openerOpen = !st.openerOpen; DS.render(); },
+      'toggle-buyers': () => { st.buyersOpen = !st.buyersOpen; DS.render(); },
       'toggle-res': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, res: { ...oc.res, [k]: !(oc.res || {})[k] } } }); DS.render(); },
       'pick-num': (el, x) => { DS.setUI({ outcome: { ...outcome(), num: x } }); DS.render(); },
       'toggle-oact': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, acts: { ...oc.acts, [k]: !oc.acts[k] } } }); DS.render(); },
