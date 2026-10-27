@@ -10,6 +10,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
   - Note: Go with the recommend, but maybe a multiselect options for it could work
   - Oct 27, at build: one main outcome (Connected, Conversation, Not interested, Wrong person), then optional multi-select results (Meeting set, BOV request, Asked for texts) on a reached call; No answer and Voicemail stay quick links. Callback becomes a Call back follow-up chip, not an outcome. Built Oct 27.
 - **1.3 Permanent opt-out:** Option A, One permanent switch in the tray (recommended)
+  - Oct 27, at build: go-ahead confirmed. The one-year blast exclusion is removed everywhere; Kowalski's (212) 555-0175 is the demo's do-not-call-list number. Built Oct 27.
 - **1.4 Meetings this week as the top number:** Option A, First tile in the pulse (recommended)
 - **1.5 Class and trust labels:** Option A, Client's names; Likely holders becomes a list (recommended)
 - **1.6 Freshness on screen:** Option A, One quiet line per list (recommended)

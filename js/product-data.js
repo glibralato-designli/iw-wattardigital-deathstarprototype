@@ -91,6 +91,8 @@
     ? [['Email', 'Opened the Q3 market report again', 'Sep 28'], ['Call', 'No answer', 'Aug 21'], ['Email', 'Opened the Q3 market report', 'Aug 3'], ['Call', 'Voicemail', 'Jul 14'], ['Text', 'Replied: “Talk to me after the summer. I’ll know where the refi lands.”', 'Jul 2'], ['Broadcast', 'Q2 LES market report · opened', 'Jun 18'], ['Note', 'Met at the REBNY breakfast; open to talking next year', 'Jun 2', 'n3'], ['Note', 'The 2016 Brookline refi resets in 2026. He’s already worried about the rate.', 'Nov 4, 2021', 'n2'], ['Note', 'Would only sell into a 1031 upstate; his wife wants out of managing tenants.', 'Mar 12, 2019', 'n1']]
     : (c.last === 'Never called' ? [] : [['Call', c.last.split(' · ')[1] || 'Call', c.last.split(' · ')[0]]]);
 
+  /* Numbers on a do-not-call list (fictional). They show a warning, never a block. */
+  const dncList = ['(212) 555-0175'];
   const contactPoints = c => {
     const first = c.name.split(' ')[0].toLowerCase(), last = c.name.split(' ')[1].toLowerCase();
     return c.id === 'marchetti'
@@ -446,5 +448,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

@@ -6,6 +6,7 @@
   const Nav = window.Nav || { params: new URLSearchParams(location.search), route: n => n + '.html', go: n => location.assign(n + '.html'), advance: (f, ms) => setTimeout(f, ms), still: false };
   const params = Nav.params;
   const OFF = 'Not in this proposal yet';
+  const NO_CONTACT = 'Asked not to be contacted, on every channel';
 
   /* ───────── Utilities ───────── */
   const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -23,14 +24,17 @@
 
   /* ───────── Store: demo data in local storage, session UI in session storage ───────── */
   const STORE = 'ds-proto-v2', UI = 'ds-ui-v2';
-  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, blastOut: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
+  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, optOut: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
-  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'blasts', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
+  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
   let snapshot = isSnapshot();
   let S = { ...fresh(), ...(read(localStorage, STORE) || {}) };
   if (params.get('reset') === '1') { S = fresh(); write(localStorage, STORE, S); try { sessionStorage.removeItem(UI); } catch (_) {} }
+  // Opt-out is permanent, on every channel (Orientation doc 1 §9): an owner who asked is Do not contact from then on.
+  const optOut = c => { c.status0 = c.status0 || c.status; c.status = 'Do not contact'; };
+  D.C.forEach(c => { if ((S.optOut || {})[c.id]) optOut(c); });
   const loadU = () => ({ navRail: null, moreOpen: false, navGrp: {}, brainUser: null, msgs: null, chatTitle: null, chatId: null, seen: false, scopeOff: false, call: null, outcome: null, ...(read(sessionStorage, UI) || {}) });
   let U = loadU();
   const save = () => { if (snapshot) return; write(localStorage, STORE, S); write(sessionStorage, UI, U); };
@@ -78,6 +82,8 @@
   ui.rankChip = c => `<span class="ds-chip" data-tone="outline">Rank ${c.rank}</span>`;
   ui.bldChip = p => ui.scoreChip(p.addr + ' · ' + p.score, p.score);
   ui.leadLine = c => 'Rank ' + c.rank + ' · ' + pById[c.pid].addr + ' · ' + pById[c.pid].score;
+  // A number on a do-not-call list warns, never blocks.
+  ui.dncList = num => D.dncList.includes(num) ? `<span class="badge" data-status="warning">${icon('warning')}On a do-not-call list</span>` : '';
   ui.lift = c => c.lift ? `<span class="ds-lift">${icon('arrow-up')}Up from ${c.lift.from}: ${esc(c.lift.why)}</span>` : '';
   ui.statusDot = status => status === 'Do not contact' ? 'bad' : /never|new/i.test(status) ? '' : /call|contact|follow/i.test(status) ? 'active' : 'good';
   ui.empty = ({ ic = 'magnifying-glass', title, text, action = '', tone }) => `<div class="ds-empty"><span class="ds-empty__icon"${tone ? ` data-tone="${tone}"` : ''}>${icon(ic)}</span><b>${esc(title)}</b>${text ? `<span class="ds-meta">${esc(text)}</span>` : ''}${action}</div>`;
@@ -190,8 +196,7 @@
   // A preset: choice=<outcome>, res=meeting,bov,texts.
   OUT.preset = (id, dur) => { const ch = params.get('choice') || (params.get('call') === 'saving' ? 'No answer' : null), oc = OUT.blank(id, dur); if (!ch) return oc;
     const p = OUT.pick(oc, ch); (params.get('res') || '').split(',').filter(k => OUT.results.some(r => r[0] === k)).forEach(k => { if (OUT.reached(ch)) p.res[k] = true; }); return p; };
-  // Saving an outcome: the call and its results, its note, and its actions on the number reached (bad wins over primary) and on blasts.
-  const BLAST_UNTIL = 'Sep 30, 2027';
+  // Saving an outcome: the call and its results, its note, its actions on the number reached (bad wins over primary) and the permanent opt-out.
   const applyOutcome = (c, oc) => {
     const ch = oc.choice, num = oc.num || bestPhone(c), said = ['Call logged'], id = c.id, res = OUT.reached(ch) ? oc.res || {} : {}, got = OUT.results.filter(([k]) => res[k]).map(([, l]) => l);
     S.done[id] = true; S.calls += 1; if (ch === 'Conversation') S.convos += 1; S.last[id] = 'Just now · ' + ch;
@@ -201,7 +206,7 @@
     if (oc.said && OUT.reached(ch)) S.said = { ...S.said, [id]: [oc.said.trim(), 'Their claim · said on a call, Sep 30 · logged by Thomas'] };
     if (oc.acts.bad) { S.bad[id] = [...badOf(c), num]; if (S.primary[id] === num) delete S.primary[id]; said.push(num + ' marked bad'); }
     else if (oc.acts.primary) { S.primary[id] = num; said.push(num + ' is now primary'); }
-    if (oc.acts.blasts) { S.blastOut[id] = BLAST_UNTIL; said.push('out of blasts until ' + BLAST_UNTIL); }
+    if (oc.acts.optout) { S.optOut = { ...S.optOut, [id]: 'Sep 30, 2026' }; optOut(c); said.push('do not contact, every channel'); }
     if (oc.notes && oc.acts.note) addTimeline(id, { k: 'Note', t: oc.notes, d: 'Just now' });
     addTimeline(id, { k: 'Call', t: [ch, ...got].join(' · ') + (oc.dur ? ' · ' + oc.dur : '') + (oc.follow ? ' · Call back ' + (/^\d{4}-/.test(oc.follow) ? new Date(oc.follow + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : oc.follow.toLowerCase()) : ''), d: 'Just now' });
     U.outcome = null; save();
@@ -265,7 +270,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, applyOutcome, OUT, BLAST_UNTIL });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, applyOutcome, OUT, optOut, NO_CONTACT });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
@@ -579,7 +584,7 @@
         <div class="ds-peek__scroll">
           <div class="ds-peek__head"><div style="display:flex;align-items:flex-start;gap:var(--space-3)"><span class="ds-rhead__avatar ds-peek__avatar"${isC ? '' : ' data-kind="property"'} style="width:3rem;height:3rem;border-radius:var(--radius-xl)">${isC ? esc(initials(c.name)) : icon('buildings')}</span><div class="ds-rhead__body" style="flex:1"><div class="ds-rhead__title"><h2 class="ds-title-xl ds-peek__title">${esc(title)}</h2>${ui.cls(isC ? c.cls : p.cls, true)}</div><div class="ds-toolbar" style="gap:var(--space-1) var(--space-3-5);color:var(--fg-muted)">${meta.map(([l, ic]) => `<span class="ds-meta-icon">${icon(ic)}${esc(l)}</span>`).join('')}</div></div></div>
             <div class="ds-toolbar" style="gap:var(--space-1-5)">${chips}</div>${isC ? ui.lift(c) : ''}
-            <div class="ds-toolbar">${ui.btn({ label: isC ? 'Call' : 'Call owner', ic: 'phone', link: href('contact', 'id=' + c.id + '&act=call') })}${ui.btn({ label: 'Ask Brain', ic: 'sparkle', variant: 'outline', act: 'ask', arg: isC ? 'Why now for ' + c.name + '?' : 'Look up ' + p.addr })}${ui.iconBtn({ ic: 'chat-text', aria: 'Text', disabled: true })}${ui.iconBtn({ ic: 'envelope-simple', aria: 'Email', disabled: true })}</div></div>
+            <div class="ds-toolbar">${ui.btn({ label: isC ? 'Call' : 'Call owner', ic: 'phone', link: href('contact', 'id=' + c.id + '&act=call'), disabled: c.status === 'Do not contact', tip: c.status === 'Do not contact' ? NO_CONTACT : null })}${ui.btn({ label: 'Ask Brain', ic: 'sparkle', variant: 'outline', act: 'ask', arg: isC ? 'Why now for ' + c.name + '?' : 'Look up ' + p.addr })}${ui.iconBtn({ ic: 'chat-text', aria: 'Text', disabled: true })}${ui.iconBtn({ ic: 'envelope-simple', aria: 'Email', disabled: true })}</div></div>
           <div class="ds-peek__tabs">${ui.stateTabs(isC ? [['overview', 'Overview'], ['property', 'Property']] : [['overview', 'Overview'], ['owner', 'Owner']], pk.tab, 'peek-tab', 'Preview')}</div>
           <div class="ds-peek__body" data-anim="${V.peekDir ? 'slide-y' : 'fade'}" data-key="peekbody-${pk.k}-${pk.id}-${pk.tab}" style="--dir:${V.peekDir || 1}">${peekSections()}</div>
         </div>

@@ -75,7 +75,7 @@ Small changes with the biggest effect on trust. They fix places where the protot
 
 ### 1.3 Permanent opt-out
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Outcome tray and sheet, case file header, Details
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Outcome tray and sheet, case file header, Details
 
 - **The brief:** A person who asks not to be contacted is never contacted again, on any channel. A text STOP counts the same. Numbers on do-not-call lists show a warning, never a block. (Doc 1 §9)
 - **Today:** A "Do not contact" status chip exists, but the tray offers "Remove from blasts for 1 year".
