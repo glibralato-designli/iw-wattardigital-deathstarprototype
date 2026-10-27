@@ -46,6 +46,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
   - Note: With a good layout
   - Oct 27, at build: summary-first layout picked over two columns. The app gets the chip and a Buyer section on the contact's Overview. Example: Michael Greene (sold Sep 3, so 1031 identify by Oct 18). Built Oct 27.
 - **3.3 Mobile app as field mode:** Option A, Near me as a tab, Scan in the header (recommended)
+  - Oct 27, at build: tabs Today · Near me · Approvals · Database · More; Brain moves to a header button (Approvals stays a tab from 2.3). More keeps Calendar, Activity, Changes and settings. Scan also on Near me's header. The app's look is kept. Built Oct 27.
 - **3.4 Visual standard test:** Option A, A variant to compare (recommended)
 - **3.5 Calendar: booking page and sync:** Option A, A small card in the rail (recommended)
 - **3.6 Dashboard names and Funnel and trends:** Option A, Keep the video names, add the funnel to Performance (recommended)

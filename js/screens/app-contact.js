@@ -5,7 +5,7 @@
   const c = D.cById[id], p = D.pById[c.pid];
   const S = DS.S(), U = DS.U();
   const TABS = [['overview', 'Overview'], ['intelligence', 'Intelligence'], ['ownership', 'Ownership'], ['activity', 'Activity'], ['details', 'Details'], ['history', 'History']];
-  const st = { tab: TABS.some(t => t[0] === params.get('tab')) ? params.get('tab') : 'overview', noteDraft: '', saving: params.get('call') === 'saving', logged: params.get('call') === 'logged' ? 'No answer' : null, openerOpen: params.get('opener') === 'open', buyersOpen: params.get('buyers') === 'all' };
+  const st = { voice: ['rec', 'done'].includes(params.get('voice')) ? params.get('voice') : null, tab: TABS.some(t => t[0] === params.get('tab')) ? params.get('tab') : 'overview', noteDraft: '', saving: params.get('call') === 'saving', logged: params.get('call') === 'logged' ? 'No answer' : null, openerOpen: params.get('opener') === 'open', buyersOpen: params.get('buyers') === 'all' };
   const dnc = () => c.status === 'Do not contact';
 
   /* Presets: call=live|outcome|saving|logged|log, choice=<outcome>, res=<results, comma-separated>, why=open, note=1, flag=<evidence index>. */
@@ -121,13 +121,20 @@
       ${reached ? `<div class="ds-sheet-sec"><h3>What came out of it</h3><div class="ds-achips" style="margin:0;padding:0;flex-wrap:wrap">${O.results.map(([k, l]) => `<button type="button" class="ds-fchip" role="checkbox" aria-checked="${!!res[k]}" aria-pressed="${!!res[k]}" data-act="toggle-res" data-arg="${k}">${res[k] ? icon('check') : ''}${l}</button>`).join('')}</div></div>
       <div class="ds-sheet-sec"><label class="field"><span class="field__label">What they said</span><textarea id="out-said" class="field__control" rows="2" placeholder="In their words" data-input="outSaid">${esc(oc.said || '')}</textarea><span class="ds-meta">Saved as their claim, sourced to this call.</span></label></div>` : ''}
       <div class="ds-sheet-sec"><h3>Call back</h3><div class="ds-achips" style="margin:0;padding:0;flex-wrap:wrap">${FOLLOW.map(([k, l]) => `<button type="button" class="ds-fchip" aria-pressed="${(oc.follow || '') === k}" data-act="follow" data-arg="${k}">${l}</button>`).join('')}</div></div>
-      <div class="ds-sheet-sec"><label class="field"><span class="field__label">Your notes</span><textarea id="out-notes" class="field__control" rows="3" placeholder="Optional" data-input="outNotes">${esc(oc.notes)}</textarea></label></div>
+      <div class="ds-sheet-sec"><label class="field"><span class="field__label">Your notes</span><textarea id="out-notes" class="field__control" rows="3" placeholder="Optional" data-input="outNotes">${esc(oc.notes)}</textarea></label>${voice()}</div>
       <div class="ds-sheet-sec"><h3>Also</h3><div class="ds-opts">${ACTS.map(([k, l]) => `<button type="button" class="ds-optrow" data-kind="check" role="checkbox" aria-checked="${!!oc.acts[k]}" data-act="toggle-oact" data-arg="${k}"><span>${l}</span><span class="ds-optrow__mark">${icon('check')}</span></button>`).join('')}</div>${oc.acts.optout ? `<div class="alert" data-status="danger" role="status" data-anim="grow" data-key="optout">${icon('warning-diamond')}<span>This stops every channel, permanently.</span></div>` : ''}</div>`,
       foot: ui.btn({ label: 'Skip', variant: 'outline', act: 'skip-outcome' }) + (oc.choice ? ui.btn({ label: st.saving ? 'Saving' : 'Save outcome', act: 'save-outcome', busy: st.saving, id: 'save-outcome' }) : `<button type="button" class="button" aria-disabled="true" data-tip="Pick an outcome first">Save outcome</button>`) }); };
   const noteSheet = () => ui.sheet({ key: 'note', title: 'Add a note', body: `<label class="field" style="padding-top:var(--space-2)"><span class="field__label">What did you learn?</span><textarea id="note-draft" class="field__control" rows="4" data-input="noteDraft">${esc(st.noteDraft)}</textarea></label>`, foot: ui.btn({ label: 'Cancel', variant: 'outline', act: 'close-sheet' }) + ui.btn({ label: 'Save note', act: 'save-note' }) });
   const overlays = () => outcome() ? outcomeSheet() : DS.V.sheet === 'why' ? whySheet() : DS.V.sheet === 'note' ? noteSheet() : '';
 
   // Saving applies the outcome's actions exactly as on the web (DS.applyOutcome).
+  /* Voice note (3.0 · 3.3): tap to record, Stop, and the transcript lands in Your notes, marked as a transcript to check. Presets: voice=rec|done. */
+  const VOICE = 'Voice note · 0:18 · transcript: Wants the numbers before Friday. Call back after 4.';
+  const voice = () => st.voice === 'rec'
+    ? `<div class="ds-voice" data-rec role="status"><span class="ds-voice__dot" aria-hidden="true"></span><span>Recording · 0:12</span><span class="ds-grow"></span>${ui.btn({ label: 'Stop', size: 'sm', variant: 'outline', act: 'voice-stop' })}</div>`
+    : st.voice === 'done' ? `<p class="ds-meta ds-voice__done">${icon('microphone')}Transcribed into your notes. Check it before you save.</p>`
+    : `<button type="button" class="ds-voice" data-act="voice">${icon('microphone')}<span>Record a voice note</span></button>`;
+  if (st.voice === 'done' && U.outcome && U.outcome.id === id && !(U.outcome.notes || '').includes('Voice note')) DS.setUI({ outcome: { ...U.outcome, notes: VOICE } });
   const doSave = () => { const oc = outcome(), ch = oc.choice, said = DS.applyOutcome(c, oc); st.saving = false; st.logged = ch; DS.render(); DS.toast(said); };
 
   // The browser tab names the record: Death Star | <name> (Orientation doc 3).
@@ -145,6 +152,8 @@
       'end-call': () => { const dur = callTime(); DS.setUI({ call: null, outcome: DS.OUT.blank(id, dur) }); DS.render(); },
       'pick-outcome': (el, o) => { DS.setUI({ outcome: DS.OUT.pick(outcome(), o) }); DS.render(); },
       'toggle-opener': () => { st.openerOpen = !st.openerOpen; DS.render(); },
+      voice: () => { st.voice = 'rec'; DS.render(); },
+      'voice-stop': () => { st.voice = 'done'; const oc = outcome(); DS.setUI({ outcome: { ...oc, notes: (oc.notes ? oc.notes + '\n' : '') + VOICE } }); DS.render(); },
       'toggle-buyers': () => { st.buyersOpen = !st.buyersOpen; DS.render(); },
       'toggle-res': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, res: { ...oc.res, [k]: !(oc.res || {})[k] } } }); DS.render(); },
       'pick-num': (el, x) => { DS.setUI({ outcome: { ...outcome(), num: x } }); DS.render(); },

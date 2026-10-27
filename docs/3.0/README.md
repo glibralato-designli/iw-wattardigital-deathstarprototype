@@ -340,7 +340,7 @@ Features that close the loop between calls, plus the visual standard test.
 
 ### 3.3 Mobile app as field mode
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** App tabs, Today, More
+**Status:** Done, Oct 27, 2026 (Option A, Brain in the header) · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** App tabs, Today, More
 
 - **The brief:** Field mode shows only what makes sense on a phone: Today, the card, the pop-up record, texting, email and the tracker, plus Near me, Building scan, tap to call and a two-tap outcome. Not marketing, valuations, the model or settings. (Doc 3 Mobile, doc 5 scenario 7)
 - **Today:** Five tabs; More holds Calendar, Activity, the four reports, Headlines and BOV & OM.

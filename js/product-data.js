@@ -179,6 +179,9 @@
   const dashboardTabs = [['home', 'Overview'], ['conversations', 'Activity'], ['reporting', 'Who to call'], ['calendar', 'Calendar'], '|', ['outreach-performance', 'Performance'], ['listings', 'Listings'], ['web-analytics', 'Website']];
   const databaseTabs = [['contacts', 'Contacts'], ['properties', 'Properties'], ['cleaning', 'Cleaning']];
 
+  /* Near me (3.0 · 3.3, field mode): where Thomas stands (simulated) and owners whose lead building is within a ten-minute walk, closest first. */
+  const near = { at: 'Ludlow St and Delancey St', walk: [['marchetti', 1], ['shah', 3], ['greene', 3], ['morales', 4], ['chen', 5], ['feld', 6], ['baum', 7], ['okafor', 8], ['adler', 9]] };
+
   /* Cleaning (3.0 · 3.1): ten minutes a day across four queues. Each item: the field, current → proposed, confidence, a dated source and a
      plain reason. Nothing changes in a record until Thomas approves. flag: Brain leaves it alone (conflicting sources), so it's never in a bulk action. */
   const QUEUES = [['contact', 'Contact', 'phone'], ['ownership', 'Ownership', 'identification-card'], ['property', 'Property', 'buildings'], ['context', 'Context', 'sparkle']];
@@ -559,5 +562,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { buyerSide, fitsFor, QUEUES, cleaning, teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { near, buyerSide, fitsFor, QUEUES, cleaning, teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

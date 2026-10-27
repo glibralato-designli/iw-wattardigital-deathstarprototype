@@ -1779,3 +1779,19 @@ a.ds-atile:hover{background:var(--bg-subtle);color:var(--fg);text-decoration:non
 [data-shell="app"] .ds-acount b{font-size:var(--text-xl);line-height:var(--line-height-xl);font-weight:var(--weight-semibold)}
 [data-shell="app"] .ds-aboth{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
 [data-shell="app"] .ds-maptile{border:0}
+/* Field mode (3.0 · 3.3): the location line on Near me, the scan sheet (the facade drawing in a camera frame) and the voice note row. */
+[data-shell="app"] .ds-anear{display:flex;align-items:flex-start;gap:var(--space-2);padding:0 var(--space-4);color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+[data-shell="app"] .ds-anear svg{width:1rem;height:1rem;flex:none;margin-top:2px;color:var(--brand-primary-text)}
+.ds-scan{display:flex;flex-direction:column;gap:var(--space-3);padding-top:var(--space-2)}
+.ds-scan__view{position:relative;border-radius:var(--radius-xl);overflow:hidden;background:var(--bg-muted)}
+.ds-scan__view .ds-facade{border-radius:0}
+.ds-scan__frame{position:absolute;inset:12%;border:2px solid var(--bg);border-radius:var(--radius-lg);box-shadow:0 0 0 999px rgb(0 0 0 / .28)}
+.ds-scan[data-found] .ds-scan__frame{border-color:var(--brand-primary)}
+.ds-voice{display:flex;align-items:center;gap:var(--space-2);width:100%;min-height:var(--touch-target);margin-top:var(--space-2);padding:0 var(--space-3);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);background:var(--bg);color:var(--fg);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+button.ds-voice svg{width:1.125rem;height:1.125rem;color:var(--brand-primary-text)}
+.ds-voice[data-rec]{background:var(--brand-primary-subtle);border-color:transparent}
+.ds-voice__dot{width:.5rem;height:.5rem;border-radius:var(--radius-full);background:var(--brand-primary);animation:ds-voice-pulse 1.2s var(--ease) infinite}
+@keyframes ds-voice-pulse{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.ds-voice__dot{animation:none}}
+.ds-voice__done{display:flex;align-items:center;gap:var(--space-1-5);margin-top:var(--space-2)}
+.ds-voice__done svg{width:1rem;height:1rem;color:var(--brand-primary-text)}

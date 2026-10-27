@@ -242,7 +242,7 @@
         <p class="ds-buyer__said">“${esc(b.said[0])}”<span class="ds-meta"> Said on the ${esc(b.said[1])}</span></p>
         <div class="ds-buyer__clock"><div class="ds-buyer__h"><h3>1031 clock</h3><span class="badge">${b.clock.left} days to identify</span></div>${ui.clock(b.clock)}</div>`,
       deals: `<div class="ds-buyer__rows">${b.deals.map(([k, a, d, v, src]) => `<div class="ds-buyer__row"><span class="ds-buyer__k">${esc(k)}</span><span class="ds-row__body"><span class="font-medium">${esc(a)}</span><span class="ds-meta">${esc(d)} · ${esc(src)}</span></span><span class="num">${esc(v)}</span></div>`).join('')}</div>`,
-      fits: `<div class="ds-buyer__rows">${b.listings.map(([a, sub, tag]) => `<a class="ds-buyer__row" href="${href('listings')}"><span class="ds-buyer__k">${icon('tag')}</span><span class="ds-row__body"><span class="font-medium">${esc(a)}</span><span class="ds-meta">${esc(sub)}</span></span><span class="badge" data-status="info">${esc(tag)}</span></a>`).join('')}${fits.map(p => `<a class="ds-buyer__row" href="${href('property', 'id=' + p.id)}"><span class="ds-buyer__k">${icon('buildings')}</span><span class="ds-row__body"><span class="font-medium">${esc(p.addr)}</span><span class="ds-meta">Off-market · ${esc(cById[p.owner].name)} · ${p.units} units</span></span><span class="ds-meta num" title="Building score">${p.score}</span></a>`).join('')}</div>`,
+      fits: `<div class="ds-buyer__rows">${b.listings.map(([a, sub, tag]) => `<${DS.app ? 'div' : `a href="${href('listings')}"`} class="ds-buyer__row"><span class="ds-buyer__k">${icon('tag')}</span><span class="ds-row__body"><span class="font-medium">${esc(a)}</span><span class="ds-meta">${esc(sub)}</span></span><span class="badge" data-status="info">${esc(tag)}</span></${DS.app ? 'div' : 'a'}>`).join('')}${fits.map(p => `<a class="ds-buyer__row" href="${href('property', 'id=' + p.id)}"><span class="ds-buyer__k">${icon('buildings')}</span><span class="ds-row__body"><span class="font-medium">${esc(p.addr)}</span><span class="ds-meta">Off-market · ${esc(cById[p.owner].name)} · ${p.units} units</span></span><span class="ds-meta num" title="Building score">${p.score}</span></a>`).join('')}</div>`,
       nFits: b.listings.length + fits.length };
   };
   ui.buyerSide = c => { const x = ui.buyerParts(c); if (!x) return '';
@@ -785,12 +785,13 @@
 
   /* ───────── App shell (mobile app mode) ─────────
      Pages in pages/app/ set body[data-shell="app"]. A header bar, a five-tab bar and bottom sheets replace
-     the navy frame; Brain is a tab; a live call follows Thomas as a pill above the tab bar. Routes keep the
+     the navy frame; Brain opens from every header; a live call follows Thomas as a pill above the tab bar. Routes keep the
      web names (home, contact, brain…), so shared helpers and reused screen scripts link inside the app. */
   const APP = document.body.dataset.shell === 'app';
   DS.app = APP;
-  const TABS = [['today', 'Today', 'sun', 'attack-plan'], ['approvals', 'Approvals', 'tray', 'approvals'], ['brain', 'Brain', 'sparkle', 'brain'], ['database', 'Database', 'database', 'contacts'], ['more', 'More', 'dots-three-circle', 'more']];
-  const tabOf = sc => sc.tab || ({ today: 'today', brain: 'brain', database: 'database' }[sc.nav]) || 'more';
+  // Field mode (3.0 · 3.3): Today, Near me, Approvals, Database, More. Brain is a sparkle button in every header.
+  const TABS = [['today', 'Today', 'sun', 'attack-plan'], ['near', 'Near me', 'map-pin', 'near'], ['approvals', 'Approvals', 'tray', 'approvals'], ['database', 'Database', 'database', 'contacts'], ['more', 'More', 'dots-three-circle', 'more']];
+  const tabOf = sc => sc.tab || ({ today: 'today', near: 'near', brain: 'brain', database: 'database' }[sc.nav]) || 'more';
   function tabbar() {
     const cur = tabOf(DS.screen);
     return TABS.map(([k, l, ic, page]) => { const n = k === 'approvals' ? apprPending() : 0; return `<a class="ds-tab" href="${href(page)}"${k === cur ? ' aria-current="page"' : ''}${n ? ` aria-label="${l}, ${n} to approve"` : ''}>${icon(ic, k === cur ? 'fill' : 'regular')}${n ? `<i class="ds-tab__badge" aria-hidden="true">${n}</i>` : ''}<span>${l}</span></a>`; }).join('');
@@ -804,11 +805,20 @@
     const back = h.lead ? `<div class="ds-apphead__lead">${h.lead}</div>` : !b ? '' : b[3] === 'history'
       ? `<button type="button" class="ds-apphead__back" data-act="app-back" data-arg="${esc(b[1])}">${icon('caret-left')}<span>${esc(b[0])}</span></button>`
       : `<a class="ds-apphead__back" href="${href(b[1], b[2] || '')}">${icon('caret-left')}<span>${esc(b[0])}</span></a>`;
-    return `<div class="ds-apphead__bar"${h.large ? ' data-large' : ''}>${back}<span class="ds-apphead__title"${h.large ? ' aria-hidden="true"' : ''}>${esc(h.title)}</span><div class="ds-apphead__tools">${h.actions || ''}</div></div>`;
+    return `<div class="ds-apphead__bar"${h.large ? ' data-large' : ''}>${back}<span class="ds-apphead__title"${h.large ? ' aria-hidden="true"' : ''}>${esc(h.title)}</span><div class="ds-apphead__tools">${h.actions || ''}${sc.id === 'brain' ? '' : `<a class="ds-icon-btn ds-apphead__brain" href="${href('brain')}" aria-label="Ask Brain">${icon('sparkle')}</a>`}</div></div>`;
   }
   ui.large = (title, sub = '', extra = '') => `<div class="ds-large"><div class="ds-large__text">${sub ? `<span class="ds-large__sub">${esc(sub)}</span>` : ''}<h1>${esc(title)}</h1></div>${extra}</div>`;
   // Bottom sheet: grabber, title and close, a scrolling body and an optional sticky footer.
   ui.sheet = ({ key, title, body, foot = '', close = 'close-sheet', size }) => `<div class="ds-sheet-layer" data-key="sheet-${esc(key)}"><div class="ds-sheet-scrim" data-act="${close}" data-anim="fade" data-key="sheet-scrim-${esc(key)}"></div><section class="ds-sheet"${size ? ` data-size="${size}"` : ''} role="dialog" aria-modal="true" aria-label="${esc(title)}" data-anim="sheet" data-key="sheet-body-${esc(key)}"><span class="ds-sheet__grab" aria-hidden="true"></span><header class="ds-sheet__head"><h2>${esc(title)}</h2>${ui.iconBtn({ ic: 'x', aria: 'Close', act: close })}</header><div class="ds-sheet__body">${body}</div>${foot ? `<footer class="ds-sheet__foot">${foot}</footer>` : ''}</section></div>`;
+  /* Building scan (3.0 · 3.3, field mode): point the camera at a facade; Death Star matches it to a building and opens the record.
+     A typed address is the fallback. V.sheet: 'scan' (looking), 'scan-found' (matched 118 Ludlow St), 'scan-type' (typing). Preset: scan=open|found|type. */
+  DS.scanPreset = () => { const k = params.get('scan'); if (k) V.sheet = k === 'found' ? 'scan-found' : k === 'type' ? 'scan-type' : 'scan'; };
+  ui.scanSheet = () => { const k = V.sheet || ''; if (!k.startsWith('scan')) return ''; const p = pById.p118;
+    if (k === 'scan-type') return ui.sheet({ key: 'scan-type', title: 'Type an address', body: `<label class="field" style="padding-top:var(--space-2)"><span class="field__label">Address or BBL</span><input id="scan-addr" class="field__control" value="118 Ludlow" autocomplete="off"></label><p class="ds-meta">Matches as you type: <b>${esc(p.addr)}</b>, ${esc(p.hood)}.</p>`, foot: ui.btn({ label: 'Back to camera', variant: 'outline', act: 'scan' }) + ui.btn({ label: 'Open ' + p.addr, link: href('property', 'id=' + p.id) }) });
+    const found = k === 'scan-found';
+    return ui.sheet({ key: 'scan', title: 'Scan a building', body: `<div class="ds-scan"${found ? ' data-found' : ''}><div class="ds-scan__view" aria-hidden="true"><div class="ds-facade" data-wide data-art>${DS.facade(p)}</div><span class="ds-scan__frame"></span></div>
+        <p class="ds-meta" role="status">${found ? `Matched <b>${esc(p.addr)}</b> · ${esc(cById[p.owner].name)} · score ${p.score}` : 'Point at the front of the building. Keep the door and the number in the frame.'}</p></div>`,
+      foot: found ? ui.btn({ label: 'Type it instead', variant: 'outline', act: 'scan-type' }) + ui.btn({ label: 'Open ' + p.addr, link: href('property', 'id=' + p.id) }) : ui.btn({ label: 'Type an address', variant: 'outline', act: 'scan-type' }) + ui.btn({ label: 'Match', ic: 'scan', act: 'scan-match' }) }); };
   const callClock = () => { if (!U.call) return '0:00'; const s = Math.floor((Date.now() - U.call.t0) / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
   function callPill() {
     if (!U.call || (DS.screen.id === 'contact' && params.get('id') === U.call.id)) return '';
@@ -894,6 +904,9 @@
     menu: (el, m) => { V.menu = V.menu === m ? null : m; render(); },
     'pick-role': (el, r) => { U.role = r || null; V.menu = null; save(); render(); },
     'close-menu': () => { V.menu = null; render(); },
+    scan: () => { V.sheet = 'scan'; render(); },
+    'scan-match': () => { V.sheet = 'scan-found'; render(); },
+    'scan-type': () => { V.sheet = 'scan-type'; render(); setTimeout(() => { const i = document.getElementById('scan-addr'); if (i) i.focus(); }, 30); },
     'close-sheet': () => { V.sheet = null; render(); if (DS.screen.onSheetClose) DS.screen.onSheetClose(); },
     sheet: (el, k) => { V.sheet = k; render(); },
     // Chats: a drawer on a phone and in the app; on wider web screens, show or hide the history column.
