@@ -220,7 +220,7 @@
   ui.waiting = (id, label = 'Waiting for your click') => `<a class="ds-waiting" href="${href('approvals', id ? 'open=' + id : '')}">${icon('tray')}${esc(label)}</a>`;
   /* Changes note (3.0 · 2.5): a quiet line where the old behaviour was, with Restore (and Undo once restored). The full list is System › Changes. */
   ui.changeNote = id => { const ch = D.changes.find(x => x.id === id); if (!ch) return ''; const back = !!(S.restored || {})[id];
-    return `<p class="ds-change" data-key="change-${id}">${icon('clock-counter-clockwise')}<span>${back ? esc('Restored: ' + ch.area.toLowerCase() + ' is back to how it was before ' + ch.date + '.') : `<b>${esc(ch.area)} changed ${esc(ch.date)}:</b> ${esc(ch.what)}`}</span><button type="button" class="ds-link-btn" data-act="restore-change" data-arg="${id}">${back ? 'Undo' : 'Restore'}</button><a class="ds-link-btn" href="${href('changes')}">All changes</a></p>`; };
+    return `<p class="ds-change" data-key="change-${id}">${icon('clock-counter-clockwise')}<span>${back ? esc('Restored: ' + ch.area.toLowerCase() + ' is back to how it was before ' + ch.date + '.') : `<b>${esc(ch.area)} changed ${esc(ch.date)}:</b> ${esc(ch.what)}`} <span class="ds-change__acts"><button type="button" class="ds-link-btn" data-act="restore-change" data-arg="${id}">${back ? 'Undo' : 'Restore'}</button><span aria-hidden="true">·</span><a class="ds-link-btn" href="${href('changes')}">All changes</a></span></span></p>`; };
   // The first touch (3.0 · 2.4): its channel, the plan, the because, a sequence's step and why it stopped. Owners without a fixture get one from their state.
   const touchOf = c => { const t = D.touches[c.id];
     if (t) return { ic: t[0], plan: t[1], because: t[2], step: t[3], stopped: t[4], appr: t[5] };

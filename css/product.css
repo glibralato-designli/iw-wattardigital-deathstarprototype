@@ -385,11 +385,16 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-teach__ex{display:flex;align-items:flex-start;gap:var(--space-2);max-width:48rem;padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--bg-subtle);color:var(--fg-secondary);text-wrap:pretty}
 .ds-teach__ex svg{width:1rem;height:1rem;flex:none;margin-top:2px;color:var(--brand-primary-text)}
 /* Changes note (3.0 · 2.5): a quiet, lasting line where the old behaviour was. Muted, never an alert. */
-.ds-change{display:flex;align-items:flex-start;flex-wrap:wrap;gap:var(--space-1) var(--space-2);font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-muted);text-wrap:pretty}
-.ds-change>span{flex:1 1 16rem;min-width:0}
+.ds-change{display:flex;align-items:flex-start;gap:var(--space-1-5);font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-muted);text-wrap:pretty}
+.ds-change>span{flex:1;min-width:0}
 .ds-change>svg{width:.875rem;height:.875rem;flex:none;margin-top:2px;color:var(--fg-subtle)}
 .ds-change b{font-weight:var(--weight-medium);color:var(--fg-secondary)}
+.ds-change__acts{display:inline-flex;align-items:baseline;gap:var(--space-1-5);white-space:nowrap}
+.ds-change__acts>span{color:var(--fg-subtle)}
 .ds-change .ds-link-btn{font-size:inherit;line-height:inherit}
+/* Under Today's source line it shares that line's indent, so the two icons sit in one column. */
+.ds-plan-src+.ds-change{padding:0 var(--space-2)}
+[data-shell="app"] .ds-plan-src+.ds-change{padding:0 var(--space-4) var(--space-2)}
 /* The first touch (3.0 · 2.4): channel icon and a short plan, one quiet line under the why now. */
 .ds-touch{display:inline-flex;align-items:center;gap:var(--space-1);min-width:0;max-width:100%;font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);color:var(--fg-secondary)}
 .ds-touch>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1049,8 +1054,8 @@ a.ds-teamchip:hover{background:var(--brand-secondary-subtle)}
 .ds-bsugg__saved svg{width:.875rem;height:.875rem}
 .ds-bsugg__foot{padding:0 var(--space-1);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
 .ds-bsugg__empty{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--bg);font-size:var(--text-sm)}
-.ds-plan-src{display:flex;align-items:center;gap:var(--space-1-5);padding:0 var(--space-2);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
-.ds-plan-src svg{width:.875rem;height:.875rem;color:var(--brand-primary-text)}
+.ds-plan-src{display:flex;align-items:flex-start;gap:var(--space-1-5);padding:0 var(--space-2);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+.ds-plan-src svg{width:.875rem;height:.875rem;flex:none;margin-top:2px;color:var(--brand-primary-text)}
 .ds-goaledit{display:grid;grid-template-columns:minmax(0,1fr) 5.5rem;gap:var(--space-2);align-items:center;padding:var(--space-1-5) 0}
 .ds-weekedit{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--space-2)}
 .ds-weekedit .field__label{white-space:nowrap}
