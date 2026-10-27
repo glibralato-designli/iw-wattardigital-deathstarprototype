@@ -276,7 +276,7 @@ Inter is the only family (Google Fonts, system fallback), with `cv11` and `ss01`
 | `--text-lg` | 20 / 28 | Stat and tile numbers (600) |
 | `--text-xl` | 22 / 30 | Page title, greeting, record name (600, −0.01em) |
 | `--text-2xl` | 26 / 34 | Dialog title input, emphasised stat |
-| `--text-3xl` | 30 / 34 | Pulse numbers |
+| `--text-3xl` | 30 / 34 | Pulse numbers (the lead tile, Meetings this week, in `--brand-primary-text`, like the selected metric tab's number) |
 | `--text-4xl` | 34 / 42 | Predictive score (700) |
 | `--text-5xl`–`--text-8xl` | 48–96 | Review hub display only |
 

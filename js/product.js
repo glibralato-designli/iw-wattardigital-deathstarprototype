@@ -196,6 +196,9 @@
   // A preset: choice=<outcome>, res=meeting,bov,texts.
   OUT.preset = (id, dur) => { const ch = params.get('choice') || (params.get('call') === 'saving' ? 'No answer' : null), oc = OUT.blank(id, dur); if (!ch) return oc;
     const p = OUT.pick(oc, ch); (params.get('res') || '').split(',').filter(k => OUT.results.some(r => r[0] === k)).forEach(k => { if (OUT.reached(ch)) p.res[k] = true; }); return p; };
+  // The north-star number (Orientation doc 1 §2): owner meetings scheduled this week. The calendar holds 3 (Okafor lunch, Adler BOV pitch,
+  // 90 Clinton St tour); each Meeting set from a call adds one. Last week: 1.
+  const meetingsWeek = () => 3 + (S.meetings || 0);
   // Saving an outcome: the call and its results, its note, its actions on the number reached (bad wins over primary) and the permanent opt-out.
   const applyOutcome = (c, oc) => {
     const ch = oc.choice, num = oc.num || bestPhone(c), said = ['Call logged'], id = c.id, res = OUT.reached(ch) ? oc.res || {} : {}, got = OUT.results.filter(([k]) => res[k]).map(([, l]) => l);
@@ -270,7 +273,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, applyOutcome, OUT, optOut, NO_CONTACT });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;

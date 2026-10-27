@@ -93,7 +93,7 @@ Small changes with the biggest effect on trust. They fix places where the protot
 
 ### 1.4 Meetings this week as the top number
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Home pulse, Dashboard › Today goals, app Home
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Home pulse, Dashboard › Today goals, app Home
 
 - **The brief:** The one number that matters is owner meetings scheduled this week. Everything else exists to move it. (Doc 1 §2, doc 3 Dashboard)
 - **Today:** Home leads with calls today, conversations, Class A coverage and follow-ups due.

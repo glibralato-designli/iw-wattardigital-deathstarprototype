@@ -29,10 +29,11 @@
 
   const pulse = () => {
     const S = DS.S(), done = DS.callsDone(), fu = S.tasks.filter(t => !t.done && t.g === 'Follow up').length;
-    const cells = [['Calls today', 'phone', done, 'of 40', done / 40, 'attack-plan', '+2 vs. yesterday', 'up', 'calls'], ['Conversations', 'chat-text', 2 + S.convos, 'of 5', (2 + S.convos) / 5, 'conversations', 'On pace for goal', '', 'convos'], ['Class A coverage', 'chart-pie-slice', '64%', 'called', 0.64, 'outreach-performance', '+4 pts this week', 'up', 'pulse-cov'], ['Follow-ups due', 'clock', fu, 'today', 0, 'attack-plan', '2 overdue', 'warn', 'pulse-fu']];
+    const m = DS.meetingsWeek();
+    const cells = [['Meetings this week', 'handshake', m, 'with owners', 0, 'calendar', '+' + (m - 1) + ' vs. last week (1)', 'up', 'meetings'], ['Calls today', 'phone', done, 'of 40', done / 40, 'attack-plan', '+2 vs. yesterday', 'up', 'calls'], ['Conversations', 'chat-text', 2 + S.convos, 'of 5', (2 + S.convos) / 5, 'conversations', 'On pace for goal', '', 'convos'], ['Follow-ups due', 'clock', fu, 'today', 0, 'attack-plan', '2 overdue', 'warn', 'pulse-fu']];
     // Queues pushed from the Database's list builder count here, as on the web's Outreach tile.
     const qs = DS.queues(); cells.push(['Queues ready', 'list-bullets', 3 + qs.length, 'ready', 1, 'contacts', qs.length ? qs.length + ' pushed today · ' + DS.loc(qs.reduce((t, q) => t + q.n, 0)) + ' owners' : '1,480 owners queued', qs.length ? 'up' : '', 'pulse-q']);
-    return `<section class="ds-atiles" aria-label="Pulse">${cells.map(([l, ic, v, of, r, page, d, tone, key]) => `<a class="ds-atile" href="${href(page)}"><span class="ds-atile__label">${icon(ic)}${esc(l)}</span><span class="ds-atile__value"><b data-count="${key}">${esc(v)}</b><span class="ds-meta">${esc(of)}</span></span>${ui.progress(r, l, { thin: true, fill: true, key })}<span class="ds-atile__foot"${tone ? ` data-tone="${tone}"` : ''}>${icon(tone === 'up' ? 'arrow-up-right' : tone === 'warn' ? 'warning-circle' : 'check')}${esc(d)}</span></a>`).join('')}</section>`;
+    return `<section class="ds-atiles" aria-label="Pulse">${cells.map(([l, ic, v, of, r, page, d, tone, key]) => `<a class="ds-atile"${key === 'meetings' ? ' data-lead' : ''} href="${href(page)}"><span class="ds-atile__label">${icon(ic)}${esc(l)}</span><span class="ds-atile__value"><b data-count="${key}">${esc(v)}</b><span class="ds-meta">${esc(of)}</span></span>${ui.progress(r, l, { thin: true, fill: true, key })}<span class="ds-atile__foot"${tone ? ` data-tone="${tone}"` : ''}>${icon(tone === 'up' ? 'arrow-up-right' : tone === 'warn' ? 'warning-circle' : 'check')}${esc(d)}</span></a>`).join('')}</section>`;
   };
 
   // Brain's morning note: on the web it opens the Brain panel; in the app it's a card on Home.
