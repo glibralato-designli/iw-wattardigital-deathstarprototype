@@ -5,43 +5,43 @@
   const addD = n => { const d = new Date(TODAY); d.setDate(d.getDate() + n); return d; };
 
   const C = [
-    ['marchetti', 'Daniel Marchetti', 'Ludlow 118 Holdings LLC', 'A', 132, 'p118', 'Loan maturity', '$9.4M loan due in June on 37 units', 'Daniel Marchetti has a $9.4M loan coming due in June on his 37-unit Ludlow Street building. He’ll need to refinance or sell, so now’s the time to get in front of him.', 'verified', '41d ago · No answer', '(212) 555-0147', 'Contacted', 19, 'Debt Clock', 'Rising', 'Domestic LLC · Family owner', 1],
-    ['feld', 'Aaron Feld', 'Orchard 27 Realty LLC', 'A', 121, 'p27o', 'Estate transition', 'Inherited in March; estate in probate', 'Aaron Feld inherited 27 Orchard St in March, and public records suggest the estate is still in probate. Heirs often sell within two years.', 'single', 'Never called', '(212) 555-0182', 'New', 1, 'Estate Transition', 'Rising', 'Domestic LLC · Heir', 0],
-    ['okafor', 'Grace Okafor', 'Clinton Street Partners LP', 'A', 117, 'p90c', 'Loan maturity', '$6.1M loan due in August; held 22 years', 'Grace Okafor’s $6.1M loan on 90 Clinton St matures in August, and her family has held the building for 22 years. A sale or recap is likely this year.', 'verified', '12d ago · Voicemail', '(212) 555-0164', 'Contacted', 22, 'Debt Clock', 'Steady', 'Limited partnership · Family office', 1],
-    ['adler', 'Ruth Adler', 'Adler Family Trust', 'B', 98, 'p64e', 'Long hold', 'Held 31 years; partners in their 70s', 'Ruth Adler’s family has held 64 Essex St for 31 years, and both partners are in their 70s. Long holds like this often trade when the next generation takes over.', 'verified', '3d ago · Callback set', '(212) 555-0121', 'Engaged', 31, 'Legacy Hold', 'Steady', 'Trust · Family owner', 1],
-    ['rivera', 'Marisol Rivera', 'Rivera Holdings LLC', 'B', 88, 'p212e', 'Unused FAR', '9,400 SF of unused air rights', 'Marisol Rivera’s building at 212 E 3rd St has 9,400 SF of unused development rights. Developers are paying for air rights in the East Village, which could prompt a sale.', 'verified', '27d ago · No answer', '(212) 555-0138', 'Contacted', 18, 'Fund Exit', 'Rising', 'Domestic LLC · Private owner', 1],
-    ['kowalski', 'Peter Kowalski', 'Avenue B Owners LLC', 'B', 84, 'p31b', 'Loan maturity', '$3.2M loan due in November', 'Peter Kowalski has a $3.2M loan on 31 Avenue B coming due in November. With rates where they are, he may prefer to sell than refinance.', 'verified', 'Never called', '(212) 555-0175', 'New', 14, 'Debt Clock', 'Rising', 'Domestic LLC · Private owner', 0],
-    ['chen', 'Wei Chen', 'Delancey Owners LLC', 'B', 82, 'p155d', 'Lis pendens', 'Lis pendens filed in August', 'A lis pendens was filed against 155 Delancey St in August. Owners facing a foreclosure action often look for a quick sale.', 'stale', '64d ago · Not interested', '(212) 555-0193', 'Nurture', 9, 'Partner Split', 'Falling', 'Domestic LLC · Partnership', 0],
-    ['shah', 'Anita Shah', 'Allen Street Realty LLC', 'C', 61, 'p48a', 'Long hold', 'Held 26 years, no recent activity', 'Anita Shah has held 48 Allen St for 26 years with no refinance or listing. Worth a check-in, not a pitch.', 'single', '90d ago · Voicemail', '(212) 555-0110', 'Contacted', 26, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
-    ['greene', 'Michael Greene', 'Rivington 19 LLC', 'C', 55, 'p19r', 'Nearby sale', 'Listed a nearby building last year', 'Michael Greene listed a nearby building last year and pulled it. He may be open to talking about 19 Rivington St.', 'stale', '5mo ago · Connected', '(212) 555-0156', 'Nurture', 11, 'Fund Exit', 'Falling', 'Domestic LLC · Investor', 0],
-    ['morales', 'Elena Morales', 'Stanton 7 LLC', 'D', 34, 'p7s', 'Long hold', 'Long hold; few signals', 'Elena Morales has owned 7 Stanton St for 15 years. There are few signals right now, so keep her informed rather than calling.', 'single', 'Never called', '(212) 555-0149', 'New', 15, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
-    ['baum', 'Harold Baum', 'Norfolk 120 Associates', 'LH', 14, 'p120n', 'Recent refinance', 'Refinanced in 2024 on a 10-year term', 'Harold Baum refinanced 120 Norfolk St in 2024 on a 10-year term. He’s likely to hold.', 'verified', '2mo ago · Not interested', '(212) 555-0187', 'Do not contact', 21, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
+    ['marchetti', 'Daniel Marchetti', 'Ludlow 118 Holdings LLC', 'A', 'p118', 'Loan maturity', '$9.4M loan due in June on 37 units', 'Daniel Marchetti has a $9.4M loan coming due in June on his 37-unit Ludlow Street building. He’ll need to refinance or sell, so now’s the time to get in front of him.', 'verified', '41d ago · No answer', '(212) 555-0147', 'Contacted', 19, 'Debt Clock', 'Rising', 'Domestic LLC · Family owner', 1],
+    ['feld', 'Aaron Feld', 'Orchard 27 Realty LLC', 'A', 'p27o', 'Estate transition', 'Inherited in March; estate in probate', 'Aaron Feld inherited 27 Orchard St in March, and public records suggest the estate is still in probate. Heirs often sell within two years.', 'single', 'Never called', '(212) 555-0182', 'New', 1, 'Estate Transition', 'Rising', 'Domestic LLC · Heir', 0],
+    ['okafor', 'Grace Okafor', 'Clinton Street Partners LP', 'A', 'p90c', 'Loan maturity', '$6.1M loan due in August; held 22 years', 'Grace Okafor’s $6.1M loan on 90 Clinton St matures in August, and her family has held the building for 22 years. A sale or recap is likely this year.', 'verified', '12d ago · Voicemail', '(212) 555-0164', 'Contacted', 22, 'Debt Clock', 'Steady', 'Limited partnership · Family office', 1],
+    ['adler', 'Ruth Adler', 'Adler Family Trust', 'B', 'p64e', 'Long hold', 'Held 31 years; partners in their 70s', 'Ruth Adler’s family has held 64 Essex St for 31 years, and both partners are in their 70s. Long holds like this often trade when the next generation takes over.', 'verified', '3d ago · Callback set', '(212) 555-0121', 'Engaged', 31, 'Legacy Hold', 'Steady', 'Trust · Family owner', 1],
+    ['rivera', 'Marisol Rivera', 'Rivera Holdings LLC', 'B', 'p212e', 'Unused FAR', '9,400 SF of unused air rights', 'Marisol Rivera’s building at 212 E 3rd St has 9,400 SF of unused development rights. Developers are paying for air rights in the East Village, which could prompt a sale.', 'verified', '27d ago · No answer', '(212) 555-0138', 'Contacted', 18, 'Fund Exit', 'Rising', 'Domestic LLC · Private owner', 1],
+    ['kowalski', 'Peter Kowalski', 'Avenue B Owners LLC', 'B', 'p31b', 'Loan maturity', '$3.2M loan due in November', 'Peter Kowalski has a $3.2M loan on 31 Avenue B coming due in November. With rates where they are, he may prefer to sell than refinance.', 'verified', 'Never called', '(212) 555-0175', 'New', 14, 'Debt Clock', 'Rising', 'Domestic LLC · Private owner', 0],
+    ['chen', 'Wei Chen', 'Delancey Owners LLC', 'B', 'p155d', 'Lis pendens', 'Lis pendens filed in August', 'A lis pendens was filed against 155 Delancey St in August. Owners facing a foreclosure action often look for a quick sale.', 'stale', '64d ago · Not interested', '(212) 555-0193', 'Nurture', 9, 'Partner Split', 'Falling', 'Domestic LLC · Partnership', 0],
+    ['shah', 'Anita Shah', 'Allen Street Realty LLC', 'C', 'p48a', 'Long hold', 'Held 26 years, no recent activity', 'Anita Shah has held 48 Allen St for 26 years with no refinance or listing. Worth a check-in, not a pitch.', 'single', '90d ago · Voicemail', '(212) 555-0110', 'Contacted', 26, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
+    ['greene', 'Michael Greene', 'Rivington 19 LLC', 'C', 'p19r', 'Nearby sale', 'Listed a nearby building last year', 'Michael Greene listed a nearby building last year and pulled it. He may be open to talking about 19 Rivington St.', 'stale', '5mo ago · Connected', '(212) 555-0156', 'Nurture', 11, 'Fund Exit', 'Falling', 'Domestic LLC · Investor', 0],
+    ['morales', 'Elena Morales', 'Stanton 7 LLC', 'D', 'p7s', 'Long hold', 'Long hold; few signals', 'Elena Morales has owned 7 Stanton St for 15 years. There are few signals right now, so keep her informed rather than calling.', 'single', 'Never called', '(212) 555-0149', 'New', 15, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
+    ['baum', 'Harold Baum', 'Norfolk 120 Associates', 'LH', 'p120n', 'Recent refinance', 'Refinanced in 2024 on a 10-year term', 'Harold Baum refinanced 120 Norfolk St in 2024 on a 10-year term. He’s likely to hold.', 'verified', '2mo ago · Not interested', '(212) 555-0187', 'Do not contact', 21, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
     // Outside the Lower East Side: Upper East Side, Midtown and Chelsea are in the territory; Central Harlem (north of 100th St) is not.
-    ['lindqvist', 'Erik Lindqvist', 'East 82nd Street Associates LLC', 'A', 109, 'p311e', 'Loan maturity', '$7.8M loan due in March on 30 units', 'Erik Lindqvist’s $7.8M loan on 311 E 82nd St matures in March, and the building has had no refinance since 2015. Owners in this spot often test a sale before they refinance.', 'verified', '19d ago · Voicemail', '(212) 555-0131', 'Contacted', 17, 'Debt Clock', 'Rising', 'Domestic LLC · Family owner', 1],
-    ['osei', 'Kwame Osei', 'West 46th Holdings LLC', 'B', 86, 'p418w', 'Long hold', 'Held 28 years; owner in his late 60s', 'Kwame Osei has held 418 W 46th St for 28 years and is in his late 60s. Long holds in Midtown West tend to trade when the owner starts planning the estate.', 'verified', 'Never called', '(212) 555-0168', 'New', 28, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
-    ['brennan', 'Claire Brennan', 'Chelsea 22 Realty LLC', 'C', 58, 'p236w', 'Nearby sale', 'Two buildings on the block sold this year', 'Two walk-ups on Claire Brennan’s block of W 22nd St sold this year. Public records suggest she has been approached before. Worth a check-in with the comps.', 'single', '4mo ago · Connected', '(212) 555-0114', 'Nurture', 12, 'Fund Exit', 'Steady', 'Domestic LLC · Investor', 1],
-    ['dubois', 'Marc Dubois', 'Lenox 130 LLC', 'B', 79, 'p130w', 'Loan maturity', '$2.6M loan due in May', 'Marc Dubois has a $2.6M loan on 130 W 130th St due in May. The building is in Central Harlem, outside the territory.', 'single', 'Never called', '(212) 555-0172', 'New', 9, 'Debt Clock', 'Rising', 'Domestic LLC · Private owner', 0],
-  ].map(([id, name, entity, cls, score, pid, signal, why, whyFull, trust, last, phone, status, years, narrative, momentum, meta, warm]) => ({ id, name, entity, cls, score, pid, signal, why, whyFull, trust, last, phone, status, years, narrative, momentum, meta, warm }));
+    ['lindqvist', 'Erik Lindqvist', 'East 82nd Street Associates LLC', 'A', 'p311e', 'Loan maturity', '$7.8M loan due in March on 30 units', 'Erik Lindqvist’s $7.8M loan on 311 E 82nd St matures in March, and the building has had no refinance since 2015. Owners in this spot often test a sale before they refinance.', 'verified', '19d ago · Voicemail', '(212) 555-0131', 'Contacted', 17, 'Debt Clock', 'Rising', 'Domestic LLC · Family owner', 1],
+    ['osei', 'Kwame Osei', 'West 46th Holdings LLC', 'B', 'p418w', 'Long hold', 'Held 28 years; owner in his late 60s', 'Kwame Osei has held 418 W 46th St for 28 years and is in his late 60s. Long holds in Midtown West tend to trade when the owner starts planning the estate.', 'verified', 'Never called', '(212) 555-0168', 'New', 28, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
+    ['brennan', 'Claire Brennan', 'Chelsea 22 Realty LLC', 'C', 'p236w', 'Nearby sale', 'Two buildings on the block sold this year', 'Two walk-ups on Claire Brennan’s block of W 22nd St sold this year. Public records suggest she has been approached before. Worth a check-in with the comps.', 'single', '4mo ago · Connected', '(212) 555-0114', 'Nurture', 12, 'Fund Exit', 'Steady', 'Domestic LLC · Investor', 1],
+    ['dubois', 'Marc Dubois', 'Lenox 130 LLC', 'B', 'p130w', 'Loan maturity', '$2.6M loan due in May', 'Marc Dubois has a $2.6M loan on 130 W 130th St due in May. The building is in Central Harlem, outside the territory.', 'single', 'Never called', '(212) 555-0172', 'New', 9, 'Debt Clock', 'Rising', 'Domestic LLC · Private owner', 0],
+  ].map(([id, name, entity, cls, pid, signal, why, whyFull, trust, last, phone, status, years, narrative, momentum, meta, warm]) => ({ id, name, entity, cls, pid, signal, why, whyFull, trust, last, phone, status, years, narrative, momentum, meta, warm }));
 
   const P = [
-    ['p118', '118 Ludlow St', 'Lower East Side', '10002', '1-00412-0033', 'marchetti', 37, 12, 25, 21400, 1910, '$9.4M', 'Jun 9, 2026', 4],
-    ['p22h', '22 Hester St', 'Chinatown', '10002', '1-00301-0018', 'marchetti', 16, 10, 6, 9800, 1925, '$2.1M', 'Mar 2029', 1],
-    ['p9l', '9 Ludlow St', 'Lower East Side', '10002', '1-00296-0041', 'marchetti', 12, 4, 8, 7200, 1920, 'Not on record', 'Not on record', 1],
-    ['p27o', '27 Orchard St', 'Lower East Side', '10002', '1-00297-0012', 'feld', 24, 24, 0, 14100, 1915, '$3.8M', 'Jan 2028', 2],
-    ['p90c', '90 Clinton St', 'Lower East Side', '10002', '1-00348-0025', 'okafor', 41, 20, 21, 26800, 1928, '$6.1M', 'Aug 2026', 3],
-    ['p64e', '64 Essex St', 'Lower East Side', '10002', '1-00352-0007', 'adler', 20, 6, 14, 12400, 1905, '$1.4M', 'Dec 2030', 2],
-    ['p155d', '155 Delancey St', 'Lower East Side', '10002', '1-00346-0031', 'chen', 30, 18, 12, 19600, 1931, '$4.9M', 'Feb 2027', 2],
-    ['p212e', '212 E 3rd St', 'East Village', '10009', '1-00385-0044', 'rivera', 18, 8, 10, 11300, 1900, '$1.9M', 'Oct 2029', 2],
-    ['p31b', '31 Avenue B', 'East Village', '10009', '1-00384-0002', 'kowalski', 22, 12, 10, 13800, 1910, '$3.2M', 'Nov 2026', 2],
-    ['p48a', '48 Allen St', 'Lower East Side', '10002', '1-00308-0019', 'shah', 14, 6, 8, 8600, 1915, 'Not on record', 'Not on record', 1],
-    ['p19r', '19 Rivington St', 'Lower East Side', '10002', '1-00425-0036', 'greene', 10, 10, 0, 6400, 1925, '$1.1M', 'Jul 2031', 1],
-    ['p7s', '7 Stanton St', 'Lower East Side', '10002', '1-00426-0003', 'morales', 8, 2, 6, 5100, 1910, 'Not on record', 'Not on record', 0],
-    ['p120n', '120 Norfolk St', 'Lower East Side', '10002', '1-00354-0028', 'baum', 26, 14, 12, 16200, 1930, '$5.5M', 'May 2034', 0],
-    ['p311e', '311 E 82nd St', 'Upper East Side', '10028', '1-01545-0021', 'lindqvist', 30, 30, 0, 22600, 1920, '$7.8M', 'Mar 2027', 3],
-    ['p418w', '418 W 46th St', 'Midtown West', '10036', '1-01055-0034', 'osei', 20, 8, 12, 13200, 1910, '$1.6M', 'Sep 2030', 1],
-    ['p236w', '236 W 22nd St', 'Chelsea', '10011', '1-00773-0045', 'brennan', 14, 9, 5, 9900, 1900, 'Not on record', 'Not on record', 1],
-    ['p130w', '130 W 130th St', 'Central Harlem', '10027', '1-01914-0012', 'dubois', 16, 6, 10, 12100, 1905, '$2.6M', 'May 2027', 2],
-  ].map(([id, addr, hood, zip, bbl, owner, units, fm, rs, sf, built, debt, mat, signals]) => ({ id, addr, hood, zip, bbl, owner, units, fm, rs, sf, built, debt, mat, signals }));
+    ['p118', '118 Ludlow St', 'Lower East Side', '10002', '1-00412-0033', 'marchetti', 37, 12, 25, 21400, 1910, '$9.4M', 'Jun 9, 2026', 4, 88],
+    ['p22h', '22 Hester St', 'Chinatown', '10002', '1-00301-0018', 'marchetti', 16, 10, 6, 9800, 1925, '$2.1M', 'Mar 2029', 1, 46],
+    ['p9l', '9 Ludlow St', 'Lower East Side', '10002', '1-00296-0041', 'marchetti', 12, 4, 8, 7200, 1920, 'Not on record', 'Not on record', 1, 31],
+    ['p27o', '27 Orchard St', 'Lower East Side', '10002', '1-00297-0012', 'feld', 24, 24, 0, 14100, 1915, '$3.8M', 'Jan 2028', 2, 91],
+    ['p90c', '90 Clinton St', 'Lower East Side', '10002', '1-00348-0025', 'okafor', 41, 20, 21, 26800, 1928, '$6.1M', 'Aug 2026', 3, 89],
+    ['p64e', '64 Essex St', 'Lower East Side', '10002', '1-00352-0007', 'adler', 20, 6, 14, 12400, 1905, '$1.4M', 'Dec 2030', 2, 68],
+    ['p155d', '155 Delancey St', 'Lower East Side', '10002', '1-00346-0031', 'chen', 30, 18, 12, 19600, 1931, '$4.9M', 'Feb 2027', 2, 66],
+    ['p212e', '212 E 3rd St', 'East Village', '10009', '1-00385-0044', 'rivera', 18, 8, 10, 11300, 1900, '$1.9M', 'Oct 2029', 2, 74],
+    ['p31b', '31 Avenue B', 'East Village', '10009', '1-00384-0002', 'kowalski', 22, 12, 10, 13800, 1910, '$3.2M', 'Nov 2026', 2, 72],
+    ['p48a', '48 Allen St', 'Lower East Side', '10002', '1-00308-0019', 'shah', 14, 6, 8, 8600, 1915, 'Not on record', 'Not on record', 1, 52],
+    ['p19r', '19 Rivington St', 'Lower East Side', '10002', '1-00425-0036', 'greene', 10, 10, 0, 6400, 1925, '$1.1M', 'Jul 2031', 1, 44],
+    ['p7s', '7 Stanton St', 'Lower East Side', '10002', '1-00426-0003', 'morales', 8, 2, 6, 5100, 1910, 'Not on record', 'Not on record', 0, 28],
+    ['p120n', '120 Norfolk St', 'Lower East Side', '10002', '1-00354-0028', 'baum', 26, 14, 12, 16200, 1930, '$5.5M', 'May 2034', 0, 11],
+    ['p311e', '311 E 82nd St', 'Upper East Side', '10028', '1-01545-0021', 'lindqvist', 30, 30, 0, 22600, 1920, '$7.8M', 'Mar 2027', 3, 82],
+    ['p418w', '418 W 46th St', 'Midtown West', '10036', '1-01055-0034', 'osei', 20, 8, 12, 13200, 1910, '$1.6M', 'Sep 2030', 1, 70],
+    ['p236w', '236 W 22nd St', 'Chelsea', '10011', '1-00773-0045', 'brennan', 14, 9, 5, 9900, 1900, 'Not on record', 'Not on record', 1, 48],
+    ['p130w', '130 W 130th St', 'Central Harlem', '10027', '1-01914-0012', 'dubois', 16, 6, 10, 12100, 1905, '$2.6M', 'May 2027', 2, 63],
+  ].map(([id, addr, hood, zip, bbl, owner, units, fm, rs, sf, built, debt, mat, signals, score]) => ({ id, addr, hood, zip, bbl, owner, units, fm, rs, sf, built, debt, mat, signals, score }));
 
   /* Thomas's territory: Main Body Manhattan, from 100th St to the southern tip. */
   const TERRITORY = { name: 'Main Body Manhattan', sub: '100th St to the southern tip', outside: ['Central Harlem'] };
@@ -49,6 +49,14 @@
 
   const cById = Object.fromEntries(C.map(c => [c.id, c]));
   const pById = Object.fromEntries(P.map(p => [p.id, p]));
+
+  /* Buildings are scored (0–100) and classed; people are ranked by their most pressing building (pid).
+     Team history can lift a rank, never a score: [places up, what the team did]. */
+  P.forEach(p => { p.cls = p.score >= 80 ? 'A' : p.score >= 60 ? 'B' : p.score >= 40 ? 'C' : p.score >= 20 ? 'D' : 'LH'; });
+  const LIFT = { marchetti: [2, 'team met him in 2019'], adler: [3, 'team did a BOV on 64 Essex St in 2011'] };
+  const ranked = C.slice().sort((a, b) => pById[b.pid].score - pById[a.pid].score), base = new Map(ranked.map((c, i) => [c, i + 1]));
+  Object.entries(LIFT).forEach(([id, [n]]) => { const i = ranked.indexOf(cById[id]); ranked.splice(i - n, 0, ...ranked.splice(i, 1)); });
+  ranked.forEach((c, i) => { c.rank = i + 1; c.lift = LIFT[c.id] ? { from: base.get(c), why: LIFT[c.id][1] } : null; });
 
   const CLASS = { A: 'Immediate seller', B: 'High probability', C: 'Monitor', D: 'Informational', LH: 'Likely holder' };
   const TIER = { A: 'Tier 1 · Hot', B: 'Tier 2 · Warm', C: 'Tier 3 · Watch', D: 'Tier 4 · Inform', LH: 'Hold' };
@@ -432,7 +440,7 @@
       months, distress: c.id === 'chen' && lead ? 'Lis pendens · filed Aug 14' : 'None on record',
       vio, dob: count('DOB'), ecb: count('ECB'), hpd: count('HPD'), litigation: p.id === 'p118' ? 1 : 0,
       storefront: mixed ? 'Occupied' : null,
-      signals, priority: { A: 'P1', B: 'P2', C: 'P3', D: 'P4', LH: 'P4' }[c.cls],
+      signals,
       deals: [],
     };
   };

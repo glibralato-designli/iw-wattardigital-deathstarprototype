@@ -17,7 +17,7 @@
   const callRow = (id, recap) => {
     const c = D.cById[id], done = recap || !!DS.S().done[id];
     const end = done ? `<span class="ds-called" aria-label="Called" data-tick="called-${id}|${recap ? 'recap' : 'on'}">${icon('check')}</span>` : `<a class="ds-icon-btn ds-abtn" style="border:var(--border-width) solid var(--border)" href="${href('contact', 'id=' + id + '&act=call')}" aria-label="Call ${esc(c.name)}" data-tick="called-${id}|off">${icon('phone')}</a>`;
-    return `<div class="ds-arow"${done ? ' data-done' : ''} data-lead>${ui.cls(c.cls)}<a class="ds-arow__body" href="${href('contact', 'id=' + id)}" style="color:inherit;text-decoration:none"><span class="ds-arow__title">${esc(c.name)}</span><span class="ds-arow__sub">${esc(c.why)}</span><span style="margin-top:var(--space-1)">${ui.trust(c.trust)}</span></a>${end}</div>`;
+    return `<div class="ds-arow"${done ? ' data-done' : ''} data-lead>${ui.cls(c.cls)}<a class="ds-arow__body" href="${href('contact', 'id=' + id)}" style="color:inherit;text-decoration:none"><span class="ds-arow__title">${esc(c.name)}</span><span class="ds-arow__sub">${esc(c.why)}</span><span class="ds-meta">${esc(ui.leadLine(c))}</span>${ui.lift(c)}<span style="margin-top:var(--space-1)">${ui.trust(c.trust)}</span></a>${end}</div>`;
   };
 
   const callNext = () => {

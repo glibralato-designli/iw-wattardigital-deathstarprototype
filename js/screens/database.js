@@ -21,18 +21,20 @@
   const TRK = { Verified: 'verified', 'Single source': 'single', Stale: 'stale', Disputed: 'disputed' }, TRO = { verified: 0, single: 1, stale: 2, disputed: 3 };
   const clsKey = () => st.cls === 'All classes' ? null : st.cls === 'Likely holders' ? 'LH' : st.cls.replace('Class ', '');
   const daysOf = s => { if (s.startsWith('Just')) return 0; if (s.startsWith('Never')) return 99999; const m = s.match(/(\d+)(d|mo)/); return m ? +m[1] * (m[2] === 'mo' ? 30 : 1) : 9999; };
-  const sort = () => st.sort || { key: 'score', dir: 'desc' };
+  // Owners sort by rank, buildings by their own score.
+  const defSort = () => kind === 'contacts' ? { key: 'rank', dir: 'asc' } : { key: 'score', dir: 'desc' };
+  const sort = () => st.sort || defSort();
   const cmp = (a, b) => typeof a === 'number' && typeof b === 'number' ? a - b : String(a).localeCompare(String(b));
   const contacts = () => {
     const q = st.q.trim().toLowerCase(), dig = q.replace(/\D/g, ''), s = sort();
-    const key = c => ({ name: c.name, prop: D.pById[c.pid].addr, last: daysOf(DS.lastOf(c)), trust: TRO[c.trust], score: c.score })[s.key];
+    const key = c => ({ name: c.name, prop: D.pById[c.pid].addr, last: daysOf(DS.lastOf(c)), trust: TRO[c.trust], rank: c.rank })[s.key];
     return CR.rows(b.crit).filter(c => !q || c.name.toLowerCase().includes(q) || c.entity.toLowerCase().includes(q) || D.pById[c.pid].addr.toLowerCase().includes(q) || (q.length >= 3 && DS.emailsOf(c).some(e => e.includes(q))) || (dig.length >= 4 && c.phone.replace(/\D/g, '').includes(dig))).sort((a, b2) => (s.dir === 'asc' ? 1 : -1) * cmp(key(a), key(b2)));
   };
   const properties = () => {
     const q = st.q.trim().toLowerCase(), dig = q.replace(/\D/g, ''), ck = clsKey(), tk = TRK[st.trust], s = sort();
     const trustOf = p => D.cById[p.owner].pid === p.id ? D.cById[p.owner].trust : 'verified';
-    const key = p => { const c = D.cById[p.owner]; return ({ addr: p.addr, owner: c.name, units: p.units, sf: p.sf, signals: p.signals, trust: TRO[trustOf(p)], score: c.score })[s.key]; };
-    return D.P.filter(p => { const c = D.cById[p.owner]; return (!st.terr || p.terr) && (!q || p.addr.toLowerCase().includes(q) || c.name.toLowerCase().includes(q) || (dig.length >= 4 && p.bbl.replace(/\D/g, '').includes(dig))) && (!ck || c.cls === ck) && (!tk || trustOf(p) === tk) && (st.sig === 'All signals' || (c.pid === p.id && c.signal === st.sig)); }).sort((a, b) => (s.dir === 'asc' ? 1 : -1) * cmp(key(a), key(b)));
+    const key = p => { const c = D.cById[p.owner]; return ({ addr: p.addr, owner: c.name, units: p.units, sf: p.sf, signals: p.signals, trust: TRO[trustOf(p)], score: p.score })[s.key]; };
+    return D.P.filter(p => { const c = D.cById[p.owner]; return (!st.terr || p.terr) && (!q || p.addr.toLowerCase().includes(q) || c.name.toLowerCase().includes(q) || (dig.length >= 4 && p.bbl.replace(/\D/g, '').includes(dig))) && (!ck || p.cls === ck) && (!tk || trustOf(p) === tk) && (st.sig === 'All signals' || (c.pid === p.id && c.signal === st.sig)); }).sort((a, b) => (s.dir === 'asc' ? 1 : -1) * cmp(key(a), key(b)));
   };
   const hasFilters = () => kind === 'contacts' ? !!st.q || CR.on(b.crit).length > 0 : !!st.q || st.cls !== 'All classes' || st.trust !== 'All trust' || st.sig !== 'All signals';
   const critStr = () => CR.str(b.crit);
@@ -87,7 +89,7 @@
     ${kind === 'properties' ? `<button type="button" class="button" data-variant="outline" aria-disabled="true" data-tip="${DS.OFF}">${icon('funnel-simple')}Prospects view</button>` : ''}
     ${hasFilters() ? ui.btn({ label: 'Clear', variant: 'ghost', act: 'clear' }) : ''}<span class="ds-grow"></span><span class="ds-meta">${count} ${kind}</span></div>`;
   const head = cols => `<div class="ds-tr" data-head role="row">${cols.map(([key, l, right]) => key === 'reset'
-    ? (st.sort && !(st.sort.key === 'score' && st.sort.dir === 'desc') ? `<button type="button" class="ds-reset-sort" aria-label="Reset sorting" data-tip="Sorted by ${esc(st.sort.key)}, ${st.sort.dir === 'asc' ? 'ascending' : 'descending'} · Reset" data-act="reset-sort">${icon('arrow-clockwise')}</button>` : `<span class="ds-reset-sort" aria-hidden="true" aria-disabled="true">${icon('arrow-clockwise')}</span>`)
+    ? (st.sort && !(st.sort.key === defSort().key && st.sort.dir === defSort().dir) ? `<button type="button" class="ds-reset-sort" aria-label="Reset sorting" data-tip="Sorted by ${esc(st.sort.key)}, ${st.sort.dir === 'asc' ? 'ascending' : 'descending'} · Reset" data-act="reset-sort">${icon('arrow-clockwise')}</button>` : `<span class="ds-reset-sort" aria-hidden="true" aria-disabled="true">${icon('arrow-clockwise')}</span>`)
     : key ? `<button type="button" class="ds-sort" role="columnheader" aria-sort="${sort().key === key ? (sort().dir === 'asc' ? 'ascending' : 'descending') : 'none'}"${sort().key === key ? ' data-on' : ''}${right ? ' data-right' : ''} data-act="sort" data-arg="${key}">${esc(l)}${icon(sort().key === key ? (sort().dir === 'asc' ? 'caret-up' : 'caret-down') : 'arrows-down-up')}</button>`
     : `<span role="columnheader"${right ? ' class="ds-td-right"' : ''}>${esc(l)}</span>`).join('')}</div>`;
   const pager = (shown, total) => { const n = Math.max(1, Math.ceil(total / Number(st.size))), nums = n <= 6 ? [...Array(n)].map((_, i) => i + 1) : [1, 2, 3, 'gap', n];
@@ -97,7 +99,7 @@
   const selected = (k, x) => DS.V.peek && DS.V.peek.k === k && DS.V.peek.id === x;
   const table = () => {
     const isC = kind === 'contacts', rows = isC ? contacts() : properties(), total = isC ? CR.count(b.crit) : st.terr ? D.DB.propsInTerritory : D.DB.properties;
-    const cols = isC ? [['reset'], ['name', 'Name'], ['prop', 'Lead property'], [null, 'Why now'], ['last', 'Last touch'], ['trust', 'Trust'], ['score', 'Score', true]] : [['reset'], ['addr', 'Address'], ['owner', 'Owner'], ['units', 'Units', true], ['sf', 'Gross SF', true], ['signals', 'Signals', true], ['trust', 'Trust'], ['score', 'Score', true]];
+    const cols = isC ? [['reset'], ['name', 'Name'], ['prop', 'Lead property'], [null, 'Why now'], ['last', 'Last touch'], ['trust', 'Trust'], ['rank', 'Rank', true]] : [['reset'], ['addr', 'Address'], ['owner', 'Owner'], ['units', 'Units', true], ['sf', 'Gross SF', true], ['signals', 'Signals', true], ['trust', 'Trust'], ['score', 'Score', true]];
     let body;
     if (st.data === 'loading') body = skeleton();
     else if (st.data === 'error') body = `<div role="alert" style="border-top:var(--border-width) solid var(--border-subtle)">${ui.empty({ ic: 'warning', tone: 'danger', title: `${isC ? 'Contacts' : 'Properties'} didn’t load`, text: 'The connection to the database timed out. Your filters are kept.', action: ui.btn({ label: 'Try again', ic: 'arrow-clockwise', variant: 'outline', act: 'retry' }) })}</div>`;
@@ -108,8 +110,8 @@
       body = outside ? ui.empty({ title: isC ? 'No contacts match in the territory' : 'No properties match in the territory', text: outside + (outside === 1 ? ' match is' : ' matches are') + ' outside ' + D.TERRITORY.name + '.', action: ui.btn({ label: 'Include outside the territory', variant: 'outline', act: 'terr' }) })
         : ui.empty({ title: isC ? 'No contacts match' : 'No properties match', text: 'Try another name, or clear the filters.', action: ui.btn({ label: 'Clear filters', variant: 'outline', act: 'clear' }) }); }
     else body = rows.map(r => {
-      if (isC) { const c = r; return `<div class="ds-tr" role="row" aria-selected="${selected('c', c.id)}" data-act="row" data-arg="c:${c.id}">${ui.cls(c.cls)}<span class="ds-td-name"><button type="button" data-act="row" data-arg="c:${c.id}">${esc(c.name)}</button><span class="ds-row__sub">${esc(c.entity + ' · ' + DS.portfolio(c).length + ' props')}</span></span><span class="ds-ellipsis">${esc(D.pById[c.pid].addr)}</span><span class="ds-ellipsis muted" title="${esc(c.why)}">${esc(c.why)}</span><span class="ds-meta-strong ds-ellipsis" title="${esc(DS.lastOf(c))}">${esc(DS.lastOf(c))}</span><span>${ui.trust(c.trust)}</span><span class="ds-td-right font-medium num">${c.score}</span></div>`; }
-      const p = r, c = D.cById[p.owner]; return `<div class="ds-tr" role="row" aria-selected="${selected('p', p.id)}" data-act="row" data-arg="p:${p.id}">${ui.cls(c.cls)}<span class="ds-td-name"><button type="button" data-act="row" data-arg="p:${p.id}">${esc(p.addr)}</button><span class="ds-row__sub">${esc(p.hood + ' · ' + p.zip)}</span></span><span class="ds-ellipsis">${esc(c.name)}</span><span class="ds-td-right num">${p.units}</span><span class="ds-td-right num">${DS.loc(p.sf)}</span><span class="ds-td-right num">${p.signals}</span><span>${ui.trust(c.pid === p.id ? c.trust : 'verified')}</span><span class="ds-td-right font-medium num">${c.score}</span></div>`;
+      if (isC) { const c = r; return `<div class="ds-tr" role="row" aria-selected="${selected('c', c.id)}" data-act="row" data-arg="c:${c.id}">${ui.cls(c.cls)}<span class="ds-td-name"><button type="button" data-act="row" data-arg="c:${c.id}">${esc(c.name)}</button><span class="ds-row__sub">${esc(c.entity + ' · ' + DS.portfolio(c).length + ' props')}</span></span><span class="ds-ellipsis">${esc(D.pById[c.pid].addr)} <span class="muted num">· ${D.pById[c.pid].score}</span></span><span class="ds-ellipsis muted" title="${esc(c.why)}">${esc(c.why)}</span><span class="ds-meta-strong ds-ellipsis" title="${esc(DS.lastOf(c))}">${esc(DS.lastOf(c))}</span><span>${ui.trust(c.trust)}</span><span class="ds-td-right font-medium num">${c.rank}</span></div>`; }
+      const p = r, c = D.cById[p.owner]; return `<div class="ds-tr" role="row" aria-selected="${selected('p', p.id)}" data-act="row" data-arg="p:${p.id}">${ui.cls(p.cls)}<span class="ds-td-name"><button type="button" data-act="row" data-arg="p:${p.id}">${esc(p.addr)}</button><span class="ds-row__sub">${esc(p.hood + ' · ' + p.zip)}</span></span><span class="ds-ellipsis">${esc(c.name)}</span><span class="ds-td-right num">${p.units}</span><span class="ds-td-right num">${DS.loc(p.sf)}</span><span class="ds-td-right num">${p.signals}</span><span>${ui.trust(c.pid === p.id ? c.trust : 'verified')}</span><span class="ds-td-right font-medium num">${p.score}</span></div>`;
     }).join('');
     return `<div class="ds-stack" data-gap="4">${filters(st.data === 'ready' ? rows.length : 0)}<div class="ds-table" data-kind="${kind}" role="table" aria-label="${isC ? 'Contacts' : 'Properties'}">${head(cols)}${body}${pager(st.data === 'ready' ? rows.length : 0, total)}</div></div>`;
   };
@@ -143,7 +145,7 @@
       recent: () => { st.recentOpen = !st.recentOpen; DS.render(); },
       terr: () => { st.terr = !st.terr; DS.render(); },
       clear: () => { Object.assign(st, { q: '', cls: 'All classes', trust: 'All trust', sig: 'All signals', list: 'all' }); Object.assign(b, { crit: [], edit: null, sugg: [], pushed: null, savedId: null, push: null, saving: null }); DS.render(); },
-      sort: (el, key) => { const cur = sort(); st.sort = cur.key === key ? { key, dir: cur.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: ['name', 'prop', 'addr', 'owner', 'trust', 'last'].includes(key) ? 'asc' : 'desc' }; DS.render(); },
+      sort: (el, key) => { const cur = sort(); st.sort = cur.key === key ? { key, dir: cur.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: ['name', 'prop', 'addr', 'owner', 'trust', 'last', 'rank'].includes(key) ? 'asc' : 'desc' }; DS.render(); },
       'reset-sort': () => { st.sort = null; DS.render(); },
       retry: () => { st.data = 'loading'; DS.render(); setTimeout(() => { st.data = 'ready'; DS.render(); }, 900); },
     },

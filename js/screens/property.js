@@ -24,9 +24,9 @@
     const off = (l, ic) => ui.btn({ ic, aria: l, variant: 'outline', disabled: true, tip: l + ' · ' + DS.OFF });
     return `<div class="ds-rnav"><a class="ds-back" href="${href('properties')}">${icon('caret-left')}Back to Properties</a></div>
       <div class="ds-rhead"><span class="ds-rhead__avatar" data-kind="property" aria-hidden="true">${icon('buildings')}</span>
-        <div class="ds-rhead__body"><div class="ds-rhead__title"><h1>${esc(p.addr)}</h1>${ui.cls(c.cls, true)}</div>
+        <div class="ds-rhead__body"><div class="ds-rhead__title"><h1>${esc(p.addr)}</h1>${ui.cls(p.cls, true)}</div>
           <div class="ds-rhead__meta">${meta.map(([l, ic]) => `<span>${icon(ic)}${esc(l)}</span>`).join('')}${team.length ? `<button type="button" class="ds-teamchip" data-act="tab" data-arg="team" data-tip="From the team’s archive. Not part of the score.">${icon('users')}Team knows this building</button>` : ''}</div>
-          <div class="ds-rhead__chips"><a class="ds-chip" data-tone="outline" href="${href('contact', 'id=' + c.id)}">${icon('user')}${esc(c.name)}${icon('caret-right')}</a>${ui.scoreChip('Owner score ' + c.score, c.score)}<span class="ds-chip" title="Call priority">Priority ${f.priority}</span></div></div>
+          <div class="ds-rhead__chips">${ui.scoreChip('Score ' + p.score, p.score)}<a class="ds-chip" data-tone="outline" href="${href('contact', 'id=' + c.id)}">${icon('user')}${esc(c.name)} · Rank ${c.rank}${icon('caret-right')}</a></div></div>
         <div class="ds-rhead__actions"><div class="ds-rhead__primary">${ui.btn({ label: 'Call owner', ic: 'phone', link: href('contact', 'id=' + c.id + '&act=call') })}${ui.btn({ label: 'Open owner', variant: 'outline', link: href('contact', 'id=' + c.id) })}</div>
           <div class="ds-rhead__tools">${ui.btn({ ic: 'file-text', aria: 'BOV & OM', tip: 'BOV & OM · next phase', variant: 'outline', link: href('bov', 'id=' + p.id) })}${off('View on map', 'map-trifold')}${off('Find comps', 'magnifying-glass')}${off('Owner summary (PDF)', 'receipt')}${off('Add to list', 'plus')}${ui.btn({ ic: 'arrows-in-simple', aria: 'Show as side panel', tip: 'Show as side panel', variant: 'outline', link: href('properties', 'peek=' + p.id) })}</div></div>
       </div>`;
@@ -40,7 +40,7 @@
   /* ───────── Overview ───────── */
   const why = () => {
     const on = f.signals.filter(s => s[1]), n = safe().length;
-    return `<section class="ds-why" aria-label="Why now"><div class="ds-why__head">${ui.cls(c.cls)}<h2>Why now</h2>${ui.trust(lead ? c.trust : 'verified')}<span class="ds-grow"></span><span class="badge" data-status="success">${icon('seal-check')}${n} ${n === 1 ? 'line' : 'lines'} safe to state</span></div>
+    return `<section class="ds-why" aria-label="Why now"><div class="ds-why__head">${ui.cls(p.cls)}<h2>Why now</h2>${ui.trust(lead ? c.trust : 'verified')}<span class="ds-grow"></span><span class="badge" data-status="success">${icon('seal-check')}${n} ${n === 1 ? 'line' : 'lines'} safe to state</span></div>
       <p class="ds-why__text">${esc(whyFull)}</p>
       ${on.length ? `<ul class="ds-whylist">${on.map(([l, , line]) => `<li><span><b class="font-medium">${esc(l)}</b><span class="muted"> · ${esc(line)}</span></span></li>`).join('')}</ul>` : ''}
       <div class="ds-signals" aria-label="Distress signals"><span class="ds-meta">Distress signals</span>${f.signals.map(([l, active]) => `<span class="ds-signal"${active ? ' data-on' : ''}>${active ? icon('check') : ''}${esc(l)}<span class="sr-only">${active ? ' · present' : ' · not present'}</span></span>`).join('')}</div>
@@ -89,7 +89,7 @@
     const notes = (S.pnotes || {})[p.id] || [], tl = DS.timelineOf(c).slice(0, 3);
     return `<aside class="ds-record__rail" aria-label="Property sidebar">
       <section class="ds-rail-card" aria-label="Primary contact"><h2>Primary contact</h2><div style="display:flex;align-items:center;gap:var(--space-2-5)">${ui.cls(c.cls)}<span class="ds-row__body"><a class="font-medium" href="${href('contact', 'id=' + c.id)}">${esc(c.name)}</a><span class="ds-row__sub">${esc(c.entity)}</span></span></div>
-        ${ui.kv([['Phone', DS.bestPhone(c)], ['Email', email], ['Priority', f.priority + ' · ' + D.CLASS[c.cls]]], { compact: true })}</section>
+        ${ui.kv([['Phone', DS.bestPhone(c)], ['Email', email], ['Rank', 'Rank ' + c.rank + ' · by ' + D.pById[c.pid].addr]], { compact: true })}</section>
       <section class="ds-rail-card" aria-label="Location"><h2>Location</h2><div class="ds-facade" data-wide data-art>${DS.facade(p)}</div>${DS.mapTile(p)}<span class="ds-meta">Illustrations for the demo. The live portal shows the street view and map.</span>
         <div class="ds-toolbar" style="gap:var(--space-1-5)">${[['Street view', 'image'], ['Open in Map', 'map-trifold']].map(([l, ic]) => `<span class="ds-off-link" role="link" tabindex="0" aria-disabled="true" data-tip="${DS.OFF}">${icon(ic)}${l}</span>`).join('')}</div></section>
       <section class="ds-rail-card" aria-label="Property notes"><h2>Property notes</h2>${notes.map(n => `<div class="ds-stack" style="gap:1px"><span style="text-wrap:pretty">${esc(n.t)}</span><span class="ds-meta">${esc(n.d)}</span></div>`).join('')}

@@ -277,13 +277,14 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-weekrow[data-today]{background:var(--bg-muted);font-weight:var(--weight-medium)}
 
 /* ───────── Attack Plan ───────── */
-.ds-callrow{display:grid;grid-template-columns:1.375rem minmax(0,10.625rem) minmax(0,1fr) auto var(--control-md);gap:var(--space-3);align-items:center;padding:var(--space-3) var(--space-2);border-radius:var(--radius-md)}
+.ds-callrow{display:grid;grid-template-columns:1.375rem minmax(0,12.5rem) minmax(0,1fr) auto var(--control-md);gap:var(--space-3);align-items:center;padding:var(--space-3) var(--space-2);border-radius:var(--radius-md)}
 .ds-callrow[data-done]{background:var(--bg-subtle)}
 .ds-callrow__name{display:flex;flex-direction:column;min-width:0;padding:0;border:0;background:transparent;text-align:left;color:var(--fg);text-decoration:none}
 .ds-callrow__name:hover{text-decoration:none;color:var(--fg)}.ds-callrow__name:hover b{text-decoration:underline}
 .ds-callrow__name b{font-weight:var(--weight-medium);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ds-callrow[data-done] .ds-callrow__name b{color:var(--fg-subtle)}
-.ds-callrow__why{color:var(--fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ds-callrow__why{display:flex;flex-direction:column;align-items:flex-start;min-width:0;color:var(--fg-muted)}
+.ds-callrow__why>span:first-child{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ds-called{width:var(--control-md);height:var(--control-md);display:grid;place-items:center;color:var(--success)}
 .ds-called svg{width:1rem;height:1rem}
 .ds-task{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-2);border-radius:var(--radius-md)}
@@ -907,6 +908,9 @@ button.ds-crit[data-suggest]:hover{background:var(--bg)}
 .ds-teamchip{height:var(--control-xs);display:inline-flex;align-items:center;gap:var(--space-1);padding:0 var(--space-2);border:var(--border-width) dashed var(--brand-secondary-border);border-radius:var(--radius-full);color:var(--brand-secondary-text);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);white-space:nowrap;background:transparent;text-decoration:none}
 a.ds-teamchip:hover{background:var(--brand-secondary-subtle)}
 .ds-teamchip svg{width:.875rem;height:.875rem}
+/* The lift line: only when team history moved an owner's rank. Muted text, never a badge. */
+.ds-lift{display:inline-flex;align-items:center;gap:var(--space-1);min-width:0;font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-subtle)}
+.ds-lift svg{width:.75rem;height:.75rem;flex:none;color:var(--brand-secondary-text)}
 .ds-teamlist{display:flex;flex-direction:column}
 .ds-teamrow{display:grid;grid-template-columns:3.5rem minmax(0,1fr) auto;gap:var(--space-1) var(--space-3);align-items:start;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--border-subtle)}
 .ds-teamrow:last-child{border-bottom:0}
@@ -1204,6 +1208,7 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
   .ds-evidence>:nth-child(3){grid-column:1 / -1;justify-self:start}
   .ds-callrow{grid-template-columns:1.375rem minmax(0,1fr) auto var(--control-md)}
   .ds-callrow>:nth-child(3){display:none}
+  .ds-callrow .ds-row__sub{white-space:normal}
   .ds-card__head,.ds-metrics__head{flex-wrap:wrap}
   /* Attack Plan head on phones: title + caret, then count + full progress bar, then the link. */
   .ds-plan__head{row-gap:var(--space-2)}
@@ -1250,15 +1255,18 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
   .ds-dbsearch{flex:1 0 100%}
   .ds-db .ds-toolbar>.select,.ds-db .ds-toolbar>.ds-switch-btn{flex:1 1 calc(50% - var(--space-2))}
   .ds-db .ds-toolbar>.ds-grow{display:none}
-  /* Tables become lists: class, name and score on the first line, the why now under it, then last touch and trust. */
+  /* Tables become lists: class, name and rank (or score) on the first line; an owner's lead building and its score under it (replacing the entity), then the why now, then last touch and trust. */
   .ds-table .ds-tr{grid-template-columns:1.375rem minmax(0,1fr) auto!important;row-gap:var(--space-1-5);align-items:start;min-height:0;padding:var(--space-3-5) var(--space-3)}
   .ds-table .ds-tr>*{grid-column:2 / -1}
   .ds-table .ds-tr>:first-child{grid-column:1;grid-row:1}
   .ds-table .ds-tr>:nth-child(2){grid-column:2;grid-row:1}
   .ds-table .ds-tr>:last-child{grid-column:3;grid-row:1;align-self:center}
-  .ds-table[data-kind="contacts"] .ds-tr>:nth-child(3),.ds-table[data-kind="properties"] .ds-tr>:is(:nth-child(4),:nth-child(5),:nth-child(6)){display:none}
-  .ds-table[data-kind="contacts"] .ds-tr>:nth-child(5){grid-column:2;grid-row:3;align-self:center}
-  .ds-table[data-kind="contacts"] .ds-tr>:nth-child(6),.ds-table[data-kind="properties"] .ds-tr>:nth-child(7){grid-column:3;grid-row:3;justify-self:end}
+  .ds-table[data-kind="contacts"] .ds-td-name .ds-row__sub,.ds-table[data-kind="properties"] .ds-tr>:is(:nth-child(4),:nth-child(5),:nth-child(6)){display:none}
+  .ds-table[data-kind="contacts"] .ds-tr>:nth-child(3){grid-row:2}
+  .ds-table[data-kind="contacts"] .ds-tr>:nth-child(4){grid-row:3}
+  .ds-table[data-kind="contacts"] .ds-tr>:nth-child(5){grid-column:2;grid-row:4;align-self:center}
+  .ds-table[data-kind="contacts"] .ds-tr>:nth-child(6){grid-column:3;grid-row:4;justify-self:end}
+  .ds-table[data-kind="properties"] .ds-tr>:nth-child(7){grid-column:3;grid-row:3;justify-self:end}
   .ds-table[data-kind="properties"] .ds-tr>:nth-child(3){grid-column:2;grid-row:2;align-self:center}
   .ds-table[data-kind="properties"] .ds-tr>:nth-child(7){grid-row:2}
   .ds-table .ds-tr[data-head]>:not(:first-child):not(:nth-child(2)):not(:last-child){display:none}

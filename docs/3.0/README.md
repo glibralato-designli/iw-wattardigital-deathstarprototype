@@ -37,7 +37,7 @@ Small changes with the biggest effect on trust. They fix places where the protot
 
 ### 1.1 Score per building, rank per person
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** Today, Database, case file, property record, peek, Brain answers, app
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** Today, Database, case file, property record, peek, Brain answers, app
 
 - **The brief:** Buildings are scored, people are called. Each building has a score (0–100 in the examples) and a class. The owner is ranked by their most pressing building, and every row and card names it. Team history moves rank, never score. (Doc 1 §7 and §21, doc 2 §4)
 - **Today:** One owner score (Marchetti 132) on the owner and the property. Rows show a lead property.
