@@ -314,14 +314,23 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-weekrow[data-today]{background:var(--bg-muted);font-weight:var(--weight-medium)}
 
 /* ───────── Attack Plan ───────── */
-.ds-callrow{display:grid;grid-template-columns:1.375rem minmax(0,12.5rem) minmax(0,1fr) auto var(--control-md);gap:var(--space-3);align-items:center;padding:var(--space-3) var(--space-2);border-radius:var(--radius-md)}
+.ds-callrow{display:grid;grid-template-columns:2.25rem minmax(0,1fr) auto;gap:var(--space-3);align-items:center;padding:var(--space-3-5) var(--space-2);border-radius:var(--radius-md)}
+.ds-callrow+.ds-callrow{border-top:var(--border-width) solid var(--border-subtle);border-radius:0}
 .ds-callrow[data-done]{background:var(--bg-subtle)}
-.ds-callrow__name{display:flex;flex-direction:column;min-width:0;padding:0;border:0;background:transparent;text-align:left;color:var(--fg);text-decoration:none}
-.ds-callrow__name:hover{text-decoration:none;color:var(--fg)}.ds-callrow__name:hover b{text-decoration:underline}
-.ds-callrow__name b{font-weight:var(--weight-medium);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ds-callrow[data-done] .ds-callrow__name b{color:var(--fg-subtle)}
-.ds-callrow__why{display:flex;flex-direction:column;align-items:flex-start;min-width:0;color:var(--fg-muted)}
-.ds-callrow__why>span:first-child{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-callrow__rank{align-self:start;display:flex;flex-direction:column;align-items:center;gap:var(--space-0-5);padding-top:2px}
+.ds-callrow__rank>b{font-size:var(--text-lg);line-height:var(--line-height-lg);font-weight:var(--weight-semibold);font-variant-numeric:tabular-nums;color:var(--fg-subtle)}
+.ds-callrow__lift{display:inline-flex;align-items:center;gap:1px;font-size:var(--text-2xs);line-height:var(--line-height-2xs);font-weight:var(--weight-medium);color:var(--brand-secondary-text);white-space:nowrap;cursor:help}
+.ds-callrow__lift svg{width:.625rem;height:.625rem}
+.ds-callrow__body{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.ds-callrow__top{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.ds-callrow__name{min-width:0;font-weight:var(--weight-semibold);color:var(--fg);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-callrow__name:hover{color:var(--fg);text-decoration:underline}
+.ds-callrow[data-done] .ds-callrow__name{color:var(--fg-subtle)}
+.ds-callrow__why{display:flex;align-items:center;gap:var(--space-2);min-width:0;color:var(--fg-secondary)}
+.ds-callrow__why>span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-callrow__why .ds-trust{flex:none}
+.ds-callrow__meta{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1) var(--space-3);min-width:0}
+.ds-callrow__bld{font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-subtle);font-variant-numeric:tabular-nums;white-space:nowrap}
 .ds-called{width:var(--control-md);height:var(--control-md);display:grid;place-items:center;color:var(--success)}
 .ds-called svg{width:1rem;height:1rem}
 .ds-task{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-2);border-radius:var(--radius-md)}
@@ -389,11 +398,12 @@ button.ds-chip:hover{background:var(--bg-subtle)}
    Brain's note about where the list came from uses Brain's surface (the tint of Brain suggests);
    a change to how the product behaves is a neutral system notice, never a status colour (it is not an alert). */
 .ds-plan-notes{display:flex;flex-direction:column;gap:var(--space-2)}
-.ds-change{display:grid;grid-template-columns:1rem minmax(0,1fr) auto;align-items:center;gap:var(--space-1) var(--space-2-5);padding:var(--space-2-5) var(--space-3);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);background:var(--bg-subtle);font-size:var(--text-sm);line-height:var(--line-height-sm);color:var(--fg-secondary);text-wrap:pretty}
+.ds-change{display:grid;grid-template-columns:1rem minmax(0,1fr) auto;align-items:center;gap:var(--space-1) var(--space-2-5);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--bg-muted);font-size:var(--text-sm);line-height:var(--line-height-sm);color:var(--fg-secondary);text-wrap:pretty}
 .ds-change>svg{width:1rem;height:1rem;color:var(--fg-muted)}
 .ds-change b{font-weight:var(--weight-semibold);color:var(--fg)}
 .ds-change__acts{display:flex;align-items:center;gap:var(--space-3);white-space:nowrap}
 .ds-change .ds-link-btn{font-size:inherit;line-height:inherit;font-weight:var(--weight-medium)}
+@media (max-width:767px){.ds-callrow{grid-template-columns:1.75rem minmax(0,1fr) auto;gap:var(--space-2-5);padding:var(--space-3) var(--space-1)}.ds-callrow__why{flex-wrap:wrap;row-gap:var(--space-1)}.ds-callrow__why>span{white-space:normal}}
 @media (max-width:767px){.ds-change{align-items:start}.ds-change>svg{margin-top:3px}.ds-change__acts{grid-column:2}}
 [data-shell="app"] .ds-change{align-items:start}[data-shell="app"] .ds-change>svg{margin-top:3px}[data-shell="app"] .ds-change__acts{grid-column:2}
 /* The first touch (3.0 · 2.4): channel icon and a short plan, one quiet line under the why now. */
@@ -1055,7 +1065,7 @@ a.ds-teamchip:hover{background:var(--brand-secondary-subtle)}
 .ds-bsugg__saved svg{width:.875rem;height:.875rem}
 .ds-bsugg__foot{padding:0 var(--space-1);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
 .ds-bsugg__empty{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--bg);font-size:var(--text-sm)}
-.ds-plan-src{display:flex;align-items:flex-start;gap:var(--space-2);padding:var(--space-2-5) var(--space-3);border:var(--border-width) solid var(--brand-primary-muted);border-radius:var(--radius-lg);background:var(--brand-primary-subtle);color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm);text-wrap:pretty}
+.ds-plan-src{display:flex;align-items:flex-start;gap:var(--space-2);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--brand-primary-subtle);color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm);text-wrap:pretty}
 .ds-plan-src svg{width:1rem;height:1rem;flex:none;margin-top:3px;color:var(--brand-primary-text)}
 .ds-plan-src b{font-weight:var(--weight-semibold);color:var(--brand-primary-text)}
 [data-shell="app"] .ds-plan-notes{padding:0 var(--space-4) var(--space-2)}
@@ -1301,10 +1311,6 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
   .ds-vio>.ds-meta{grid-column:2;grid-row:2}
   .ds-evidence{grid-template-columns:minmax(0,1fr) auto}
   .ds-evidence>:nth-child(3){grid-column:1 / -1;justify-self:start}
-  .ds-callrow{grid-template-columns:1.375rem minmax(0,1fr) auto var(--control-md);row-gap:var(--space-1)}
-  .ds-callrow>:nth-child(3){grid-column:2 / -1;grid-row:2}
-  .ds-callrow__why>span:first-child{display:none}
-  .ds-callrow .ds-row__sub{white-space:normal}
   .ds-card__head,.ds-metrics__head{flex-wrap:wrap}
   /* Attack Plan head on phones: title + caret, then count + full progress bar, then the link. */
   .ds-plan__head{row-gap:var(--space-2)}

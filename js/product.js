@@ -222,6 +222,14 @@
   ui.changeNote = id => { const ch = D.changes.find(x => x.id === id); if (!ch) return ''; const back = !!(S.restored || {})[id];
     return `<div class="ds-change" role="note" aria-label="What changed" data-key="change-${id}">${icon('clock-counter-clockwise')}<p>${back ? esc('Restored: ' + ch.area.toLowerCase() + ' is back to how it was before ' + ch.date + '.') : `<b>${esc(ch.area)} changed ${esc(ch.date)}.</b> ${esc(ch.what)}`}</p><div class="ds-change__acts"><button type="button" class="ds-link-btn" data-act="restore-change" data-arg="${id}">${back ? 'Undo' : 'Restore'}</button><a class="ds-link-btn" href="${href('changes')}">All changes</a></div></div>`; };
   // Above the call list: where Brain got today's list (Brain's tint), then any change to the ranking (a neutral system notice).
+  /* A ranked call row (Today, 3.0 polish): the rank in a quiet gutter (with "↑ from N" when team history moved it; the reason on hover
+     and in the peek), then the name, the why now on one line, and a meta line (first touch · building and score · trust). One action. */
+  ui.callRow = (c, end, done) => `<div class="ds-callrow"${done ? ' data-done' : ''}>
+    <span class="ds-callrow__rank" aria-label="Rank ${c.rank}${c.lift ? ', up from ' + c.lift.from + ': ' + esc(c.lift.why) : ''}"><b>${c.rank}</b>${c.lift ? `<span class="ds-callrow__lift" title="Up from ${c.lift.from}: ${esc(c.lift.why)}" aria-hidden="true">${icon('arrow-up')}${c.lift.from}</span>` : ''}</span>
+    <div class="ds-callrow__body"><div class="ds-callrow__top">${ui.cls(c.cls)}<a class="ds-callrow__name" href="${href('contact', 'id=' + c.id)}">${esc(c.name)}</a></div>
+      <div class="ds-callrow__why"><span title="${esc(c.why)}">${esc(c.why)}</span>${ui.trust(c.trust)}</div>
+      <div class="ds-callrow__meta">${ui.touch(c)}<span class="ds-callrow__bld">${esc(pById[c.pid].addr)} · ${pById[c.pid].score}</span></div></div>
+    ${end}</div>`;
   ui.planNotes = () => `<div class="ds-plan-notes"><p class="ds-plan-src">${icon('sparkle')}<span><b>Built by Brain at 5:40 AM</b> from LES maturities, 3 callbacks and 2 blast openers · deeds as of Sep 1</span></p>${ui.changeNote('ranking')}</div>`;
   // The first touch (3.0 · 2.4): its channel, the plan, the because, a sequence's step and why it stopped. Owners without a fixture get one from their state.
   const touchOf = c => { const t = D.touches[c.id];
