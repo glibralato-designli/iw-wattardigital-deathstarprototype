@@ -31,6 +31,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 - **2.4 First touch on every Today row:** Option A, A small plan under the reason (recommended)
   - Oct 27, at build: on the case file the plan replaces the engagement-based Next touch line (the engagement becomes the because). Built Oct 27.
 - **2.5 Changes note and restore:** Option A, Inline note plus a Changes page (recommended)
+  - Oct 27, at build: the sidebar's System item turns on and opens System › Changes (Settings, Health, Controls drawn). The app has More › Changes. Built Oct 27.
 - **2.6 One Brain, the client's assistant names:** Option A, One Brain with role labels (recommended)
   - Note: Maybe go with the label according to the scope chip, but maybe another option in the brain chat to select the role
 - **2.7 Teach line on every page:** Option A, Purpose line, example on request (recommended)

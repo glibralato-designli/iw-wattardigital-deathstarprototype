@@ -371,6 +371,19 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-why__head>svg{width:1rem;height:1rem;color:var(--brand-primary-text)}
 .ds-why__head h2{font-size:var(--text-md);line-height:var(--line-height-sm)}
 .ds-why__text{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg);text-wrap:pretty;max-width:46rem}
+/* System › Changes: one row per change, the date in a fixed column. */
+.ds-chlist{display:flex;flex-direction:column}
+.ds-chrow{display:grid;grid-template-columns:4rem minmax(0,1fr) auto;gap:var(--space-1) var(--space-4);align-items:start;padding:var(--space-3) 0;border-top:var(--border-width) solid var(--border-subtle)}
+.ds-chrow:first-child{border-top:0}
+.ds-chrow__date{color:var(--fg-muted);font-weight:var(--weight-medium)}
+.ds-chrow .badge{align-self:flex-start;margin-top:var(--space-1)}
+@media (max-width:767px){.ds-chrow{grid-template-columns:minmax(0,1fr) auto}.ds-chrow__date{grid-column:1 / -1}}
+/* Changes note (3.0 · 2.5): a quiet, lasting line where the old behaviour was. Muted, never an alert. */
+.ds-change{display:flex;align-items:flex-start;flex-wrap:wrap;gap:var(--space-1) var(--space-2);font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-muted);text-wrap:pretty}
+.ds-change>span{flex:1 1 16rem;min-width:0}
+.ds-change>svg{width:.875rem;height:.875rem;flex:none;margin-top:2px;color:var(--fg-subtle)}
+.ds-change b{font-weight:var(--weight-medium);color:var(--fg-secondary)}
+.ds-change .ds-link-btn{font-size:inherit;line-height:inherit}
 /* The first touch (3.0 · 2.4): channel icon and a short plan, one quiet line under the why now. */
 .ds-touch{display:inline-flex;align-items:center;gap:var(--space-1);min-width:0;max-width:100%;font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);color:var(--fg-secondary)}
 .ds-touch>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

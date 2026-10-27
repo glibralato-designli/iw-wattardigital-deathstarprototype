@@ -24,17 +24,18 @@
 
   /* ───────── Store: demo data in local storage, session UI in session storage ───────── */
   const STORE = 'ds-proto-v2', UI = 'ds-ui-v2';
-  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, optOut: {}, appr: {}, apprEdit: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
+  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, optOut: {}, restored: {}, appr: {}, apprEdit: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
-  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'approved', 'decided', 'bulk', 'wave', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
+  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'approved', 'decided', 'bulk', 'wave', 'restored', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
   let snapshot = isSnapshot();
   let S = { ...fresh(), ...(read(localStorage, STORE) || {}) };
   if (params.get('reset') === '1') { S = fresh(); write(localStorage, STORE, S); try { sessionStorage.removeItem(UI); } catch (_) {} }
   // Opt-out is permanent, on every channel (Orientation doc 1 §9): an owner who asked is Do not contact from then on.
   const optOut = c => { c.status0 = c.status0 || c.status; c.status = 'Do not contact'; };
   D.C.forEach(c => { if ((S.optOut || {})[c.id]) optOut(c); });
+  if (params.has('restored')) params.get('restored').split(',').forEach(id => { S.restored = { ...S.restored, [id]: true }; });
   const loadU = () => ({ navRail: null, moreOpen: false, navGrp: {}, brainUser: null, msgs: null, chatTitle: null, chatId: null, seen: false, scopeOff: false, call: null, outcome: null, ...(read(sessionStorage, UI) || {}) });
   let U = loadU();
   const save = () => { if (snapshot) return; write(localStorage, STORE, S); write(sessionStorage, UI, U); };
@@ -214,6 +215,9 @@
     if (params.has('bulk')) L.filter(a => a.lane === params.get('bulk') && !a.blocked && !a.n).forEach(a => { S.appr[a.id] = 'approved'; });
     if (params.get('wave') === '1') S.appr.a0 = 'wave'; };
   ui.waiting = (id, label = 'Waiting for your click') => `<a class="ds-waiting" href="${href('approvals', id ? 'open=' + id : '')}">${icon('tray')}${esc(label)}</a>`;
+  /* Changes note (3.0 · 2.5): a quiet line where the old behaviour was, with Restore (and Undo once restored). The full list is System › Changes. */
+  ui.changeNote = id => { const ch = D.changes.find(x => x.id === id); if (!ch) return ''; const back = !!(S.restored || {})[id];
+    return `<p class="ds-change" data-key="change-${id}">${icon('clock-counter-clockwise')}<span>${back ? esc('Restored: ' + ch.area.toLowerCase() + ' is back to how it was before ' + ch.date + '.') : `<b>${esc(ch.area)} changed ${esc(ch.date)}:</b> ${esc(ch.what)}`}</span><button type="button" class="ds-link-btn" data-act="restore-change" data-arg="${id}">${back ? 'Undo' : 'Restore'}</button><a class="ds-link-btn" href="${href('changes')}">All changes</a></p>`; };
   // The first touch (3.0 · 2.4): its channel, the plan, the because, a sequence's step and why it stopped. Owners without a fixture get one from their state.
   const touchOf = c => { const t = D.touches[c.id];
     if (t) return { ic: t[0], plan: t[1], because: t[2], step: t[3], stopped: t[4], appr: t[5] };
@@ -245,7 +249,7 @@
   };
   // Learning Mode (Brain, web and app): what Brain has been taught, with the way to teach it.
   ui.learning = () => { const all = [...(S.taught || []).slice().reverse(), ...D.taught];
-    return `<div class="ds-learning"><div class="ds-stack" data-gap="2" style="gap:var(--space-1)"><h1 class="ds-title-xl">What Brain has been taught</h1><span class="ds-lede">Brain learns only what you approve. A lesson changes how it reads similar owners and what it suggests; the predictive score stays separate.</span></div>
+    return `<div class="ds-learning"><div class="ds-stack" data-gap="2" style="gap:var(--space-1)"><h1 class="ds-title-xl">What Brain has been taught</h1><span class="ds-lede">Brain learns only what you approve. A lesson changes how it reads similar owners and what it suggests; the predictive score stays separate.</span></div>${ui.changeNote('lesson')}
       <section class="ds-card" data-pad="all" aria-label="Lessons">${all.map(([t, scope, when, by]) => `<div class="ds-lesson">${icon('book-open')}<span class="ds-row__body"><span class="font-medium" style="text-wrap:pretty">${esc(t)}</span><span class="ds-row__sub">${esc(scope)} · approved by ${esc(by)}, ${esc(when)}</span></span>${ui.btn({ label: 'Forget', variant: 'ghost', size: 'sm', disabled: true })}</div>`).join('')}</section>
       <div class="ds-note">${icon('note-pencil')}<span class="ds-grow">To teach Brain, correct an answer in chat, then approve what it should remember.</span>${ui.btn({ label: 'Try it with Okafor', variant: 'outline', size: 'sm', act: 'try-teach' })}</div></div>`; };
   /* Brain suggests (Today, web and app): Brain's own surface, collapsible. One compact row per suggested list: the live count,
@@ -376,7 +380,7 @@
       if (moreOpen) D.more.forEach(([l, ic, page]) => { h += page ? `<a class="ds-nav" data-sub href="${href(page)}"${sc.id === page ? ' aria-current="page"' : ''}${railTip(l)}>${sc.id === page ? '<span class="ds-nav__ink" aria-hidden="true"></span>' : ''}${icon(ic)}<span>${esc(l)}</span></a>` : `<a class="ds-nav" data-sub role="link" tabindex="0" aria-disabled="true" data-tip="${OFF}" data-tip-side="right">${icon(ic)}<span>${esc(l)}</span></a>`; });
     }
     h += `</div><div class="ds-sidebar__foot"><div style="position:relative"><button type="button" class="ds-nav" aria-haspopup="dialog" aria-expanded="${V.menu === 'guide'}" data-act="menu" data-arg="guide"${railTip('Guide')}>${icon('question')}<span>Guide</span></button>${V.menu === 'guide' ? guide() : ''}</div>`;
-    h += `<a class="ds-nav" role="link" tabindex="0" aria-disabled="true" data-tip="${OFF}" data-tip-side="right">${icon('gear-six')}<span>System</span></a><div class="ds-rail-divider" style="margin:var(--space-1-5) 0" aria-hidden="true"></div>`;
+    h += `<a class="ds-nav" href="${href('changes')}"${sc.nav === 'system' ? ' aria-current="page"' : ''}${railTip('System')}>${sc.nav === 'system' ? '<span class="ds-nav__ink" aria-hidden="true"></span>' : ''}${icon('gear-six')}<span>System</span></a><div class="ds-rail-divider" style="margin:var(--space-1-5) 0" aria-hidden="true"></div>`;
     h += `<div style="position:relative"><button type="button" class="ds-account" aria-label="Account menu" aria-haspopup="menu" aria-expanded="${V.menu === 'avatar'}" data-act="menu" data-arg="avatar"${railTip('Thomas Windels')}><span class="avatar">TW</span><span class="ds-account__who"><span class="ds-account__name">Thomas Windels</span><span class="ds-account__org">Stewart Group</span></span>${rail ? '' : icon('caret-up-down')}</button>${V.menu === 'avatar' ? account() : ''}</div></div>`;
     return h;
   }
@@ -400,7 +404,7 @@
     const groups = []; let g = { h: 'Workspace', rows: [] }; groups.push(g);
     D.nav.forEach(n => { if (typeof n === 'string') { g = { h: n, rows: [] }; groups.push(g); return; } const [l, ic, page] = n; g.rows.push({ l, ic, page, on: TABS[page] ? TABS[page].join(' · ') : '', off: page ? (LATER[page] || '') : (LATER[l] || '') }); });
     groups.push({ h: 'More', rows: D.more.map(([l, ic, page]) => ({ l, ic, page: page || null, on: page === 'bov' ? 'Drawn · next phase' : page ? 'Read-only' : '', off: '' })) });
-    groups.push({ h: 'System', rows: [{ l: 'System', ic: 'gear-six', page: null, on: '', off: 'Settings · Health · System status · Runbook · Controls' }] });
+    groups.push({ h: 'System', rows: [{ l: 'System', ic: 'gear-six', page: 'changes', on: 'Changes', off: 'Settings · Health · System status · Runbook · Controls' }] });
     groups.push({ h: 'Top bar', rows: [{ l: 'Links', ic: 'link-simple', page: null, on: '', off: 'Research (11) · Media (7)' }] });
     const struct = groups.map(gr => `<div class="ds-stack" data-gap="2"><div class="ds-struct-head"><b>${esc(gr.h)}</b><span>${gr.rows.filter(r => r.page).length} of ${gr.rows.length} built</span></div><div>${gr.rows.map(r => {
       const inner = `${icon(r.ic)}<span class="ds-row__body"><span class="font-medium"${r.page ? '' : ' style="color:var(--fg-subtle)"'}>${esc(r.l)}</span>${r.on ? `<span class="ds-meta" style="color:var(--fg-secondary)">${esc(r.on)}</span>` : ''}${r.off ? `<span class="ds-meta">Later: ${esc(r.off)}</span>` : ''}</span>${r.page ? '<span class="badge" data-status="success">Built</span>' : '<span class="badge">Later</span>'}`;
@@ -859,6 +863,7 @@
     send: () => DS.sendText(V.draft),
     ask: (el, t) => DS.ask(t),
     'ask-nudge': (el, t) => DS.ask('Tell me more: ' + t),
+    'restore-change': (el, id) => { const back = !(S.restored || {})[id], ch = D.changes.find(x => x.id === id); S.restored = { ...S.restored, [id]: back }; if (!back) delete S.restored[id]; save(); render(); DS.toast(back ? ch.area + ' restored to before ' + ch.date : ch.area + ' change is back on'); },
     'approve-list': (el, i) => { const m = U.msgs[+i], str = m.crit || D.brainList; U.msgs[+i] = { ...m, pending: false, approved: true }; saveList(m.listName, str); render(); DS.toast('Saved to Lists · ' + loc(crit.count(crit.parse(str))) + ' owners'); },
     'approve-teach': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false, approved: true }; S.taught = [...(S.taught || []).filter(x => x[0] !== D.okaforLesson[0]), D.okaforLesson]; save(); render(); DS.toast('Remembered. Learning Mode lists it.'); },
     'decline-teach': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false }; save(); render(); },

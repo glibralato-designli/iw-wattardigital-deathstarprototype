@@ -257,6 +257,14 @@
     lindqvist: ['Erik, it’s Thomas Windels. John Stewart sold you 311 East 82nd back in 2009.', 'With the March maturity coming, I can show you what similar buildings on 82nd have traded for.', 'Would a short call this week be useful?'],
   };
 
+  /* What changed (3.0 · 2.5, Orientation doc 1 §9): [id, area, date, what changed, how it was before, who approved it]. */
+  const changes = [
+    ['ranking', 'Ranking', 'Oct 25', 'Paid-off loans weigh more, so owners with no debt rank lower.', 'A paid-off loan counted the same as any long hold.', 'Model v4.1 · approved by Thomas W.'],
+    ['lesson', 'Brain lesson', 'Oct 24', 'Family owners who say “not selling” are read as “not yet”, unless they just refinanced.', 'Brain took “not selling” at face value.', 'Lesson approved by Thomas W.'],
+    ['dnc-check', 'Approvals', 'Oct 23', 'A text to a number on a do-not-call list shows a check before you send.', 'It went into the queue with no check.', 'Thomas W.'],
+    ['callbacks', 'Today', 'Oct 22', 'Callbacks come first in Call next.', 'Callbacks were mixed into the ranked list.', 'Thomas W.'],
+  ].map(([id, area, date, what, before, by]) => ({ id, area, date, what, before, by }));
+
   /* The first touch per owner (3.0 · 2.4, Orientation doc 1 §6, doc 2 §3): [channel icon, plan, because, sequence step, why it stopped, approval id]. */
   const touches = {
     marchetti: ['phone', 'Call now', 'he asked to talk after the summer, and opened the Q3 report 2 days ago', null, null, 'a4'],
@@ -503,5 +511,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

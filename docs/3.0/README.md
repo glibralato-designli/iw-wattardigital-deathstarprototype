@@ -245,7 +245,7 @@ The screens the brief describes in the most detail, and the ones every scenario 
 
 ### 2.5 Changes note and restore
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Shared component, System › Changes page
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Shared component, System › Changes page
 
 - **The brief:** When behaviour changes, a quiet note sits where the old behaviour was, with Restore. A full history lives in Controls. Undo and "what changed" deserve first-class placement. (Doc 1 §9, doc 3 across the portal)
 - **Today:** None.
