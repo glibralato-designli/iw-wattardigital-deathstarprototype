@@ -36,6 +36,8 @@
   const place = () => `<section class="ds-asec" aria-label="Location"><div class="ds-ahead"><h2>Location</h2><a href="${href('bov', 'id=' + p.id)}">BOV & OM</a></div><div class="ds-acard" style="padding:var(--space-3);display:flex;flex-direction:column;gap:var(--space-3)"><div class="ds-facade" data-wide data-art>${DS.facade(p)}</div>${DS.mapTile(p)}<span class="ds-meta">Illustrations for the demo.</span></div></section>`;
   const BODY = { overview: () => overview() + place(), violations, ownership, team: teamTab, deals, evidence: ev };
 
+  // The browser tab names the record: Death Star | <name> (Orientation doc 3).
+  document.title = 'Death Star | ' + p.addr;
   DS.define({
     id: 'property', nav: 'database', tab: 'database',
     head, scope: () => p.addr,

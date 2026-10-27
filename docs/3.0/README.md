@@ -148,7 +148,7 @@ Small changes with the biggest effect on trust. They fix places where the protot
 
 ### 1.7 Small standards
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Every page
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Every page
 
 - **The brief:** Browser tab reads "Death Star | Page". Pages use the whole screen on wide monitors, nothing fixed-width. (Doc 3 across the portal)
 - **Today:** Tab titles read "Home — Death Star".

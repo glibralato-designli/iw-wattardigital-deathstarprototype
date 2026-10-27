@@ -122,6 +122,8 @@
   // Saving applies the outcome's actions exactly as on the web (DS.applyOutcome).
   const doSave = () => { const oc = outcome(), ch = oc.choice, said = DS.applyOutcome(c, oc); st.saving = false; st.logged = ch; DS.render(); DS.toast(said); };
 
+  // The browser tab names the record: Death Star | <name> (Orientation doc 3).
+  document.title = 'Death Star | ' + c.name;
   DS.define({
     id: 'contact', nav: 'database', tab: 'database',
     head, scope: () => c.name,

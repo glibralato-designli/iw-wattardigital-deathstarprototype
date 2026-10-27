@@ -995,7 +995,7 @@
     const main = document.getElementById('ds-main');
     DS.vt(() => { firstPaint = true; animSeen = new Set(); startScreen(); main.scrollTop = 0; });
     if (had && (!document.activeElement || document.activeElement === document.body)) main.focus({ preventScroll: true });
-    const say = document.getElementById('ds-announce'); if (say) say.textContent = pg.title.replace(/ — .*$/, '');
+    const say = document.getElementById('ds-announce'); if (say) say.textContent = pg.title.replace(/^Death Star \| /, '');
     dispatchEvent(new CustomEvent('screenchange', { detail: { href: location.href } }));
   };
   DS.navigate = (to, { replace = false, pop = false } = {}) => {

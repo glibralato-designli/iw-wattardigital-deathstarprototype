@@ -18,6 +18,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 - **1.6 Freshness on screen:** Option A, One quiet line per list (recommended)
   - Oct 27, at build: go-ahead confirmed, including "deeds as of Sep 1" on Today's source line. Built Oct 27.
 - **1.7 Small standards:** Option A, Apply as written (recommended)
+  - Oct 27, at build: record pages carry the record's name ("Death Star | Daniel Marchetti"). Built Oct 27.
 
 ## Phase 2 · Core
 

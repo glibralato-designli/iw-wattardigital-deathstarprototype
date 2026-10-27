@@ -231,6 +231,8 @@
     const said = DS.applyOutcome(c, oc); st.saving = false; DS.render(); DS.toast(said);
   };
 
+  // The browser tab names the record: Death Star | <name> (Orientation doc 3).
+  document.title = 'Death Star | ' + c.name;
   DS.define({
     id: 'contact', nav: 'database', brain: 'min',
     crumbs: () => [{ l: 'Database', page: 'contacts' }, { l: 'Contacts', page: 'contacts' }, { l: c.name }],

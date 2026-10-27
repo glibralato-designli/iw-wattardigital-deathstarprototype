@@ -103,6 +103,8 @@
   const tabs = () => ui.stateTabs([['overview', 'Overview'], ['violations', 'Violations (' + openVio() + ' open)'], ['ownership', 'Ownership (1)'], ['deals', 'Deals (0)'], ['evidence', 'Evidence'], ['team', 'Team history (' + team.length + ')'], ['docs', 'Documents', true], ['permits', 'Permits', true]], st.tab, 'tab', 'Property');
   const body = () => `<div class="ds-stack" data-gap="4" style="gap:var(--space-5)" data-anim="fade" data-key="ptab-${st.tab}">${({ overview, violations, ownership, deals, evidence: evTab, team: teamTab })[st.tab]()}</div>`;
 
+  // The browser tab names the record: Death Star | <name> (Orientation doc 3).
+  document.title = 'Death Star | ' + p.addr;
   DS.define({
     id: 'property', nav: 'database', brain: 'min',
     crumbs: () => [{ l: 'Database', page: 'contacts' }, { l: 'Properties', page: 'properties' }, { l: p.addr }],
