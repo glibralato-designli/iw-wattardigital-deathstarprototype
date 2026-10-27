@@ -263,7 +263,7 @@ The screens the brief describes in the most detail, and the ones every scenario 
 
 ### 2.6 One Brain, the client's assistant names
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 (see the note in DECISIONS.md) · **Effort:** S · **Screens:** Brain panel, page scope chip
+**Status:** Done, Oct 27, 2026 (Option A, with a composer role menu) · **Decision:** Option A approved, Oct 27 (see the note in DECISIONS.md) · **Effort:** S · **Screens:** Brain panel, page scope chip
 
 - **The brief:** Every page has its own assistant (Assistant on records, Data Scientist, Cartographer, Marketing Coordinator, Investigative Reporter), and there is a floating assistant with Tasks and Conversations. (Doc 3 across the portal)
 - **Today:** One assistant, Brain, scoped to the page.

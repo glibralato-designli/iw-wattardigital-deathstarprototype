@@ -34,6 +34,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
   - Oct 27, at build: the sidebar's System item turns on and opens System › Changes (Settings, Health, Controls drawn). The app has More › Changes. Built Oct 27.
 - **2.6 One Brain, the client's assistant names:** Option A, One Brain with role labels (recommended)
   - Note: Maybe go with the label according to the scope chip, but maybe another option in the brain chat to select the role
+  - Oct 27, at build: the composer gets a role menu (Auto plus the five roles); the chip shows the chosen role. Mapping as proposed (Who to call is Marketing Coordinator). Built Oct 27.
 - **2.7 Teach line on every page:** Option A, Purpose line, example on request (recommended)
 
 ## Phase 3 · Extend

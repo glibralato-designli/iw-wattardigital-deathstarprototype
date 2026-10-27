@@ -145,7 +145,7 @@ window.PROJECT = {
           description: 'Coverage by ZIP weakest first, one email funnel with its rates beside Clicked what, engagement by channel. Every ZIP tile, funnel stage and Clicked what row turns into a list. Channel filters are off.' },
         { id: 'calendar', name: '10 Dashboard · Calendar', path: 'pages/calendar.html', flow: 'plan-week', kind: 'form', primaryAction: 'New event',
           description: 'Meetings, call blocks, BOV pitches and tours in day, week and month. A click on a slot drops a draft with an inline card; New event opens the full dialog.',
-          states: { Day: 'view=day', Month: 'view=month', Selected: 'event=0-6', Draft: 'draft=1', NewEvent: 'dialog=new', Validation: 'dialog=new&clash=1', Success: 'added=1' },
+          states: { BrainRoleMenu: 'brain=open&menu=role', Day: 'view=day', Month: 'view=month', Selected: 'event=0-6', Draft: 'draft=1', NewEvent: 'dialog=new', Validation: 'dialog=new&clash=1', Success: 'added=1' },
           waivers: { Loading: LOCAL, Error: LOCAL, Empty: 'the week always has events', Submitting: 'saving an event is instant and confirmed by a toast (Success)' } },
         { id: 'outreach-performance', name: '11 Dashboard · Performance', path: 'pages/outreach-performance.html', flow: 'plan-week', kind: 'info',
           description: 'From the portal tab: a diagnosis when a number drops, Outreach (today vs previous day vs week, calling efficiency, LinkedIn, blasts; each count turns into a list), Business generation with deltas, Workflow efficacy. Logging is off.' },

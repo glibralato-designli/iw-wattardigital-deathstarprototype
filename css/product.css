@@ -636,6 +636,9 @@ a.ds-listitem:hover,button.ds-listitem:hover{background:var(--bg-subtle);color:v
 .ds-brain__head>svg{width:1.125rem;height:1.125rem;color:var(--brand-primary-text)}
 .ds-brain__head b{flex:1;margin-left:var(--space-1-5);font-size:var(--text-md);line-height:var(--line-height-sm);font-weight:var(--weight-semibold)}
 .ds-scope{align-self:flex-start;margin:0 var(--space-4);height:1.5rem;display:inline-flex;align-items:center;gap:var(--space-1);padding:0 var(--space-1) 0 var(--space-2);border-radius:var(--radius-sm);background:var(--bg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-secondary)}
+.ds-scope{max-width:calc(100% - var(--space-8));white-space:nowrap}
+.ds-scope>b{font-weight:var(--weight-semibold);flex:none}
+.ds-scope__on{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .ds-scope button{width:1rem;height:1rem;display:grid;place-items:center;padding:0;border:0;border-radius:var(--radius-xs);background:transparent;color:var(--fg-muted)}
 .ds-scope button:hover{background:var(--border)}
 .ds-scope svg{width:.75rem;height:.75rem}
@@ -680,6 +683,12 @@ a.ds-listitem:hover,button.ds-listitem:hover{background:var(--bg-subtle);color:v
 .ds-composer__mode{display:inline-flex;height:1.625rem;padding:2px;margin-left:var(--space-1);border-radius:var(--radius-sm);background:var(--bg-muted);font-size:var(--text-xs);line-height:var(--line-height-md)}
 .ds-composer__mode button{padding:0 var(--space-2);border:0;border-radius:var(--radius-xs);background:none;color:var(--fg-muted);font:inherit;cursor:pointer}
 .ds-composer__mode button[aria-pressed="true"]{background:var(--bg);color:var(--fg);font-weight:var(--weight-medium);box-shadow:var(--shadow-sm)}
+.ds-composer__rolewrap{position:relative;display:inline-flex;flex:none}
+.ds-composer__rolewrap>.ds-composer__learn{max-width:9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ds-rolemenu{bottom:calc(100% + var(--space-1));right:0;width:15rem}
+@media (max-width:767px){.ds-composer__lbl{display:none}.ds-body:not([data-shell="app"]) .ds-composer__mode{display:none}}
+.ds-send{flex:none}
+[data-shell="app"] .ds-composer__lbl{display:none}
 .ds-composer__learn{height:1.625rem;display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-1);padding:0 var(--space-2);border:var(--border-width) solid var(--border);border-radius:var(--radius-sm);background:none;font:inherit;font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);color:var(--fg-secondary);cursor:pointer}
 /* Composer controls not in this proposal: colour only, still focusable, with the standard tooltip. */
 .ds-composer__tool[aria-disabled="true"],.ds-composer__mode button[aria-disabled="true"],.ds-composer__learn[aria-disabled="true"]{color:var(--fg-disabled);cursor:default}
