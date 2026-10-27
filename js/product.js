@@ -82,6 +82,10 @@
   ui.rankChip = c => `<span class="ds-chip" data-tone="outline">Rank ${c.rank}</span>`;
   ui.bldChip = p => ui.scoreChip(p.addr + ' · ' + p.score, p.score);
   ui.leadLine = c => 'Rank ' + c.rank + ' · ' + pById[c.pid].addr + ' · ' + pById[c.pid].score;
+  /* Source freshness (Orientation doc 3, doc 1 §8): each source's rhythm and its last update, one quiet line under an evidence list,
+     so a quiet signal is not mistaken for a bug. Only the sources in that list are named; a source with no feed says so. */
+  const FEEDS = [['ACRIS', 'ACRIS deeds update monthly, last Sep 1'], ['HPD', 'HPD violations daily, last today 5:40 AM'], ['DOB', 'DOB violations daily, last today 5:40 AM'], ['DOF', 'DOF when published, last Jul 30'], ['UniCourt', 'UniCourt filings weekly, last Sep 28'], ['PropertyShark', 'PropertyShark: no feed yet'], ['Apollo', 'Apollo: no feed yet'], ['NY DOS', 'NY DOS: no feed yet']];
+  ui.freshness = items => { const src = items.map(e => e.m || e[2] || '').join(' '), lines = FEEDS.filter(([k]) => src.includes(k)).map(([, l]) => l); return lines.length ? `<p class="ds-fresh">${icon('clock')}<span>${esc(lines.join(' · '))}</span></p>` : ''; };
   // Reach confidence in the client's words (Orientation doc 1 §21): Verified 75%+, Likely 50–74%, Unverified below. Facts keep their four trust states.
   ui.reach = pc => `${pc}%<span class="ds-reach">${pc >= 75 ? 'Verified' : pc >= 50 ? 'Likely' : 'Unverified'}</span>`;
   // A number on a do-not-call list warns, never blocks.

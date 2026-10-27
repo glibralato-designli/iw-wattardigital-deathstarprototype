@@ -130,7 +130,7 @@ Small changes with the biggest effect on trust. They fix places where the protot
 
 ### 1.6 Freshness on screen
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Evidence lists, Why this?, property record, Today header
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Evidence lists, Why this?, property record, Today header
 
 - **The brief:** City deed records arrive monthly, violations daily, tax liens when published. Freshness belongs on screen so a quiet signal is not mistaken for a bug. (Doc 3 insights, doc 1 §8)
 - **Today:** "Updated 2d ago" on the why now and a date on each evidence row.

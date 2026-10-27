@@ -16,6 +16,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 - **1.5 Class and trust labels:** Option A, Client's names; Likely holders becomes a list (recommended)
   - Oct 27, at build: Likely holders is defined by the Recent refinance signal; Baum becomes Class D. Reach words: Verified 75%+, Likely 50–74%, Unverified below 50%. Built Oct 27.
 - **1.6 Freshness on screen:** Option A, One quiet line per list (recommended)
+  - Oct 27, at build: go-ahead confirmed, including "deeds as of Sep 1" on Today's source line. Built Oct 27.
 - **1.7 Small standards:** Option A, Apply as written (recommended)
 
 ## Phase 2 · Core

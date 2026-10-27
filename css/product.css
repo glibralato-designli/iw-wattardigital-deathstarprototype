@@ -419,6 +419,8 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-conf{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg);font-weight:var(--weight-bold);font-variant-numeric:tabular-nums}
 .ds-conf[data-tone="good"]{color:var(--success)}.ds-conf[data-tone="ok"]{color:var(--brand-secondary-text)}.ds-conf[data-tone="warn"]{color:var(--warning)}.ds-conf[data-tone="bad"]{color:var(--danger)}
 .ds-reach{margin-left:var(--space-1);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);color:var(--fg-muted)}
+.ds-fresh{display:flex;align-items:flex-start;gap:var(--space-1-5);font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-subtle);text-wrap:pretty}
+.ds-fresh svg{width:.875rem;height:.875rem;flex:none;margin-top:1px}
 .ds-life{font-weight:var(--weight-semibold)}
 .ds-life[data-tone="good"]{color:var(--success)}.ds-life[data-tone="ok"]{color:var(--brand-secondary-text)}.ds-life[data-tone="warn"]{color:var(--warning)}.ds-life[data-tone="bad"]{color:var(--danger)}.ds-life[data-tone="muted"]{color:var(--fg-subtle)}
 .ds-cp{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2-5) 0;border-bottom:var(--border-width) solid var(--border-subtle)}
