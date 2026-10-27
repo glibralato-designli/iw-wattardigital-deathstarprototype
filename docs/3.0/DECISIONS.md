@@ -14,6 +14,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 - **1.4 Meetings this week as the top number:** Option A, First tile in the pulse (recommended)
   - Oct 27, at build: Class A coverage leaves the pulse and becomes a line on Who to call's coverage card. Base count 3 (this week's owner meetings on the calendar), last week 1. Built Oct 27.
 - **1.5 Class and trust labels:** Option A, Client's names; Likely holders becomes a list (recommended)
+  - Oct 27, at build: Likely holders is defined by the Recent refinance signal; Baum becomes Class D. Reach words: Verified 75%+, Likely 50–74%, Unverified below 50%. Built Oct 27.
 - **1.6 Freshness on screen:** Option A, One quiet line per list (recommended)
 - **1.7 Small standards:** Option A, Apply as written (recommended)
 

@@ -15,7 +15,7 @@
     ['shah', 'Anita Shah', 'Allen Street Realty LLC', 'C', 'p48a', 'Long hold', 'Held 26 years, no recent activity', 'Anita Shah has held 48 Allen St for 26 years with no refinance or listing. Worth a check-in, not a pitch.', 'single', '90d ago · Voicemail', '(212) 555-0110', 'Contacted', 26, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
     ['greene', 'Michael Greene', 'Rivington 19 LLC', 'C', 'p19r', 'Nearby sale', 'Listed a nearby building last year', 'Michael Greene listed a nearby building last year and pulled it. He may be open to talking about 19 Rivington St.', 'stale', '5mo ago · Connected', '(212) 555-0156', 'Nurture', 11, 'Fund Exit', 'Falling', 'Domestic LLC · Investor', 0],
     ['morales', 'Elena Morales', 'Stanton 7 LLC', 'D', 'p7s', 'Long hold', 'Long hold; few signals', 'Elena Morales has owned 7 Stanton St for 15 years. There are few signals right now, so keep her informed rather than calling.', 'single', 'Never called', '(212) 555-0149', 'New', 15, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
-    ['baum', 'Harold Baum', 'Norfolk 120 Associates', 'LH', 'p120n', 'Recent refinance', 'Refinanced in 2024 on a 10-year term', 'Harold Baum refinanced 120 Norfolk St in 2024 on a 10-year term. He’s likely to hold.', 'verified', '2mo ago · Not interested', '(212) 555-0187', 'Do not contact', 21, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
+    ['baum', 'Harold Baum', 'Norfolk 120 Associates', 'D', 'p120n', 'Recent refinance', 'Refinanced in 2024 on a 10-year term', 'Harold Baum refinanced 120 Norfolk St in 2024 on a 10-year term. He’s likely to hold.', 'verified', '2mo ago · Not interested', '(212) 555-0187', 'Do not contact', 21, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
     // Outside the Lower East Side: Upper East Side, Midtown and Chelsea are in the territory; Central Harlem (north of 100th St) is not.
     ['lindqvist', 'Erik Lindqvist', 'East 82nd Street Associates LLC', 'A', 'p311e', 'Loan maturity', '$7.8M loan due in March on 30 units', 'Erik Lindqvist’s $7.8M loan on 311 E 82nd St matures in March, and the building has had no refinance since 2015. Owners in this spot often test a sale before they refinance.', 'verified', '19d ago · Voicemail', '(212) 555-0131', 'Contacted', 17, 'Debt Clock', 'Rising', 'Domestic LLC · Family owner', 1],
     ['osei', 'Kwame Osei', 'West 46th Holdings LLC', 'B', 'p418w', 'Long hold', 'Held 28 years; owner in his late 60s', 'Kwame Osei has held 418 W 46th St for 28 years and is in his late 60s. Long holds in Midtown West tend to trade when the owner starts planning the estate.', 'verified', 'Never called', '(212) 555-0168', 'New', 28, 'Legacy Hold', 'Steady', 'Domestic LLC · Private owner', 0],
@@ -52,14 +52,15 @@
 
   /* Buildings are scored (0–100) and classed; people are ranked by their most pressing building (pid).
      Team history can lift a rank, never a score: [places up, what the team did]. */
-  P.forEach(p => { p.cls = p.score >= 80 ? 'A' : p.score >= 60 ? 'B' : p.score >= 40 ? 'C' : p.score >= 20 ? 'D' : 'LH'; });
+  P.forEach(p => { p.cls = p.score >= 80 ? 'A' : p.score >= 60 ? 'B' : p.score >= 40 ? 'C' : 'D'; });
   const LIFT = { marchetti: [2, 'team met him in 2019'], adler: [3, 'team did a BOV on 64 Essex St in 2011'] };
   const ranked = C.slice().sort((a, b) => pById[b.pid].score - pById[a.pid].score), base = new Map(ranked.map((c, i) => [c, i + 1]));
   Object.entries(LIFT).forEach(([id, [n]]) => { const i = ranked.indexOf(cById[id]); ranked.splice(i - n, 0, ...ranked.splice(i, 1)); });
   ranked.forEach((c, i) => { c.rank = i + 1; c.lift = LIFT[c.id] ? { from: base.get(c), why: LIFT[c.id][1] } : null; });
 
-  const CLASS = { A: 'Immediate seller', B: 'High probability', C: 'Monitor', D: 'Informational', LH: 'Likely holder' };
-  const TIER = { A: 'Tier 1 · Hot', B: 'Tier 2 · Warm', C: 'Tier 3 · Watch', D: 'Tier 4 · Inform', LH: 'Hold' };
+  /* The client's four classes (Orientation doc 1 §21). A long hold is a signal, not a class: Likely holders is a saved list. */
+  const CLASS = { A: 'Act now', B: 'High probability', C: 'Monitor', D: 'Informational' };
+  const TIER = { A: 'Tier 1 · Hot', B: 'Tier 2 · Warm', C: 'Tier 3 · Watch', D: 'Tier 4 · Inform' };
   const TRUST = {
     verified: { word: 'Verified', icon: 'seal-check', status: 'success' },
     single: { word: 'Single source', icon: 'warning-circle', status: 'warning' },
@@ -179,7 +180,7 @@
 
   /* Database scale: about 40,000 contacts and 18,600 properties (Thomas, P3 25:14). The table shows the fictional demo rows. */
   const DB = { contacts: 40212, inTerritory: 36480, properties: 18640, propsInTerritory: 16910 };
-  const lists = [['all', 'All contacts', 40212], ['A', 'Class A sellers', 1140], ['B', 'Class B sellers', 3860], ['C', 'Class C sellers', 9420], ['D', 'Class D sellers', 14950], ['LH', 'Likely holders', 10842], ['warm', 'Warm contacts', 3310], ['cold', 'Cold contacts', 36902]];
+  const lists = [['all', 'All contacts', 40212], ['A', 'Class A sellers', 1140], ['B', 'Class B sellers', 3860], ['C', 'Class C sellers', 9420], ['D', 'Class D sellers', 25792], ['LH', 'Likely holders', 5200], ['warm', 'Warm contacts', 3310], ['cold', 'Cold contacts', 36902]];
   const listsOff = [['Professional grade', 1260], ['Portfolio sellers', 2140], ['Active buyers', 3480]];
   const hoods = [['Lower East Side', 4820], ['East Village', 3960], ['Upper East Side', 7140], ['Midtown West', 5310], ['Chelsea', 3220]];
   const customLists = ['Class A sellers', 'LES debt 2026', 'Estate watch', 'Q4 mail merge', 'Air rights', 'Callbacks this week'];
@@ -249,7 +250,7 @@
   /* Database-wide counts behind each criterion, so a list's size reads at the scale of the real database.
      The live count combines them (see DS.crit in js/product.js); the table shows the matching demo rows. */
   const critCounts = {
-    cls: { A: 1140, B: 3860, C: 9420, D: 14950, LH: 10842 },
+    cls: { A: 1140, B: 3860, C: 9420, D: 25792 },
     signal: { 'Loan maturity': 4200, 'Estate transition': 1300, 'Long hold': 9800, 'Unused FAR': 2100, 'Lis pendens': 380, 'Nearby sale': 3100, 'Recent refinance': 5200 },
     trust: { verified: 22000, single: 11000, stale: 6000, disputed: 1200 },
     btype: { fm: 9800, rs: 6200, mixed: 24200 },
@@ -263,7 +264,7 @@
   };
   // Brain's /list answer and the lists it saves are criteria too.
   const brainList = 'hood:Lower East Side,East Village;debt:2026-12-31;cls:A,B';
-  const listCrit = { all: '', A: 'cls:A', B: 'cls:B', C: 'cls:C', D: 'cls:D', LH: 'cls:LH', warm: 'rel:warm', cold: 'rel:cold' };
+  const listCrit = { all: '', A: 'cls:A', B: 'cls:B', C: 'cls:C', D: 'cls:D', LH: 'signal:Recent refinance', warm: 'rel:warm', cold: 'rel:cold' };
 
 
   /* ───────── Proactive Brain ─────────

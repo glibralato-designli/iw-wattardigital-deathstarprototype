@@ -254,12 +254,12 @@ Primitive palette values feed semantic roles. Components use semantic colours. S
 - Ramps: `neutral` (slate), `brand-primary` (navy, 950 dominant) and `brand-secondary` (accent blue). There is no tertiary palette. `tools/check_colors.py` derives brand families from the `--brand-<family>-text` roles.
 - Surfaces: `--bg` (panel), `--bg-subtle` (rails, table heads, the metric strip), `--bg-muted` (chips, tracks, hover). `--bg-inverse` + `--fg-inverse` are tooltips only.
 - Text: `--fg`, `--fg-secondary`, `--fg-muted` (metadata), `--fg-subtle` (low emphasis), `--fg-placeholder`, `--fg-disabled` (inactive controls and empty values only). `--link` / `--link-hover` for links.
-- Borders: `--border` (structure), `--border-strong` (hover, C and LH class badges), `--border-subtle` (in-card dividers).
+- Borders: `--border` (structure), `--border-strong` (hover, C class badges), `--border-subtle` (in-card dividers).
 - Shell: `--shell`, `--shell-raised` (Ask Brain off), `--shell-fg`, `--shell-fg-strong`, `--shell-fg-icon`, `--shell-muted` (group labels), `--shell-disabled`, translucent `--shell-hover`, `--shell-active`, `--shell-active-border`, `--shell-chip`, and `--shell-gradient` (Ask Brain border only).
 - Status: `--success`, `--warning`, `--danger`, `--info`, each with `-bg` and `-border`.
 - Charts: `--chart-primary` (bars, progress), `--chart-today` (today, Class A share), `--chart-empty`, `--chart-goal` (dashed goal line), `--chart-muted`.
 - Calendars: `--cal-meeting`, `--cal-call`, `--cal-tour`, `--cal-pitch` (BOV pitches) with `-bg` tints, and `--cal-now`. The calendar holds meetings, scheduled calls, BOV pitches and tours only; posts, blasts and mail merges are planned in the Attack Plan's week strip (Thomas, walkthrough P1 08:33).
-- Class badges: A = `--brand-primary` fill, B = `--brand-secondary` fill, C = white with `--border-strong`, D = `--bg-muted`, LH = white with a dashed border.
+- Class badges: A = `--brand-primary` fill, B = `--brand-secondary` fill, C = white with `--border-strong`, D = `--bg-muted`. Four classes only (A Act now, B High probability, C Monitor, D Informational); Likely holders is a list, not a badge. Reach confidence pairs its percentage with a word (`ui.reach`, `.ds-reach`: Verified 75%+, Likely 50–74%, Unverified below), separate from the four fact trust states.
 - Checked pairs (`tools/check_colors.py`): all text roles on all surfaces, brand text on tints, on-colours on fills, status on status backgrounds, link and focus on surfaces, and the shell pairs (labels, muted, disabled and Ask Brain on navy), in light and dark.
 
 ## Typography and layout

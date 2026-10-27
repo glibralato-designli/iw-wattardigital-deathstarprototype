@@ -19,7 +19,7 @@
   if (CH[params.get('push')]) b.push = params.get('push');
   if (CH[params.get('pushed')]) { const n = CR.count(b.crit); S0.queues = [...(S0.queues || []), { name: CR.name(b.crit), ch: params.get('pushed'), n }]; b.pushed = { ch: params.get('pushed'), n }; }
   const TRK = { Verified: 'verified', 'Single source': 'single', Stale: 'stale', Disputed: 'disputed' }, TRO = { verified: 0, single: 1, stale: 2, disputed: 3 };
-  const clsKey = () => st.cls === 'All classes' ? null : st.cls === 'Likely holders' ? 'LH' : st.cls.replace('Class ', '');
+  const clsKey = () => st.cls === 'All classes' ? null : st.cls.replace('Class ', '');
   const daysOf = s => { if (s.startsWith('Just')) return 0; if (s.startsWith('Never')) return 99999; const m = s.match(/(\d+)(d|mo)/); return m ? +m[1] * (m[2] === 'mo' ? 30 : 1) : 9999; };
   // Owners sort by rank, buildings by their own score.
   const defSort = () => kind === 'contacts' ? { key: 'rank', dir: 'asc' } : { key: 'score', dir: 'desc' };
@@ -84,7 +84,7 @@
   };
   const filters = count => kind === 'contacts' ? `<div class="ds-toolbar"><label class="ds-input-icon ds-dbsearch">${icon('magnifying-glass')}<input id="db-q" aria-label="Search" placeholder="Name, phone, email or address" value="${esc(st.q)}" data-input="q" autocomplete="off"></label><span class="ds-grow"></span><span class="ds-meta">${count} demo rows</span></div>${builder()}` : `<div class="ds-toolbar">
     <label class="ds-input-icon ds-dbsearch">${icon('magnifying-glass')}<input id="db-q" aria-label="Search" placeholder="${kind === 'contacts' ? 'Name, phone, email or address' : 'Address or BBL'}" value="${esc(st.q)}" data-input="q" autocomplete="off"></label>
-    ${[['Class', 'cls', ['All classes', 'Class A', 'Class B', 'Class C', 'Class D', 'Likely holders']], ['Trust', 'trust', ['All trust', 'Verified', 'Single source', 'Stale', 'Disputed']], ['Signal type', 'sig', ['All signals', 'Loan maturity', 'Estate transition', 'Long hold', 'Unused FAR', 'Lis pendens', 'Nearby sale', 'Recent refinance']]].map(([l, k, opts]) => `<span class="select"><select class="field__control" id="db-${k}" aria-label="${l}" data-change="${k}">${opts.map(o => `<option${o === st[k] ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select></span>`).join('')}
+    ${[['Class', 'cls', ['All classes', 'Class A', 'Class B', 'Class C', 'Class D']], ['Trust', 'trust', ['All trust', 'Verified', 'Single source', 'Stale', 'Disputed']], ['Signal type', 'sig', ['All signals', 'Loan maturity', 'Estate transition', 'Long hold', 'Unused FAR', 'Lis pendens', 'Nearby sale', 'Recent refinance']]].map(([l, k, opts]) => `<span class="select"><select class="field__control" id="db-${k}" aria-label="${l}" data-change="${k}">${opts.map(o => `<option${o === st[k] ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select></span>`).join('')}
     <button type="button" class="ds-switch-btn" role="switch" aria-checked="${st.terr}" data-act="terr" data-tip="${esc(D.TERRITORY.name + ' · ' + D.TERRITORY.sub)}"><span class="ds-switch-btn__track" data-flip="terr-t"><span data-flip="terr-k"></span></span>In territory</button>
     ${kind === 'properties' ? `<button type="button" class="button" data-variant="outline" aria-disabled="true" data-tip="${DS.OFF}">${icon('funnel-simple')}Prospects view</button>` : ''}
     ${hasFilters() ? ui.btn({ label: 'Clear', variant: 'ghost', act: 'clear' }) : ''}<span class="ds-grow"></span><span class="ds-meta">${count} ${kind}</span></div>`;

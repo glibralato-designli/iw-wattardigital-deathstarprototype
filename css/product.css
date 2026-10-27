@@ -182,7 +182,6 @@ button.ds-check{position:relative}button.ds-check::after{content:"";position:abs
 .ds-class[data-cls="B"]{background:var(--brand-secondary);color:var(--brand-secondary-on)}
 .ds-class[data-cls="C"]{background:var(--bg);border-color:var(--border-strong);color:var(--fg-secondary)}
 .ds-class[data-cls="D"]{background:var(--bg-muted);color:var(--fg-subtle)}
-.ds-class[data-cls="LH"]{min-width:1.75rem;background:var(--bg);border:var(--border-width) dashed var(--border-strong);color:var(--fg-subtle)}
 .ds-trust[data-trust="stale"]{background:var(--bg-muted);border-color:var(--border);color:var(--fg-muted)}
 .ds-chip{height:1.5rem;flex:none;display:inline-flex;align-items:center;gap:var(--space-1-5);padding:0 var(--space-2);border-radius:var(--radius-sm);background:var(--bg-muted);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);white-space:nowrap}
 .ds-chip[data-tone="strong"]{color:var(--fg)}
@@ -419,6 +418,7 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-best__num{font-size:var(--text-lg);line-height:var(--line-height-lg);font-weight:var(--weight-semibold);font-variant-numeric:tabular-nums}
 .ds-conf{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg);font-weight:var(--weight-bold);font-variant-numeric:tabular-nums}
 .ds-conf[data-tone="good"]{color:var(--success)}.ds-conf[data-tone="ok"]{color:var(--brand-secondary-text)}.ds-conf[data-tone="warn"]{color:var(--warning)}.ds-conf[data-tone="bad"]{color:var(--danger)}
+.ds-reach{margin-left:var(--space-1);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);color:var(--fg-muted)}
 .ds-life{font-weight:var(--weight-semibold)}
 .ds-life[data-tone="good"]{color:var(--success)}.ds-life[data-tone="ok"]{color:var(--brand-secondary-text)}.ds-life[data-tone="warn"]{color:var(--warning)}.ds-life[data-tone="bad"]{color:var(--danger)}.ds-life[data-tone="muted"]{color:var(--fg-subtle)}
 .ds-cp{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2-5) 0;border-bottom:var(--border-width) solid var(--border-subtle)}

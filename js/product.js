@@ -45,7 +45,7 @@
   /* ───────── Shared UI helpers ───────── */
   const ui = {};
   ui.icon = icon;
-  ui.cls = (k, label) => `<span class="ds-class"${label ? ' data-label' : ''} data-cls="${k}">${label ? esc((k === 'LH' ? 'LH' : 'Class ' + k) + ' · ' + D.CLASS[k]) : esc(k)}</span>`;
+  ui.cls = (k, label) => `<span class="ds-class"${label ? ' data-label' : ''} data-cls="${k}">${label ? esc('Class ' + k + ' · ' + D.CLASS[k]) : esc(k)}</span>`;
   ui.trust = (k, word) => { const t = D.TRUST[k]; return `<span class="badge ds-trust"${t.status ? ` data-status="${t.status}"` : ''} data-trust="${k}">${icon(t.icon)}${esc(word || t.word)}</span>`; };
   ui.btn = ({ label = '', ic, variant, size, act, arg, link, shape, aria, tip, side, id, cls = '', disabled, busy, pressed, expanded, extra = {} }) => {
     const a = { class: 'button' + (label ? '' : ' button--icon') + (cls ? ' ' + cls : ''), 'data-variant': variant, 'data-size': size, 'data-shape': shape, 'aria-label': aria, 'data-tip': tip || (disabled ? OFF : null), 'data-tip-side': side, id, 'aria-busy': busy ? 'true' : null, 'aria-pressed': pressed, 'aria-expanded': expanded, ...extra };
@@ -82,6 +82,8 @@
   ui.rankChip = c => `<span class="ds-chip" data-tone="outline">Rank ${c.rank}</span>`;
   ui.bldChip = p => ui.scoreChip(p.addr + ' · ' + p.score, p.score);
   ui.leadLine = c => 'Rank ' + c.rank + ' · ' + pById[c.pid].addr + ' · ' + pById[c.pid].score;
+  // Reach confidence in the client's words (Orientation doc 1 §21): Verified 75%+, Likely 50–74%, Unverified below. Facts keep their four trust states.
+  ui.reach = pc => `${pc}%<span class="ds-reach">${pc >= 75 ? 'Verified' : pc >= 50 ? 'Likely' : 'Unverified'}</span>`;
   // A number on a do-not-call list warns, never blocks.
   ui.dncList = num => D.dncList.includes(num) ? `<span class="badge" data-status="warning">${icon('warning')}On a do-not-call list</span>` : '';
   ui.lift = c => c.lift ? `<span class="ds-lift">${icon('arrow-up')}Up from ${c.lift.from}: ${esc(c.lift.why)}</span>` : '';
@@ -139,7 +141,7 @@
   const propShare = test => Math.max(0.04, P.filter(test).length / P.length);
   const ENG = Object.keys(CC.eng);
   const CRIT = {
-    cls: { l: 'Class', ic: 'target', opts: ['A', 'B', 'C', 'D', 'LH'].map(k => [k, k === 'LH' ? 'Likely holder' : 'Class ' + k]), n: it => share(it.v, CC.cls), c: (c, v) => v.includes(c.cls) },
+    cls: { l: 'Class', ic: 'target', opts: ['A', 'B', 'C', 'D'].map(k => [k, 'Class ' + k]), n: it => share(it.v, CC.cls), c: (c, v) => v.includes(c.cls) },
     signal: { l: 'Signal', ic: 'pulse', opts: Object.keys(CC.signal).map(k => [k, k]), n: it => share(it.v, CC.signal), c: (c, v) => v.includes(c.signal) },
     trust: { l: 'Trust', ic: 'seal-check', opts: Object.entries(D.TRUST).map(([k, t]) => [k, t.word]), n: it => share(it.v, CC.trust), c: (c, v) => v.includes(c.trust) },
     btype: { l: 'Building type', ic: 'buildings', opts: [['fm', 'Fully free market'], ['rs', 'Rent stabilized'], ['mixed', 'Mixed']], n: it => share(it.v, CC.btype), p: (p, v) => v.includes(p.rs === 0 ? 'fm' : p.fm === 0 ? 'rs' : 'mixed') },

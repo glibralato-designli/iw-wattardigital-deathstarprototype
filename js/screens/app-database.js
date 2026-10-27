@@ -7,9 +7,9 @@
   const kind = document.body.dataset.page === 'properties' ? 'properties' : 'contacts', isC = kind === 'contacts';
   const st = { q: params.get('q') || '', cls: params.get('list') === 'A' ? 'Class A' : 'All classes', trust: 'All trust', sig: 'All signals', terr: true, data: params.get('data') || 'ready' };
   const TRK = { Verified: 'verified', 'Single source': 'single', Stale: 'stale', Disputed: 'disputed' };
-  const OPTS = { cls: ['All classes', 'Class A', 'Class B', 'Class C', 'Class D', 'Likely holders'], trust: ['All trust', 'Verified', 'Single source', 'Stale', 'Disputed'], sig: ['All signals', 'Loan maturity', 'Estate transition', 'Long hold', 'Unused FAR', 'Lis pendens', 'Nearby sale', 'Recent refinance'] };
+  const OPTS = { cls: ['All classes', 'Class A', 'Class B', 'Class C', 'Class D'], trust: ['All trust', 'Verified', 'Single source', 'Stale', 'Disputed'], sig: ['All signals', 'Loan maturity', 'Estate transition', 'Long hold', 'Unused FAR', 'Lis pendens', 'Nearby sale', 'Recent refinance'] };
   const TITLE = { cls: 'Class', trust: 'Trust', sig: 'Signal' };
-  const clsKey = () => st.cls === 'All classes' ? null : st.cls === 'Likely holders' ? 'LH' : st.cls.replace('Class ', '');
+  const clsKey = () => st.cls === 'All classes' ? null : st.cls.replace('Class ', '');
   const contacts = () => { const q = st.q.trim().toLowerCase(), dig = q.replace(/\D/g, ''), ck = clsKey(), tk = TRK[st.trust];
     return D.C.filter(c => (!q || c.name.toLowerCase().includes(q) || c.entity.toLowerCase().includes(q) || D.pById[c.pid].addr.toLowerCase().includes(q) || (dig.length >= 4 && c.phone.replace(/\D/g, '').includes(dig))) && (!ck || c.cls === ck) && (!tk || c.trust === tk) && (st.sig === 'All signals' || c.signal === st.sig)).sort((a, b) => a.rank - b.rank); };
   const properties = () => { const q = st.q.trim().toLowerCase(), dig = q.replace(/\D/g, ''), ck = clsKey(), tk = TRK[st.trust], trustOf = p => D.cById[p.owner].pid === p.id ? D.cById[p.owner].trust : 'verified';

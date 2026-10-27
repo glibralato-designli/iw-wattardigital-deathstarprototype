@@ -112,7 +112,7 @@ Small changes with the biggest effect on trust. They fix places where the protot
 
 ### 1.5 Class and trust labels
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Badges everywhere, Database lists, best way to reach
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Badges everywhere, Database lists, best way to reach
 
 - **The brief:** Classes are A act now, B high probability, C monitor, D informational. Contact reach uses Verified / Likely / Unverified. (Doc 1 §21, doc 3 across the portal)
 - **Today:** A Immediate seller, B High probability, C Monitor, D Informational, plus LH Likely holder. Reach shows confidence percentages only.
