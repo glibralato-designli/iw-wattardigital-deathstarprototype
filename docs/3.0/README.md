@@ -304,7 +304,7 @@ Features that close the loop between calls, plus the visual standard test.
 
 ### 3.1 Cleaning queue
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** New Database tab, sidebar count
+**Status:** Done, Oct 27, 2026 (Option A, web only) · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** New Database tab, sidebar count
 
 - **The brief:** Ten minutes a day across four queues (contact, ownership, property, context). Each item shows the current value, the proposed value, confidence, source and a plain reason. Bulk approve or reject, defer. (Doc 1 §15, doc 3 Cleaning)
 - **Today:** None.

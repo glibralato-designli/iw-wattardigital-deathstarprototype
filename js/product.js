@@ -24,11 +24,11 @@
 
   /* ───────── Store: demo data in local storage, session UI in session storage ───────── */
   const STORE = 'ds-proto-v2', UI = 'ds-ui-v2';
-  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, optOut: {}, restored: {}, appr: {}, apprEdit: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
+  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, optOut: {}, restored: {}, appr: {}, apprEdit: {}, clean: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
-  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'approved', 'decided', 'bulk', 'wave', 'restored', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
+  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'approved', 'decided', 'bulk', 'wave', 'cleaned', 'cleanbulk', 'restored', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
   let snapshot = isSnapshot();
   let S = { ...fresh(), ...(read(localStorage, STORE) || {}) };
   if (params.get('reset') === '1') { S = fresh(); write(localStorage, STORE, S); try { sessionStorage.removeItem(UI); } catch (_) {} }
@@ -64,9 +64,10 @@
   ui.off = (label, ic) => `<button type="button" class="button" data-variant="outline" aria-disabled="true" data-tip="${OFF}">${ic ? icon(ic) : ''}${esc(label)}</button>`;
   ui.tabs = (items, current, label) => `<div class="tabs"><nav class="tabs__list" aria-label="${esc(label)}">${items.map(t => {
     if (t === '|') return '<span class="tabs__divider" aria-hidden="true"></span>';
-    const [page, l, off] = t;
+    const [page, l, off, n] = t;
     if (off || !page) return `<span class="tabs__tab" role="link" tabindex="0" aria-disabled="true" data-tip="${OFF}">${esc(l)}</span>`;
-    return page === current ? `<a class="tabs__tab" aria-current="page" href="${href(page)}">${esc(l)}<span class="tabs__ink" aria-hidden="true"></span></a>` : `<a class="tabs__tab" href="${href(page)}">${esc(l)}</a>`;
+    const cnt = n ? `<span class="tabs__count num">${n}</span>` : '';
+    return page === current ? `<a class="tabs__tab" aria-current="page" href="${href(page)}">${esc(l)}${cnt}<span class="tabs__ink" aria-hidden="true"></span></a>` : `<a class="tabs__tab" href="${href(page)}">${esc(l)}${cnt}</a>`;
   }).join('')}</nav></div>`;
   // In-page tabs (state, not navigation): role tablist with arrow keys.
   ui.stateTabs = (items, current, act, label) => `<div class="tabs"><div class="tabs__list" role="tablist" aria-label="${esc(label)}">${items.map(([k, l, off]) => off
@@ -217,6 +218,16 @@
     if (params.has('approved')) params.get('approved').split(',').forEach(id => { S.appr[id] = 'approved'; });
     if (params.has('bulk')) L.filter(a => a.lane === params.get('bulk') && !a.blocked && !a.n).forEach(a => { S.appr[a.id] = 'approved'; });
     if (params.get('wave') === '1') S.appr.a0 = 'wave'; };
+  /* Cleaning (3.0 · 3.1): S.clean[id] = 'approved' | 'rejected' | 'deferred'. A flagged item is never part of a bulk action.
+     Presets: cleaned=all (the empty state), cleanbulk=<queue> (that queue's high-confidence items approved). */
+  const cleanList = () => D.cleaning.map(x => ({ ...x, c: x.cid ? cById[x.cid] : null, p: x.pid ? pById[x.pid] : x.cid ? pById[cById[x.cid].pid] : null, state: (S.clean || {})[x.id] || null }));
+  const cleanPending = () => cleanList().filter(x => !x.state).length;
+  const cleanSet = (ids, state) => { S.clean = { ...S.clean }; ids.forEach(id => { S.clean[id] = state; }); save(); };
+  const cleanPresets = () => { const L = cleanList();
+    if (params.get('cleaned') === 'all') L.forEach(x => { S.clean[x.id] = x.flag ? 'deferred' : 'approved'; });
+    if (params.has('cleanbulk')) L.filter(x => x.q === params.get('cleanbulk') && !x.flag && x.conf >= 85).forEach(x => { S.clean[x.id] = 'approved'; }); };
+  // The Database tabs, with the Cleaning count.
+  ui.dbTabs = cur => ui.tabs(D.databaseTabs.map(t => t[0] === 'cleaning' ? [t[0], t[1], false, cleanPending() || 0] : t), cur, 'Database');
   ui.waiting = (id, label = 'Waiting for your click') => `<a class="ds-waiting" href="${href('approvals', id ? 'open=' + id : '')}">${icon('tray')}${esc(label)}</a>`;
   /* Changes note (3.0 · 2.5): a quiet line where the old behaviour was, with Restore (and Undo once restored). The full list is System › Changes. */
   ui.changeNote = id => { const ch = D.changes.find(x => x.id === id); if (!ch) return ''; const back = !!(S.restored || {})[id];
@@ -318,7 +329,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, openerOf, touchOf, apprList, apprPending, apprSet, apprPresets, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, openerOf, touchOf, apprList, apprPending, apprSet, apprPresets, cleanList, cleanPending, cleanSet, cleanPresets, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
@@ -384,8 +395,8 @@
       const [label, ic, page, badge] = n, key = NAVKEY[page];
       if (!rail && grp && U.navGrp[grp] && key !== sc.nav) return;
       if (!page) { h += `<a class="ds-nav" role="link" tabindex="0" aria-disabled="true" data-tip="${OFF}" data-tip-side="right">${icon(ic)}<span>${esc(label)}</span>${badge ? `<span class="ds-nav__badge">${badge}</span>` : ''}</a>`; return; }
-      const cnt = page === 'approvals' ? apprPending() : 0;
-      h += `<a class="ds-nav" href="${href(page)}"${key === sc.nav ? ' aria-current="page"' : ''}${railTip(cnt ? label + ' · ' + cnt + ' to approve' : label)}>${key === sc.nav ? '<span class="ds-nav__ink" aria-hidden="true"></span>' : ''}${icon(ic)}<span>${esc(label)}</span>${cnt ? `<span class="ds-nav__badge" aria-label="${cnt} to approve">${cnt}</span>` : ''}</a>`;
+      const cnt = page === 'approvals' ? apprPending() : page === 'contacts' ? cleanPending() : 0, what = page === 'approvals' ? ' to approve' : ' to clean';
+      h += `<a class="ds-nav" href="${href(page)}"${key === sc.nav ? ' aria-current="page"' : ''}${railTip(cnt ? label + ' · ' + cnt + what : label)}>${key === sc.nav ? '<span class="ds-nav__ink" aria-hidden="true"></span>' : ''}${icon(ic)}<span>${esc(label)}</span>${cnt ? `<span class="ds-nav__badge" aria-label="${cnt}${what}">${cnt}</span>` : ''}</a>`;
     });
     if (rail || !U.navGrp.Marketing) {
       const moreOpen = U.moreOpen || sc.nav === 'more';

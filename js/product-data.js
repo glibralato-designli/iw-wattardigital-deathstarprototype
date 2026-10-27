@@ -177,7 +177,24 @@
   // Thomas's current tab names and order (his portal as shown in the Oct 22 video), in sentence case. Today is the Attack Plan,
   // Activity the conversation tracker, Who to call the coverage and engagement report (every row turns into a call list).
   const dashboardTabs = [['home', 'Overview'], ['conversations', 'Activity'], ['reporting', 'Who to call'], ['calendar', 'Calendar'], '|', ['outreach-performance', 'Performance'], ['listings', 'Listings'], ['web-analytics', 'Website']];
-  const databaseTabs = [['contacts', 'Contacts'], ['properties', 'Properties']];
+  const databaseTabs = [['contacts', 'Contacts'], ['properties', 'Properties'], ['cleaning', 'Cleaning']];
+
+  /* Cleaning (3.0 · 3.1): ten minutes a day across four queues. Each item: the field, current → proposed, confidence, a dated source and a
+     plain reason. Nothing changes in a record until Thomas approves. flag: Brain leaves it alone (conflicting sources), so it's never in a bulk action. */
+  const QUEUES = [['contact', 'Contact', 'phone'], ['ownership', 'Ownership', 'identification-card'], ['property', 'Property', 'buildings'], ['context', 'Context', 'sparkle']];
+  const cleaning = [
+    { id: 'k1', q: 'contact', cid: 'marchetti', field: 'Mobile', from: '(917) 555-0123 · unconfirmed', to: '(917) 555-0123 · confirmed mobile', conf: 96, src: 'Terrakotta call log · Oct 21', why: 'He picked up on Oct 21 and you talked for 6 minutes. The carrier lookup says it’s a mobile.' },
+    { id: 'k2', q: 'contact', cid: 'okafor', field: 'Email', from: 'grace.okafor@example.com', to: 'grace@okafor-family.example', conf: 81, src: 'Gmail bounce · Oct 24 · LinkedIn · Oct 25', why: 'The old address bounced twice this week. Her LinkedIn profile lists the new one.' },
+    { id: 'k3', q: 'contact', cid: 'rivera', field: 'Phone', from: '(212) 555-0138 · primary', to: 'Wrong person · stop calling it', conf: 92, src: 'Your call outcome · Oct 23', why: 'You logged “wrong person” on Oct 23, and an earlier call in September got the same answer.' },
+    { id: 'o1', q: 'ownership', pid: 'p236w', field: 'Owner', from: 'Chelsea 22 Realty LLC · Claire Brennan', to: 'W 22 Residential LLC · new deed owner', conf: 98, src: 'ACRIS deed · recorded Oct 20', why: 'A deed recorded on Oct 20 transfers 236 W 22nd St. Claire Brennan moves to past owners and the new owner gets a record.' },
+    { id: 'o2', q: 'ownership', pid: 'p27o', cid: 'feld', field: 'Decision-maker', from: 'Aaron Feld · sole heir', to: 'Aaron Feld and Miriam Feld · co-executors', conf: 48, src: 'Surrogate’s Court filing · Oct 14 · Aaron, on a call · Oct 9', why: 'The probate filing names a co-executor. Aaron told you on Oct 9 that he decides alone. The sources disagree, so Brain left this for you.', flag: true },
+    { id: 'o3', q: 'ownership', pid: 'p155d', cid: 'chen', field: 'Managing member', from: 'Not on record', to: 'Wei Chen · managing member', conf: 88, src: 'NY Department of State filing · Sep 30', why: 'The LLC’s latest filing names Wei Chen as managing member, matching the owner on the case file.' },
+    { id: 'p1', q: 'property', pid: 'p90c', field: 'Units', from: '41 units', to: '43 units', conf: 90, src: 'DOB certificate of occupancy · Oct 2', why: 'A new certificate of occupancy adds two basement units.' },
+    { id: 'p2', q: 'property', pid: 'p64e', field: 'Rent-stabilized units', from: '6 stabilized', to: '8 stabilized', conf: 84, src: 'DHCR registration 2026 · Oct 15', why: 'This year’s rent registration lists two more stabilized units than the record.' },
+    { id: 'p3', q: 'property', pid: 'p7s', field: 'Year built', from: '1910', to: '1899', conf: 58, src: 'Landmarks survey · single source · Sep 12', why: 'One survey gives an earlier date. No second source yet, so it’s marked single source if you approve.' },
+    { id: 'x1', q: 'context', pid: 'p155d', field: 'Class', from: 'Class B · 66', to: 'Class A · 81', conf: 87, src: 'Model run · Oct 27, 5:40 AM · Crain’s · Oct 23', why: 'Its lender is pulling back on walk-up refinancing, and the $4.9M loan is due in February.' },
+    { id: 'x2', q: 'context', pid: 'p48a', field: 'Signal', from: 'No signal', to: 'Lis pendens · filed Oct 22', conf: 95, src: 'NY County Clerk · Oct 22', why: 'A lis pendens was filed against 48 Allen St. It adds a distress signal to the building.' },
+  ];
 
   /* Database scale: about 40,000 contacts and 18,600 properties (Thomas, P3 25:14). The table shows the fictional demo rows. */
   const DB = { contacts: 40212, inTerritory: 36480, properties: 18640, propsInTerritory: 16910 };
@@ -529,5 +546,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { QUEUES, cleaning, teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

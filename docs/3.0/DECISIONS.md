@@ -41,6 +41,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 ## Phase 3 · Extend
 
 - **3.1 Cleaning queue:** Option A, A Cleaning tab in the Database (recommended)
+  - Oct 27, at build: web only; the app stays in field mode (3.3). Bulk actions act on selected rows, with "Select the N at 85% or more"; the flagged item is never selectable. Built Oct 27.
 - **3.2 The buyer side of a person:** Option A, A Buyer tab and a header chip (recommended)
   - Note: With a good layout
 - **3.3 Mobile app as field mode:** Option A, Near me as a tab, Scan in the header (recommended)

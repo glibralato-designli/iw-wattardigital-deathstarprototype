@@ -86,6 +86,42 @@ button.ds-inbox__row:hover{background:var(--bg-subtle)}
 .ds-inbox__reason svg{width:1rem;height:1rem;flex:none;margin-top:2px;color:var(--brand-primary-text)}
 .ds-inbox__body{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);background:var(--bg-subtle);max-width:44rem;text-wrap:pretty}
 .ds-inbox__preview>.ds-inbox__back{display:none}
+/* Database › Cleaning (3.0 · 3.1): queues as a segmented control, one row per fix (current → proposed, reason, source and confidence),
+   a selection bar for bulk actions, and Done today folded at the bottom. A flagged row sits on --bg-subtle and has no checkbox. */
+.tabs__count{padding:0 var(--space-1-5);border-radius:var(--radius-full);background:var(--bg-muted);color:var(--fg-secondary);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium)}
+.ds-fixwrap{display:flex;flex-direction:column;gap:var(--space-4);max-width:64rem}
+.ds-fixq{align-self:flex-start;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.ds-fixq .segmented__item{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-1-5);flex:none}
+.ds-fixq .segmented__item svg{width:1rem;height:1rem;flex:none}
+.ds-fixq__n{color:var(--fg-subtle);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-regular)}
+.ds-fixbar{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2);min-height:var(--control-lg);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-fixlist{display:flex;flex-direction:column;border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg);overflow:hidden}
+.ds-fix{display:grid;grid-template-columns:1.125rem minmax(0,1fr) auto;gap:var(--space-1) var(--space-3);align-items:start;padding:var(--space-4)}
+.ds-fix+.ds-fix{border-top:var(--border-width) solid var(--border-subtle)}
+.ds-fix[data-flag]{background:var(--bg-subtle)}
+.ds-fix__pick{min-height:0;padding-top:2px}
+.ds-fix__body{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.ds-fix__top{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1-5) var(--space-2)}
+.ds-fix__who{font-size:var(--text-sm);line-height:var(--line-height-sm);color:var(--fg-secondary)}
+.ds-fix__change{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1) var(--space-2);margin-top:var(--space-0-5)}
+.ds-fix__change svg{width:1rem;height:1rem;flex:none;color:var(--fg-subtle)}
+.ds-fix__from{color:var(--fg-muted)}
+.ds-fix__to{color:var(--fg);font-weight:var(--weight-medium)}
+.ds-fix__why{max-width:62ch;color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm);text-wrap:pretty}
+.ds-fix__src{color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+.ds-fix__acts{display:flex;align-items:center;gap:var(--space-1)}
+.ds-fixdone{border-radius:var(--radius-lg);background:var(--bg-subtle);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-fixdone summary{display:flex;align-items:center;gap:var(--space-2);min-height:var(--touch-target);padding:0 var(--space-3);cursor:pointer}
+.ds-fixdone summary svg{width:1rem;height:1rem;color:var(--fg-muted)}
+.ds-fixdone__row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-top:var(--border-width) solid var(--border-subtle);color:var(--fg-secondary)}
+@media (max-width:767px){
+  .ds-fix{grid-template-columns:1.125rem minmax(0,1fr)}
+  .ds-fix__acts{grid-column:2;margin-top:var(--space-2)}
+  .ds-fixq{display:grid;grid-template-columns:1fr 1fr;align-self:stretch}
+  .ds-fixq .segmented__item svg{display:none}
+  .ds-fixdone__row{grid-template-columns:minmax(0,1fr) auto}
+  .ds-fixdone__row>.ds-meta{display:none}
+}
 @media (max-width:1023px){
   .ds-inbox{grid-template-columns:minmax(0,1fr)}
   .ds-inbox:not([data-picked]) .ds-inbox__preview{display:none}

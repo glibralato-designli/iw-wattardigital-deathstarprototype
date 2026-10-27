@@ -122,7 +122,7 @@
     scope: () => 'Database',
     init: () => { const pk = params.get('peek'); if (pk) { const k = D.cById[pk] ? 'c' : D.pById[pk] ? 'p' : null; if (k) DS.V.peek = { k, id: pk, tab: params.get('peektab') || 'overview', mode: params.get('peekmode') || 'side' }; } },
     peekList: () => kind === 'contacts' ? contacts().map(c => ['c', c.id]) : properties().map(p => ['p', p.id]),
-    render: () => `<div class="ds-page">${ui.pageHead('Database', ui.tabs(D.databaseTabs, kind, 'Database'))}<div class="ds-db"${kind === 'properties' ? ' data-full' : ''}>${kind === 'contacts' ? listsNav() : ''}${table()}</div></div>`,
+    render: () => `<div class="ds-page">${ui.pageHead('Database', ui.dbTabs(kind))}<div class="ds-db"${kind === 'properties' ? ' data-full' : ''}>${kind === 'contacts' ? listsNav() : ''}${table()}</div></div>`,
     acts: {
       row: (el, arg, ev) => { ev.stopPropagation(); const [k, x] = arg.split(':'); if (selected(k, x)) { DS.V.peek = null; DS.render(); return; } DS.openPeek(k, x); },
       list: (el, k) => { const [t, x] = k.split(':'); const str = t === 'p' ? listPreset(x) : t === 's' ? (DS.savedLists().find(l => l.id === x) || {}).crit : 'hood:' + x; b.crit = CR.parse(str || ''); Object.assign(b, { edit: null, sugg: [], saving: null, push: null, pushed: null, savedId: t === 's' ? x : null }); DS.V.peek = null; DS.render(); },
