@@ -257,6 +257,24 @@
     lindqvist: ['Erik, it’s Thomas Windels. John Stewart sold you 311 East 82nd back in 2009.', 'With the March maturity coming, I can show you what similar buildings on 82nd have traded for.', 'Would a short call this week be useful?'],
   };
 
+  /* Teach line per page (3.0 · 2.7, Orientation doc 3): [what this page is for, a worked example or null]. Records explain themselves. */
+  const teach = {
+    'attack-plan': ['Who to call first and why, ranked by each owner’s most pressing building.', 'Marchetti is first: his $9.4M loan on 118 Ludlow St is due in June. Open him, read the why now, call, log the outcome, then Next owner.'],
+    approvals: ['Every planned email, text, letter, post, valuation and data push waits here for your click.', 'Ruth Adler asked for the Q3 comps on Monday. Open the draft, check the reason, change a line if you like, then Approve. It goes out in the next send.'],
+    home: ['The week’s numbers at a glance, led by meetings with owners.', 'Meetings are at 3, up from 1. Calls are on pace, but 2 follow-ups are overdue: clear them from Today.'],
+    conversations: ['Every conversation this week and its next step.', 'Ruth Adler is open to a pricing opinion on 64 Essex St; the next step is the comps by Friday.'],
+    reporting: ['Where coverage is thin and who engaged, so every gap becomes a call list.', '10038 is at 3%. Turn it into a list and push it to Phone; the push waits in Approvals first.'],
+    calendar: ['Meetings, call blocks, tours and BOV pitches.', 'Thursday at 11 is the BOV pitch for 64 Essex St with Ruth Adler.'],
+    'outreach-performance': ['Calls, emails, texts and conversations against your goals.', 'Conversations fell from 15 to 9. The diagnosis points at fewer confirmed numbers; turn the gap into a list.'],
+    listings: ['How each listing is doing, from views to offers.', null],
+    'web-analytics': ['Who visits the website, what they read, and who they are when we know.', null],
+    contacts: ['Every owner, ranked by their most pressing building. Build any list from criteria.', 'Add “Debt due by Dec 31” and “In territory”, then Save as list or Push to queue.'],
+    properties: ['Every building, scored 0–100 on its own signals.', null],
+    headlines: ['The news that matters to your owners, each story tagged to who it affects.', 'The rent freeze story touches 21,459 owners in your lists. Draft a post for them; it waits in Approvals.'],
+    bov: ['A valuation for a building, drawn from its record. Next phase.', null],
+    changes: ['What changed in how Death Star works. Restore puts one back; nothing else moves.', null],
+  };
+
   /* What changed (3.0 · 2.5, Orientation doc 1 §9): [id, area, date, what changed, how it was before, who approved it]. */
   const changes = [
     ['ranking', 'Ranking', 'Oct 25', 'Paid-off loans weigh more, so owners with no debt rank lower.', 'A paid-off loan counted the same as any long hold.', 'Model v4.1 · approved by Thomas W.'],
@@ -511,5 +529,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

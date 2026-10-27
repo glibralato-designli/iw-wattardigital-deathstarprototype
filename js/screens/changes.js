@@ -10,7 +10,6 @@
     crumbs: () => [{ l: 'System', page: 'changes' }, { l: 'Changes' }],
     scope: () => 'System',
     render: () => `<div class="ds-page">${ui.pageHead('System', ui.tabs([['changes', 'Changes'], [null, 'Settings'], [null, 'Health'], [null, 'Controls']], 'changes', 'System'))}
-      <p class="ds-lede">What changed in how Death Star works, newest first. Restore puts it back the way it was; nothing else moves.</p>
       <section class="ds-card" data-pad="all" aria-label="Changes"><div class="ds-chlist">${D.changes.map(row).join('')}</div></section></div>`,
   });
 })();

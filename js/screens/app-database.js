@@ -78,7 +78,7 @@
   DS.define({
     id: kind, nav: 'database', tab: 'database',
     head, scope: () => isC ? 'Contacts' : 'Properties',
-    render: () => `<div class="ds-apage">${ui.large('Database', 'Stewart Group')}${switcher()}<div class="ds-asec">${tools()}</div>${list()}</div>`,
+    render: () => `<div class="ds-apage">${ui.large('Database', 'Stewart Group')}${ui.teach()}${switcher()}<div class="ds-asec">${tools()}</div>${list()}</div>`,
     overlays: sheet,
     acts: {
       pick: (el, arg) => { const [k, v] = arg.split('|'); st[k] = v; DS.V.sheet = null; DS.render(); },

@@ -36,6 +36,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
   - Note: Maybe go with the label according to the scope chip, but maybe another option in the brain chat to select the role
   - Oct 27, at build: the composer gets a role menu (Auto plus the five roles); the chip shows the chosen role. Mapping as proposed (Who to call is Marketing Coordinator). Built Oct 27.
 - **2.7 Teach line on every page:** Option A, Purpose line, example on request (recommended)
+  - Oct 27, at build: lists and dashboards only (records explain themselves); the same lines in the app. Built Oct 27.
 
 ## Phase 3 · Extend
 

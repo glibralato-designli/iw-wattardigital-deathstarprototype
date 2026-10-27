@@ -281,7 +281,7 @@ The screens the brief describes in the most detail, and the ones every scenario 
 
 ### 2.7 Teach line on every page
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Page heads
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Page heads
 
 - **The brief:** A one-line "what this page is for" and one worked example on every page, plus a getting-started guide. (Doc 3 across the portal)
 - **Today:** One Brain line per Dashboard tab.

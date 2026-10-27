@@ -73,7 +73,10 @@
     ? `<span class="tabs__tab" role="tab" tabindex="-1" aria-selected="false" aria-disabled="true" data-tip="${OFF}">${esc(l)}</span>`
     : `<button type="button" class="tabs__tab" role="tab" aria-selected="${k === current}" tabindex="${k === current ? 0 : -1}" data-act="${act}" data-arg="${k}">${esc(l)}${k === current ? `<span class="tabs__ink" aria-hidden="true" data-flip="ink-${esc(label)}"></span>` : ''}</button>`).join('')}</div></div>`;
   ui.segmented = (items, current, act, label, size) => `<div class="segmented" role="tablist" aria-label="${esc(label)}"${size ? ` data-size="${size}"` : ''}>${items.map(([k, l]) => `<button type="button" class="segmented__item" role="tab" aria-selected="${k === current}" data-act="${act}" data-arg="${k}">${k === current ? `<span class="segmented__ink" aria-hidden="true" data-flip="seg-${esc(label)}"></span>` : ''}${esc(l)}</button>`).join('')}</div>`;
-  ui.pageHead = (title, tabsHtml, extra = '') => `<div class="ds-page-head"><div class="ds-page-title"><span class="ds-org">Stewart Group</span><h1>${esc(title)}</h1></div>${tabsHtml || ''}${extra}</div>`;
+  /* Teach line (3.0 · 2.7): what this page is for, one muted line, and a worked example behind "See an example". */
+  ui.teach = id => { const t = D.teach[id || (DS.screen || {}).id]; if (!t) return ''; const k = id || DS.screen.id, open = k in (V.teach || {}) ? V.teach[k] : params.get('example') === '1';
+    return `<div class="ds-teach"><p>${esc(t[0])}${t[1] ? ` <button type="button" class="ds-link-btn" aria-expanded="${open}" data-act="teach-example" data-arg="${esc(k)}">${open ? 'Hide the example' : 'See an example'}</button>` : ''}</p>${open ? `<p class="ds-teach__ex" data-anim="grow" data-key="teach-${esc(k)}">${icon('book-open')}<span>${esc(t[1])}</span></p>` : ''}</div>`; };
+  ui.pageHead = (title, tabsHtml, extra = '') => `<div class="ds-page-head"><div class="ds-page-title"><span class="ds-org">Stewart Group</span><h1>${esc(title)}</h1></div>${tabsHtml || ''}${ui.teach()}${extra}</div>`;
   ui.nudge = text => `<p class="ds-nudge">${icon('sparkle')}<span>${esc(text)}</span><button type="button" class="ds-link-btn" data-act="ask-nudge" data-arg="${esc(text)}">Ask Brain</button></p>`;
   ui.kv = (rows, opts = {}) => `<dl class="ds-kv"${opts.cols ? ` data-cols="${opts.cols}"` : ''}${opts.compact ? ' data-compact' : ''}>${rows.map(([k, v, x = {}]) => `<div class="ds-kv__row"><dt>${esc(k)}</dt><dd${isEmptyVal(v) ? ' data-empty' : ''}${x.hot ? ' data-hot' : ''}>${x.html ? v : esc(v)}</dd>${x.end || ''}</div>`).join('')}</dl>`;
   ui.acc = (key, title, sum, body, open, extra = '') => `<section><button type="button" class="ds-acc__btn" aria-expanded="${!!open}" data-act="acc" data-arg="${esc(key)}">${extra}<span class="ds-row__body"><b>${esc(title)}</b><span class="ds-row__sub">${esc(sum)}</span></span>${icon(open ? 'caret-up' : 'caret-down')}</button>${open ? `<div class="ds-acc__body" data-anim="grow" data-key="acc-${esc(key)}">${body}</div>` : ''}</section>`;
@@ -775,7 +778,7 @@
     DS.ask = text => { DS.sendText(text); if (DS.screen.id !== 'brain') DS.navigate(href('brain')); };
     DS.openBrain = () => { if (DS.screen.id !== 'brain') DS.navigate(href('brain')); };
     // Reused web screens (the four reports) get a large title instead of the Dashboard heading and tabs.
-    ui.pageHead = (title, tabsHtml, extra = '') => { const t = (D.dashboardTabs.find(x => x[0] === (DS.screen && DS.screen.id)) || [])[1]; return ui.large(t || title, t ? 'Reports' : '') + extra; };
+    ui.pageHead = (title, tabsHtml, extra = '') => { const t = (D.dashboardTabs.find(x => x[0] === (DS.screen && DS.screen.id)) || [])[1]; return ui.large(t || title, t ? 'Reports' : '') + ui.teach() + extra; };
   }
 
   /* ───────── Render loop ───────── */
@@ -870,6 +873,7 @@
     send: () => DS.sendText(V.draft),
     ask: (el, t) => DS.ask(t),
     'ask-nudge': (el, t) => DS.ask('Tell me more: ' + t),
+    'teach-example': (el, k) => { V.teach = { ...(V.teach || {}), [k]: !(V.teach || {})[k] }; render(); },
     'restore-change': (el, id) => { const back = !(S.restored || {})[id], ch = D.changes.find(x => x.id === id); S.restored = { ...S.restored, [id]: back }; if (!back) delete S.restored[id]; save(); render(); DS.toast(back ? ch.area + ' restored to before ' + ch.date : ch.area + ' change is back on'); },
     'approve-list': (el, i) => { const m = U.msgs[+i], str = m.crit || D.brainList; U.msgs[+i] = { ...m, pending: false, approved: true }; saveList(m.listName, str); render(); DS.toast('Saved to Lists · ' + loc(crit.count(crit.parse(str))) + ' owners'); },
     'approve-teach': (el, i) => { U.msgs[+i] = { ...U.msgs[+i], pending: false, approved: true }; S.taught = [...(S.taught || []).filter(x => x[0] !== D.okaforLesson[0]), D.okaforLesson]; save(); render(); DS.toast('Remembered. Learning Mode lists it.'); },

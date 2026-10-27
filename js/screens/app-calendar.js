@@ -55,7 +55,7 @@
   DS.define({
     id: 'calendar', nav: 'dashboard', tab: 'more',
     head, scope: () => 'Calendar',
-    render: () => `<div class="ds-apage">${ui.large('Calendar', st.view === 'day' ? fmtL(addD(st.off)) + (st.off === 0 ? ' · Today' : '') : addD(st.off).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }))}
+    render: () => `<div class="ds-apage">${ui.large('Calendar', st.view === 'day' ? fmtL(addD(st.off)) + (st.off === 0 ? ' · Today' : '') : addD(st.off).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }))}${ui.teach()}
       ${ui.segmented([['day', 'Day'], ['week', 'Week'], ['month', 'Month']], st.view, 'view', 'View').replace('class="segmented"', 'class="segmented" data-fill')}${st.view !== 'month' ? strip() : ''}${st.off === 0 && st.view === 'day' ? ui.nudge(D.nudges.calendar) : ''}
       <div data-anim="fade" data-key="cal-${st.view}-${st.off}" class="ds-stack" style="gap:var(--space-5)">${st.view === 'day' ? agenda(st.off) : st.view === 'week' ? week() : month()}</div></div>`,
     fab: () => `<button type="button" class="ds-fab" aria-label="New event" data-act="new">${icon('plus')}</button>`,

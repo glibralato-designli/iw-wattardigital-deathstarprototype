@@ -40,7 +40,7 @@
   DS.define({
     id: 'home', nav: 'dashboard', tab: 'more',
     head, scope: () => 'Dashboard',
-    render: () => `<div class="ds-apage">${ui.large('Overview', 'Wednesday, September 30')}${pulse()}${brainNote()}${upNext()}${meetings()}${week()}</div>`,
+    render: () => `<div class="ds-apage">${ui.large('Overview', 'Wednesday, September 30')}${ui.teach()}${pulse()}${brainNote()}${upNext()}${meetings()}${week()}</div>`,
     acts: {
       'dismiss-note': () => DS.collapse(document.querySelector('[data-key="brain-note"]'), () => { st.brainNote = false; DS.render(); }),
     },

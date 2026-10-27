@@ -34,7 +34,7 @@
   DS.define({
     id: 'conversations', nav: 'dashboard', tab: 'more',
     head, scope: () => 'Conversations',
-    render: () => `<div class="ds-apage">${ui.large('Activity', 'Dashboard')}${ui.nudge(D.nudges.conversations)}${stepper()}${summary()}<div class="ds-stack" style="gap:var(--space-6)" data-anim="fade" data-key="wk-${st.wk}">${days()}${proposals()}</div></div>`,
+    render: () => `<div class="ds-apage">${ui.large('Activity', 'Dashboard')}${ui.teach()}${ui.nudge(D.nudges.conversations)}${stepper()}${summary()}<div class="ds-stack" style="gap:var(--space-6)" data-anim="fade" data-key="wk-${st.wk}">${days()}${proposals()}</div></div>`,
     fab: () => `<button type="button" class="ds-fab" aria-label="New conversation" data-act="open-new">${icon('plus')}</button>`,
     overlays: () => DS.V.sheet === 'new' ? newSheet() : '',
     onSheetClose: () => { st.dlg = null; },

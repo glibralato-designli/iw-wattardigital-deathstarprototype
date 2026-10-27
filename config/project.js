@@ -32,7 +32,7 @@ window.PROJECT = {
       screens: [
         { id: 'attack-plan', name: '01 Today', path: 'pages/app/attack-plan.html', flow: 'start-day', kind: 'data', primaryAction: 'Call Daniel Marchetti',
           description: 'The first tab, where the day starts: the greeting with Meetings this week, a day strip, Call next with trust, call buttons and where the list comes from, Brain suggests (collapsible), to-dos, goals and meetings.',
-          states: { SuggestionSaved: 'suggsaved=1', SuggestionsCollapsed: 'brainsugg=closed', SuggestionsDismissed: 'dismissed=all', Empty: 'called=all', PastDay: 'day=-1', FutureDay: 'day=1', Week: 'range=week', AddTodo: 'sheet=add', Resolved: 'resolved=1' },
+          states: { TeachExample: 'example=1', SuggestionSaved: 'suggsaved=1', SuggestionsCollapsed: 'brainsugg=closed', SuggestionsDismissed: 'dismissed=all', Empty: 'called=all', PastDay: 'day=-1', FutureDay: 'day=1', Week: 'range=week', AddTodo: 'sheet=add', Resolved: 'resolved=1' },
           waivers: { Loading: LOCAL, Error: LOCAL } },
         { id: 'approvals', name: '02 Approvals', path: 'pages/app/approvals.html', flow: 'start-day', kind: 'form', primaryAction: 'Approve',
           description: 'The app’s Approvals tab (with its count): lanes as sections with Approve all and First wave; a row opens its draft in a sheet with Approve, Hold and Edit; a blocked item can only be removed.',
@@ -105,7 +105,7 @@ window.PROJECT = {
       screens: [
         { id: 'attack-plan', name: '01 Today', path: 'pages/attack-plan.html', flow: 'start-day', kind: 'data', primaryAction: 'Call Daniel Marchetti',
           description: 'Where the day starts (first in the sidebar): the greeting with Meetings this week and Brain’s line, then Today’s plan with Call next (and where the list comes from), to-dos and the editable week template; the right column opens with Brain suggests (compact, collapsible lists to save or dismiss), then editable goals and meetings. Day and week stepper with a date picker.',
-          states: { Empty: 'called=all', PastDay: 'day=-1', FutureDay: 'day=1', Week: 'range=week', DatePicker: 'picker=1', Resolved: 'resolved=1', RankingRestored: 'restored=ranking', SuggestionSaved: 'suggsaved=1', SuggestionsDismissed: 'dismissed=all', SuggestionsCollapsed: 'brainsugg=closed', EditGoals: 'goals=edit', EditWeek: 'week=edit' },
+          states: { TeachExample: 'example=1', Empty: 'called=all', PastDay: 'day=-1', FutureDay: 'day=1', Week: 'range=week', DatePicker: 'picker=1', Resolved: 'resolved=1', RankingRestored: 'restored=ranking', SuggestionSaved: 'suggsaved=1', SuggestionsDismissed: 'dismissed=all', SuggestionsCollapsed: 'brainsugg=closed', EditGoals: 'goals=edit', EditWeek: 'week=edit' },
           waivers: { Loading: LOCAL, Error: LOCAL } },
         { id: 'approvals', name: '02 Approvals', path: 'pages/approvals.html', flow: 'start-day', kind: 'form', primaryAction: 'Approve',
           description: 'One inbox for every planned touch (sidebar item and top-bar count): lanes on the left with the owner, building, reason and checks; the preview on the right to edit, approve or hold; Approve all per lane and First wave on Email; a blocked item (opted out) can only be removed.',

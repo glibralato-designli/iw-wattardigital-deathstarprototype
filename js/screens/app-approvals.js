@@ -44,7 +44,7 @@
   DS.define({
     id: 'approvals', nav: 'approvals', tab: 'approvals',
     head: () => ({ title: 'Approvals', large: true }), scope: () => 'Approvals',
-    render: () => { const n = pending().length; return `<div class="ds-apage">${ui.large('Approvals', n ? n + ' waiting for your click' : 'All clear')}<p class="ds-alede" style="margin-top:calc(var(--space-5) * -1)">Nothing goes out without your click.</p>${list()}</div>`; },
+    render: () => { const n = pending().length; return `<div class="ds-apage">${ui.large('Approvals', n ? n + ' waiting for your click' : 'All clear')}${ui.teach('approvals')}${list()}</div>`; },
     overlays: sheet,
     acts: {
       open: (el, id) => { DS.V.sheet = 'appr:' + id; st.edit = false; DS.render(); },
