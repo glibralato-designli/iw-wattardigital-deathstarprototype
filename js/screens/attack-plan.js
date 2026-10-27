@@ -50,7 +50,7 @@
       <div class="ds-card__head" style="padding-bottom:var(--space-1)"><div class="ds-card__title"><h2>${esc(title)}</h2><span class="ds-meta">${esc(sub)}</span></div><span class="ds-meta-strong num"><span data-count="${r === 0 && st.mode === 'day' ? 'calls' : 'plan-' + st.mode + st.sel}">${n}</span> of ${of} ${st.mode === 'week' ? 'dials' : 'calls'}</span>${ui.progress(n / of, 'Calls', { key: r === 0 && st.mode === 'day' ? 'calls' : 'plan-' + st.mode + st.sel })}</div>
       <div class="ds-stack" data-gap="2" style="gap:var(--space-0-5)">
         <div class="ds-subhead"><h3>${r < 0 ? 'Outreach · Called' : 'Outreach · Call next'}</h3><a class="small" href="${href('contacts', 'list=A')}">View all Class A</a></div>
-        ${r === 0 ? `<p class="ds-plan-src">${icon('sparkle')}<span>From LES maturities + 3 callbacks + 2 blast openers · built by Brain at 5:40 AM · deeds as of Sep 1</span></p>` : ''}${r === 0 ? ui.changeNote('ranking') : ''}
+        ${r === 0 ? ui.planNotes() : ''}
         ${r > 0 ? `<div class="ds-note" style="margin-bottom:var(--space-1)">${icon('calendar-blank')}<span class="ds-grow">${esc(st.mode === 'week' ? 'Brain builds each day’s call list that morning. 200 owners are queued for ' + w.range + '.' : 'Brain builds this call list the morning of ' + fmtL(w.selD) + '. 40 owners are queued from your Class A segments.')}</span></div>` : ''}
         ${rows.join('')}
         ${allCalled ? `<div class="ds-note" style="color:var(--fg)"><span class="ds-grow">You’ve called everyone on today’s list.</span>${ui.btn({ label: 'Build a new list', variant: 'outline', act: 'build-list' })}</div>` : ''}
