@@ -121,7 +121,7 @@
 
   DS.define({
     id: page, nav: 'dashboard', brain: 'min',
-    crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: LABEL[page] }],
+    crumbs: () => [{ l: 'Dashboard', page: 'home' }, { l: LABEL[page] }],
     scope: () => LABEL[page],
     render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, page, 'Dashboard'))}${ui.nudge(D.nudges[page])}${BODY[page]()}</div>`,
     acts: { 'pick-listing': (el, k) => { lst.sel = k; DS.render(); } },

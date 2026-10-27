@@ -113,11 +113,14 @@
     return `<section class="ds-card ds-meetings" aria-label="${esc(title)}"><div class="ds-card__head"><h2 class="ds-grow">${esc(title)}</h2><a href="${href('calendar')}">Open calendar</a></div>${list.map(([t, n, wh]) => `<div class="ds-row" data-dense><span class="ds-time">${esc(t)}</span><span class="ds-row__body"><span class="ds-row__title">${esc(n)}</span><span class="ds-row__sub">${esc(wh)}</span></span></div>`).join('')}</section>`;
   };
 
+  // Where the day starts (3.0 · 2.1): the greeting with this week's meetings, Brain's line, then the ranked list.
+  const dayHead = () => { const m = DS.meetingsWeek(); return `<div class="ds-dayhead"><div class="ds-greeting"><h1>Good morning, Thomas</h1></div><a class="ds-dayhead__num" href="${href('calendar')}"><b data-count="meetings">${m}</b><span class="ds-row__body"><span class="font-medium">meetings this week</span><span class="ds-meta">With owners · +${m - 1} vs. last week (1)</span></span></a></div>${ui.nudge(D.nudges['attack-plan'])}`; };
+
   DS.define({
-    id: 'attack-plan', nav: 'dashboard', brain: 'min',
-    crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: 'Today' }],
-    scope: () => 'Dashboard',
-    render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, 'attack-plan', 'Dashboard'))}${ui.nudge(D.nudges['attack-plan'])}${toolbar()}
+    id: 'attack-plan', nav: 'today', brain: 'min',
+    crumbs: () => [{ l: 'Today' }],
+    scope: () => 'Today',
+    render: () => `<div class="ds-page">${dayHead()}${toolbar()}
       <div class="ds-split" data-anim="slide" data-key="plan-${st.mode}-${st.sel}" style="--dir:${st.dir || 1}"><div class="ds-stack">${todayPlan()}${todos()}${week()}</div><div class="ds-stack">${suggested()}${goals()}${meetings()}</div></div></div>`,
     acts: {
       step: (el, d) => { st.dir = Math.sign(Number(d)); st.sel += Number(d) * (st.mode === 'week' ? 7 : 1); DS.render(); },

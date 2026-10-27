@@ -18,7 +18,7 @@ Open http://localhost:4173. The preview server disables caching and reloads on c
 - `pages/`: 15 web screens (13, plus More › Headlines and More › BOV & OM). `pages/app/`: 14 mobile app screens (concept), sharing the same data, Brain and call loop.
 
 ## The demo
-Start on Home. The core loop: **Home → Call Daniel Marchetti → Why this? → Call → End call → No answer → Save outcome → Next owner.** Logged calls, notes, flags, to-dos, events and conversations persist in this browser; **Reset prototype data** (account menu, bottom left) or `?reset=1` restores the seed. Light and Dark are in the same account menu.
+Start on Today. The core loop: **Today → Call Daniel Marchetti → Why this? → Call → End call → No answer → Save outcome → Next owner.** Logged calls, notes, flags, to-dos, events and conversations persist in this browser; **Reset prototype data** (account menu, bottom left) or `?reset=1` restores the seed. Light and Dark are in the same account menu.
 
 Keyboard: ⌘K search (⇧↵ opens the preview), ⌘J Brain, `[` sidebar, Esc closes.
 

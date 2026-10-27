@@ -1,4 +1,4 @@
-/* App 01 Home: the day at a glance. Greeting, today's plan, the pulse, Brain's note, the week's calls, Up next and meetings. */
+/* App More › Overview (3.0 · 2.1): the pulse, Brain's note, Up next, meetings and the week's calls. The day starts on Today. */
 (() => {
   const { D, ui, esc, icon, href, params } = DS;
   const st = { brainNote: params.get('note') !== '0' };
@@ -7,25 +7,10 @@
   const head = () => {
     const search = ui.iconBtn({ ic: 'magnifying-glass', aria: 'Search contacts, properties, BBL', act: 'palette', arg: 'search' });
     const bell = `<span class="ds-icon-btn ds-abadge" role="button" tabindex="0" aria-disabled="true" aria-label="Notifications, 3 unread" data-tip="${DS.OFF}">${icon('bell')}<i>3</i></span>`;
-    const account = `<a class="ds-icon-btn" href="${href('more')}" aria-label="Account and settings"><span class="avatar">TW</span></a>`;
-    return { title: 'Home', large: true, lead: account, actions: search + bell };
+    return { title: 'Overview', large: true, back: ['More', 'more'], actions: search + bell };
   };
 
-  const plan = () => {
-    const done = DS.callsDone(), S = DS.S();
-    const steps = [
-      { done: true, t: 'Call Ruth Adler back', m: 'Done at 8:40 AM · Callback set for Friday', link: href('contact', 'id=adler') },
-      { done: !!S.done.marchetti, t: 'Call Daniel Marchetti', m: '$9.4M loan due in June · Verified', link: href('contact', 'id=marchetti') },
-      { done: false, t: 'Tour 41 Ludlow St at 9:30 AM', m: 'With Priya Venkataraman', link: href('calendar') },
-    ];
-    return `<section class="ds-acard" aria-label="Today’s plan">
-      <div class="ds-acard__head"><div class="ds-acard__title"><h2>Today’s plan</h2><span class="ds-meta">LES maturities</span></div>
-        <div class="ds-acard__prog">${ui.progress(done / 40, 'Calls today', { key: 'calls' })}<span class="ds-meta-strong num"><span data-count="calls">${done}</span> of 40 calls</span></div></div>
-      <div>${steps.map((s, i) => `<a class="ds-arow" href="${s.link}"${s.done ? ' data-done' : ''}><span class="ds-check-mini"${s.done ? ' data-on' : ''} data-tick="step-${i}|${s.done ? 'on' : 'off'}">${icon('check')}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(s.t)}</span><span class="ds-arow__sub">${esc(s.m)}</span></span><span class="ds-arow__end">${icon('caret-right')}</span></a>`).join('')}</div>
-      <div class="ds-acard__foot">${ui.btn({ label: 'Open Today', ic: 'sun', link: href('attack-plan'), extra: { 'data-block': true } })}
-        <div class="ds-two-btn">${ui.btn({ label: 'Log a call', ic: 'phone', variant: 'outline', act: 'palette', arg: 'log' })}${ui.btn({ label: 'Build a list', ic: 'list-bullets', variant: 'outline', act: 'build-list' })}</div></div>
-    </section>`;
-  };
+
 
   const pulse = () => {
     const S = DS.S(), done = DS.callsDone(), fu = S.tasks.filter(t => !t.done && t.g === 'Follow up').length;
@@ -53,11 +38,10 @@
   const meetings = () => `<section class="ds-asec" aria-label="Today’s meetings"><div class="ds-ahead"><h2>Today’s meetings</h2><a href="${href('calendar')}">Calendar</a></div><div class="ds-alist">${D.meetings.map(([t, n, w]) => `<a class="ds-arow" href="${href('calendar')}"><span class="ds-time">${esc(t)}</span><span class="ds-arow__body"><span class="ds-arow__title">${esc(n)}</span><span class="ds-arow__sub">${esc(w)}</span></span></a>`).join('')}</div></section>`;
 
   DS.define({
-    id: 'home', nav: 'home', tab: 'home',
-    head, scope: () => 'Home',
-    render: () => `<div class="ds-apage">${ui.large('Good morning, Thomas', 'Wednesday, September 30')}<p class="ds-alede" style="margin-top:calc(var(--space-5) * -1)">22 Class A owners haven’t had a call yet.</p>${plan()}${pulse()}${brainNote()}${upNext()}${meetings()}${week()}</div>`,
+    id: 'home', nav: 'dashboard', tab: 'more',
+    head, scope: () => 'Dashboard',
+    render: () => `<div class="ds-apage">${ui.large('Overview', 'Wednesday, September 30')}${pulse()}${brainNote()}${upNext()}${meetings()}${week()}</div>`,
     acts: {
-      'build-list': () => { DS.V.draft = '/list '; DS.openBrain(); },
       'dismiss-note': () => DS.collapse(document.querySelector('[data-key="brain-note"]'), () => { st.brainNote = false; DS.render(); }),
     },
   });

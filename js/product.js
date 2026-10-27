@@ -330,7 +330,7 @@
   const chatOn = () => userCount() > 0;
 
   /* ───────── Sidebar ───────── */
-  const NAVKEY = { home: 'home', 'attack-plan': 'dashboard', brain: 'brain', contacts: 'database' };
+  const NAVKEY = { 'attack-plan': 'today', home: 'dashboard', brain: 'brain', contacts: 'database' };
   function sidebar() {
     const rail = isRail(), sc = DS.screen;
     const tipSide = 'right', railTip = l => rail ? ` data-tip="${esc(l)}" data-tip-side="${tipSide}"` : '';
@@ -368,11 +368,11 @@
       ${[['Profile', 'user'], ['Settings', 'gear-six'], ['Sign out', 'sign-out']].map(([l, ic]) => `<button type="button" class="menu__item" role="menuitem" aria-disabled="true" data-tip="${OFF}" data-tip-side="right">${icon(ic)}${l}</button>`).join('')}
     </div>`;
   }
-  const FLOWS = [['Start the day', 'Home, then Today', 'home', ''], ['Live call', 'Why now, call, log the outcome', 'contact', 'id=marchetti'], ['Check the why now', 'Drivers, evidence and trust', 'contact', 'id=marchetti&why=open'], ['Ask Brain', 'Why now, build a list, look up a property', 'brain', ''], ['Find anything', '⌘K by name, phone or BBL', null, ''], ['Plan the week', 'Calendar, add an event, conversations', 'calendar', '']];
+  const FLOWS = [['Start the day', 'Today, then the first owner', 'attack-plan', ''], ['Live call', 'Why now, call, log the outcome', 'contact', 'id=marchetti'], ['Check the why now', 'Drivers, evidence and trust', 'contact', 'id=marchetti&why=open'], ['Ask Brain', 'Why now, build a list, look up a property', 'brain', ''], ['Find anything', '⌘K by name, phone or BBL', null, ''], ['Plan the week', 'Calendar, add an event, conversations', 'calendar', '']];
   function guide() {
     const flows = FLOWS.map(([t, d, page, q], i) => `<div class="ds-guide__flow"><span class="ds-step-num">${i + 1}</span><span class="ds-row__body"><span class="font-medium">${esc(t)}</span><span class="ds-meta">${esc(d)}</span></span>${page ? `<a class="button" data-variant="outline" data-size="sm" href="${href(page, q)}">Start</a>` : `<button type="button" class="button" data-variant="outline" data-size="sm" data-act="palette" data-arg="search">Start</button>`}</div>`).join('');
-    const BUILT = { 'attack-plan': ['attack-plan', 'calendar', 'conversations', 'outreach-performance', 'reporting', 'listings', 'web-analytics'], contacts: ['contacts', 'properties'], brain: ['chat'] };
-    const TABS = { 'attack-plan': D.dashboardTabs.filter(t => t !== '|').map(t => t[1]), contacts: ['Contacts', 'Properties'], brain: ['Chat'] };
+    const BUILT = { home: ['home', 'calendar', 'conversations', 'outreach-performance', 'reporting', 'listings', 'web-analytics'], contacts: ['contacts', 'properties'], brain: ['chat'] };
+    const TABS = { home: D.dashboardTabs.filter(t => t !== '|').map(t => t[1]), contacts: ['Contacts', 'Properties'], brain: ['Chat'] };
     const LATER = { brain: 'Learning Mode', Map: 'Map · Prospects', Outreach: 'Queues · Hub · Attribution', Phone: 'Dialer · Auto-dialer · Recordings', Email: 'Inbox · Sequences · Smartlead', Texting: 'Threads · Templates', LinkedIn: 'Posts · Connections', Social: 'Inbox · Analytics', Marketing: 'Campaigns · Mail merge · Branding', Website: 'Editor · Pages' };
     const groups = []; let g = { h: 'Workspace', rows: [] }; groups.push(g);
     D.nav.forEach(n => { if (typeof n === 'string') { g = { h: n, rows: [] }; groups.push(g); return; } const [l, ic, page] = n; g.rows.push({ l, ic, page, on: TABS[page] ? TABS[page].join(' · ') : '', off: page ? (LATER[page] || '') : (LATER[l] || '') }); });
@@ -710,8 +710,8 @@
      web names (home, contact, brain…), so shared helpers and reused screen scripts link inside the app. */
   const APP = document.body.dataset.shell === 'app';
   DS.app = APP;
-  const TABS = [['home', 'Home', 'house', 'home'], ['today', 'Today', 'sun', 'attack-plan'], ['brain', 'Brain', 'sparkle', 'brain'], ['database', 'Database', 'database', 'contacts'], ['more', 'More', 'dots-three-circle', 'more']];
-  const tabOf = sc => sc.tab || ({ home: 'home', brain: 'brain', database: 'database' }[sc.nav]) || 'more';
+  const TABS = [['today', 'Today', 'sun', 'attack-plan'], ['brain', 'Brain', 'sparkle', 'brain'], ['database', 'Database', 'database', 'contacts'], ['more', 'More', 'dots-three-circle', 'more']];
+  const tabOf = sc => sc.tab || ({ today: 'today', brain: 'brain', database: 'database' }[sc.nav]) || 'more';
   function tabbar() {
     const cur = tabOf(DS.screen);
     return TABS.map(([k, l, ic, page]) => `<a class="ds-tab" href="${href(page)}"${k === cur ? ' aria-current="page"' : ''}>${icon(ic, k === cur ? 'fill' : 'regular')}<span>${l}</span></a>`).join('');

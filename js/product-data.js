@@ -165,7 +165,8 @@
   const docs = [['Rent roll, 118 Ludlow St.pdf', '2.1 MB · added Sep 12'], ['LES maturities Q4.xlsx', '480 KB · added Sep 20'], ['Stewart Group pitch.pdf', '6.4 MB · added Aug 30']];
 
   /* Sidebar: [label, icon, page or null (disabled), badge]. Strings are group labels. */
-  const nav = [['Home', 'house', 'home'], ['Dashboard', 'squares-four', 'attack-plan'], ['Brain', 'sparkle', 'brain'],
+  // Today is where the day starts (3.0 · 2.1, Orientation doc 1 §10); the Dashboard is the command centre and opens on Overview.
+  const nav = [['Today', 'sun', 'attack-plan'], ['Dashboard', 'squares-four', 'home'], ['Brain', 'sparkle', 'brain'],
     'Prospecting', ['Database', 'database', 'contacts'], ['Map', 'map-trifold'], ['Outreach', 'list-bullets'],
     'Channels', ['Phone', 'phone'], ['Email', 'envelope-simple', null, '4'], ['Texting', 'chat-text', null, '2'], ['LinkedIn', 'linkedin-logo'], ['Social', 'users'],
     'Marketing', ['Marketing', 'megaphone'], ['Website', 'globe']];
@@ -175,7 +176,7 @@
   /* Page tabs. A null page is drawn but disabled. */
   // Thomas's current tab names and order (his portal as shown in the Oct 22 video), in sentence case. Today is the Attack Plan,
   // Activity the conversation tracker, Who to call the coverage and engagement report (every row turns into a call list).
-  const dashboardTabs = [['attack-plan', 'Today'], ['conversations', 'Activity'], ['reporting', 'Who to call'], ['calendar', 'Calendar'], '|', ['outreach-performance', 'Performance'], ['listings', 'Listings'], ['web-analytics', 'Website']];
+  const dashboardTabs = [['home', 'Overview'], ['conversations', 'Activity'], ['reporting', 'Who to call'], ['calendar', 'Calendar'], '|', ['outreach-performance', 'Performance'], ['listings', 'Listings'], ['web-analytics', 'Website']];
   const databaseTabs = [['contacts', 'Contacts'], ['properties', 'Properties']];
 
   /* Database scale: about 40,000 contacts and 18,600 properties (Thomas, P3 25:14). The table shows the fictional demo rows. */
@@ -394,6 +395,7 @@
     vitalPages: [['/', '1.8s', '120ms', '0.02'], ['/listings', '2.4s', '180ms', '0.08'], ['/listings/41-ludlow-st', '3.1s', '240ms', '0.14'], ['/listings/88-orchard-st', '4.4s', '520ms', '0.31']],
   };
   const nudges = {
+    home: 'Meetings are at 3 this week, up from 1. Follow-ups are the gap: 2 are overdue.',
     'attack-plan': '22 Class A owners have no logged call yet and 3 loans mature inside 12 months. Start the call block with the maturities.',
     calendar: 'Your 1:30 PM call block has 6 owners queued. Marchetti is first.',
     conversations: '3 conversations this week asked for a number. Two proposals are in progress.',

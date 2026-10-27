@@ -23,6 +23,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 ## Phase 2 · Core
 
 - **2.1 Where the day starts:** Option B, Home becomes Today (recommended)
+  - Oct 27, at build: Home's pulse, metric tabs, Up next and meetings become Dashboard › Overview (the Dashboard's first tab; Thomas's other names kept). Today's head is the greeting with Meetings this week, then Brain's line. Approvals joins the sidebar with 2.3. App tabs: Today, Brain, Database, More; the app's pulse is More › Overview (which keeps the navy hero). Built Oct 27.
 - **2.2 The complete call card:** Option A, Extend the Overview (recommended)
 - **2.3 Approvals page:** Option A, An inbox (recommended)
 - **2.4 First touch on every Today row:** Option A, A small plan under the reason (recommended)

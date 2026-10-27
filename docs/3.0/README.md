@@ -169,7 +169,7 @@ The screens the brief describes in the most detail, and the ones every scenario 
 
 ### 2.1 Where the day starts
 
-**Status:** Not started · **Decision:** Option B approved, Oct 27 · **Effort:** M · **Screens:** Sidebar, Home, Dashboard › Today, app tabs
+**Status:** Done, Oct 27, 2026 (Option B) · **Decision:** Option B approved, Oct 27 · **Effort:** M · **Screens:** Sidebar, Home, Dashboard › Today, app tabs
 
 - **The brief:** Today is the daily starting point and Approvals is a main page. The Dashboard is the command centre. (Doc 1 §10, doc 3 Today)
 - **Today:** Home summarises the day and links to Today, which is a Dashboard tab.

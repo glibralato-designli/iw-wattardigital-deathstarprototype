@@ -6,7 +6,8 @@
   const addD = D.addD;
   const rel = () => Math.sign(st.sel);
 
-  const head = () => ({ title: 'Today', large: true, actions: `${ui.iconBtn({ ic: 'magnifying-glass', aria: 'Search contacts, properties, BBL', act: 'palette', arg: 'search' })}${ui.iconBtn({ ic: 'plus', aria: 'Add a to-do', act: 'sheet', arg: 'add' })}` });
+  // Today is the first tab and where the day starts (3.0 · 2.1); the account leads, as Home's did.
+  const head = () => ({ title: 'Today', large: true, lead: `<a class="ds-icon-btn" href="${href('more')}" aria-label="Account and settings"><span class="avatar">TW</span></a>`, actions: `${ui.iconBtn({ ic: 'magnifying-glass', aria: 'Search contacts, properties, BBL', act: 'palette', arg: 'search' })}${ui.iconBtn({ ic: 'plus', aria: 'Add a to-do', act: 'sheet', arg: 'add' })}` });
 
   const strip = () => {
     const days = [-2, -1, 0, 1, 2, 3, 4].map(o => { const d = addD(o), wk = d.getDay() === 0 || d.getDay() === 6;
@@ -67,9 +68,9 @@
     foot: ui.btn({ label: 'Cancel', variant: 'outline', act: 'close-sheet' }) + ui.btn({ label: 'Add to-do', act: 'add-task', disabled: !st.newTask.trim() }) }) : '';
 
   DS.define({
-    id: 'attack-plan', nav: 'dashboard', tab: 'today',
+    id: 'attack-plan', nav: 'today', tab: 'today',
     head, scope: () => 'Today',
-    render: () => `<div class="ds-apage">${ui.large(st.mode === 'week' ? 'This week' : st.sel === 0 ? 'Today' : fmtS(addD(st.sel)), st.mode === 'week' ? 'This week' : fmtL(addD(st.sel)))}${strip()}${st.sel === 0 ? ui.nudge(D.nudges['attack-plan']) : ''}<div class="ds-stack" data-anim="slide" data-key="today-${st.mode}-${st.sel}" style="gap:var(--space-6)">${callNext()}${st.sel === 0 && st.mode === 'day' ? ui.brainSuggests() : ''}${todos()}${goals()}${meetings()}</div></div>`,
+    render: () => `<div class="ds-apage">${ui.large(st.mode === 'week' ? 'This week' : st.sel === 0 ? 'Good morning, Thomas' : fmtS(addD(st.sel)), st.mode === 'week' ? 'This week' : fmtL(addD(st.sel)))}${st.sel === 0 && st.mode !== 'week' ? (() => { const m = DS.meetingsWeek(); return `<a class="ds-dayhead__num" data-app href="${href('calendar')}"><b data-count="meetings">${m}</b><span class="ds-row__body"><span class="font-medium">meetings this week</span><span class="ds-meta">With owners · +${m - 1} vs. last week (1)</span></span></a>`; })() : ''}${strip()}${st.sel === 0 ? ui.nudge(D.nudges['attack-plan']) : ''}<div class="ds-stack" data-anim="slide" data-key="today-${st.mode}-${st.sel}" style="gap:var(--space-6)">${callNext()}${st.sel === 0 && st.mode === 'day' ? ui.brainSuggests() : ''}${todos()}${goals()}${meetings()}</div></div>`,
     overlays: addSheet,
     after: () => { if (st.focus) { st.focus = false; const el = document.getElementById('new-task'); if (el) el.focus(); } },
     acts: {

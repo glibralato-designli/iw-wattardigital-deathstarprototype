@@ -89,7 +89,7 @@
 
   DS.define({
     id: 'calendar', nav: 'dashboard', brain: 'min',
-    crumbs: () => [{ l: 'Dashboard', page: 'attack-plan' }, { l: 'Calendar' }],
+    crumbs: () => [{ l: 'Dashboard', page: 'home' }, { l: 'Calendar' }],
     scope: () => 'Calendar',
     render: () => `<div class="ds-page">${ui.pageHead('Dashboard', ui.tabs(D.dashboardTabs, 'calendar', 'Dashboard'))}${ui.nudge(D.nudges.calendar)}<div class="ds-cal">${aside()}<div class="ds-stack" data-gap="3">${head()}<div data-anim="slide" data-key="cal-${st.view}-${st.view === 'month' ? sel().getMonth() : st.view === 'week' ? wkStart() : st.off}" style="--dir:${st.dir || 1}">${st.view === 'month' ? month() : timed()}</div></div></div></div>`,
     overlays: dialog,
