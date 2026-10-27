@@ -214,6 +214,14 @@
     if (params.has('bulk')) L.filter(a => a.lane === params.get('bulk') && !a.blocked && !a.n).forEach(a => { S.appr[a.id] = 'approved'; });
     if (params.get('wave') === '1') S.appr.a0 = 'wave'; };
   ui.waiting = (id, label = 'Waiting for your click') => `<a class="ds-waiting" href="${href('approvals', id ? 'open=' + id : '')}">${icon('tray')}${esc(label)}</a>`;
+  // The first touch (3.0 · 2.4): its channel, the plan, the because, a sequence's step and why it stopped. Owners without a fixture get one from their state.
+  const touchOf = c => { const t = D.touches[c.id];
+    if (t) return { ic: t[0], plan: t[1], because: t[2], step: t[3], stopped: t[4], appr: t[5] };
+    if (c.status === 'Do not contact') return { ic: 'warning-diamond', plan: 'No touch', because: 'asked not to be contacted, on every channel' };
+    if (c.status === 'Nurture') return { ic: 'envelope-simple', plan: 'Email monthly · no call', because: 'nurture: keep informed, don’t pitch' };
+    if (c.cls === 'C' || c.cls === 'D') return { ic: 'envelope-simple', plan: 'Email only', because: c.cls === 'C' ? 'monitor: a check-in, not a pitch' : 'informational: keep informed' };
+    return { ic: 'phone', plan: 'Call now', because: c.last === 'Never called' ? 'never called, with a verified phone' : 'a live reason and a working phone' }; };
+  ui.touch = c => { const t = touchOf(c); return `<span class="ds-touch">${icon(t.ic)}<span>${esc(t.plan + (t.stopped ? ' · ' + t.stopped : t.step ? ' · ' + t.step : ''))}</span></span>`; };
   // The opener (3.0 · 2.2): Thomas's first lines, from the fixtures or written from the why now. It never names a price.
   const openerOf = c => { const p = pById[c.pid], first = c.name.split(' ')[0]; return D.openers[c.id] || [first + ', it’s Thomas Windels at Stewart Group. I work with owners around ' + p.hood + '.', 'I’m calling about ' + p.addr + ': ' + c.signal.toLowerCase() + ' is the kind of moment where owners like a second view.', 'No pitch. Would fifteen minutes this week be useful?']; };
   // The north-star number (Orientation doc 1 §2): owner meetings scheduled this week. The calendar holds 3 (Okafor lunch, Adler BOV pitch,
@@ -293,7 +301,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, openerOf, apprList, apprPending, apprSet, apprPresets, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, openerOf, touchOf, apprList, apprPending, apprSet, apprPresets, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
@@ -582,7 +590,8 @@
       const c = cById[pk.id], p = pById[c.pid], first = c.name.split(' ')[0].toLowerCase(), last = c.name.split(' ')[1].toLowerCase();
       if (tab === 'overview') {
         const tl = timelineOf(c).slice(0, 3), ic = { Call: 'phone', Email: 'envelope-simple', Note: 'note', Flag: 'warning-diamond', Text: 'chat-text', Broadcast: 'megaphone' };
-        return sec('Why now', ui.whyMini(c.whyFull, c.trust)) + sec('Contact', kvIcons([['Best phone', bestPhone(c)], ['Best email', first + '.' + last + '@example.com'], ['Last touch', lastOf(c)], ['Status', c.status]])) + sec('Key facts', kvIcons([['Debt', p.debt], ['Maturity', p.mat], ['Years held', c.years + ' years'], ['Profile', c.meta.split(' · ')[1]]])) +
+        const t = touchOf(c), w = t.appr && apprList().find(a => a.id === t.appr && !a.state && !a.blocked);
+        return sec('Why now', ui.whyMini(c.whyFull, c.trust)) + sec('Next touch', `<div class="ds-stack" style="gap:var(--space-1)">${ui.touch(c)}<span class="ds-meta" style="text-wrap:pretty">Because ${esc(t.because)}.</span>${w ? ui.waiting(w.id) : ''}</div>`) + sec('Contact', kvIcons([['Best phone', bestPhone(c)], ['Best email', first + '.' + last + '@example.com'], ['Last touch', lastOf(c)], ['Status', c.status]])) + sec('Key facts', kvIcons([['Debt', p.debt], ['Maturity', p.mat], ['Years held', c.years + ' years'], ['Profile', c.meta.split(' · ')[1]]])) +
           sec('Recent activity', listRows(tl.length ? tl.map(x => [ic[x.k] || 'note', x.k + ' · ' + x.t, x.d, href('contact', 'id=' + c.id + '&tab=activity')]) : [['note', 'Nothing logged yet', 'Calls and notes show up here', href('contact', 'id=' + c.id)]]), `<a class="ds-link-btn" href="${href('contact', 'id=' + c.id + '&tab=activity')}">View all</a>`);
       }
       const others = portfolio(c).filter(x => x.id !== p.id);

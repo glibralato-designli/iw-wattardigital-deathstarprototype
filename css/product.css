@@ -371,6 +371,10 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-why__head>svg{width:1rem;height:1rem;color:var(--brand-primary-text)}
 .ds-why__head h2{font-size:var(--text-md);line-height:var(--line-height-sm)}
 .ds-why__text{font-size:var(--text-body-lg);line-height:var(--line-height-body-lg);text-wrap:pretty;max-width:46rem}
+/* The first touch (3.0 · 2.4): channel icon and a short plan, one quiet line under the why now. */
+.ds-touch{display:inline-flex;align-items:center;gap:var(--space-1);min-width:0;max-width:100%;font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);color:var(--fg-secondary)}
+.ds-touch>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-touch svg{width:.875rem;height:.875rem;flex:none;color:var(--brand-primary-text)}
 .ds-why__which{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap;font-weight:var(--weight-medium)}
 .ds-why__next{display:flex;align-items:flex-start;gap:var(--space-1-5);color:var(--fg-secondary);text-wrap:pretty}
 .ds-why__next svg{width:1rem;height:1rem;flex:none;margin-top:2px;color:var(--brand-primary-text)}
@@ -1261,8 +1265,9 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
   .ds-vio>.ds-meta{grid-column:2;grid-row:2}
   .ds-evidence{grid-template-columns:minmax(0,1fr) auto}
   .ds-evidence>:nth-child(3){grid-column:1 / -1;justify-self:start}
-  .ds-callrow{grid-template-columns:1.375rem minmax(0,1fr) auto var(--control-md)}
-  .ds-callrow>:nth-child(3){display:none}
+  .ds-callrow{grid-template-columns:1.375rem minmax(0,1fr) auto var(--control-md);row-gap:var(--space-1)}
+  .ds-callrow>:nth-child(3){grid-column:2 / -1;grid-row:2}
+  .ds-callrow__why>span:first-child{display:none}
   .ds-callrow .ds-row__sub{white-space:normal}
   .ds-card__head,.ds-metrics__head{flex-wrap:wrap}
   /* Attack Plan head on phones: title + caret, then count + full progress bar, then the link. */

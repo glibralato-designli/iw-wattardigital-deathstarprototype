@@ -226,7 +226,7 @@ The screens the brief describes in the most detail, and the ones every scenario 
 
 ### 2.4 First touch on every Today row
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** Today rows, peek, case file
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** M · **Screens:** Today rows, peek, case file
 
 - **The brief:** The first touch is chosen per owner: call, email then call on day 2 or 3, email only, or a letter. Screens show the "because" behind every planned touch. (Doc 1 §6, doc 2 §3, doc 3 insights)
 - **Today:** Today is a call list only.

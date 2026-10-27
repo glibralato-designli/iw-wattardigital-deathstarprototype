@@ -67,7 +67,7 @@
       <p class="ds-why__which"><span class="ds-meta">Which building</span><a href="${href('property', 'id=' + p.id)}">${esc(p.addr)}</a><span class="num">· ${p.score}</span></p>
       <div class="ds-toolbar" style="gap:var(--space-1-5)"><span class="ds-chip">${esc(c.narrative)}</span><span class="ds-chip">Momentum: ${esc(c.momentum)}</span></div>
       <div class="ds-why__actions" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr))">${ui.btn({ label: 'Why this?', variant: 'outline', act: 'sheet', arg: 'why' })}${ui.btn({ label: 'Ask Brain', ic: 'sparkle', variant: 'outline', act: 'ask', arg: 'Why now for ' + c.name + '?' })}</div>
-      ${rel.next && !dnc() ? `<p class="ds-why__next">${icon('arrow-right')}<span><b>Next touch.</b> ${esc(rel.next[0])} · ${esc(rel.next[1].replace(/^Suggest/, 'suggest'))}.${(w => w ? ' ' + ui.waiting(w.id, w.lane === 'text' ? 'Text waiting for your click' : 'Draft waiting for your click') : '')(DS.apprList().find(a => a.cid === id && !a.state && !a.blocked))}</span></p>` : ''}</section>`;
+      ${!dnc() ? (t => `<p class="ds-why__next">${icon(t.ic)}<span><b>Next touch.</b> ${esc(t.plan)}${t.stopped ? ' · ' + esc(t.stopped) : t.step ? ' · ' + esc(t.step) : ''}, because ${esc(t.because)}.${(w => w ? ' ' + ui.waiting(w.id, w.lane === 'text' ? 'Text waiting for your click' : 'Draft waiting for your click') : '')(DS.apprList().find(a => a.cid === id && !a.state && !a.blocked))}</span></p>`)(DS.touchOf(c)) : ''}</section>`;
   };
   const whySheet = () => { const ev = evidence();
     return ui.sheet({ key: 'why', title: 'Why this?', size: 'full', body: `<div class="ds-stack" data-gap="4">

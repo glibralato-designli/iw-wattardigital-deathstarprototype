@@ -29,6 +29,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 - **2.3 Approvals page:** Option A, An inbox (recommended)
   - Oct 27, at build: lane switches left for phase 4. In the app, Approvals is a tab with a count (Today, Approvals, Brain, Database, More). The web top bar shows a "N to approve" pill. Built Oct 27.
 - **2.4 First touch on every Today row:** Option A, A small plan under the reason (recommended)
+  - Oct 27, at build: on the case file the plan replaces the engagement-based Next touch line (the engagement becomes the because). Built Oct 27.
 - **2.5 Changes note and restore:** Option A, Inline note plus a Changes page (recommended)
 - **2.6 One Brain, the client's assistant names:** Option A, One Brain with role labels (recommended)
   - Note: Maybe go with the label according to the scope chip, but maybe another option in the brain chat to select the role
