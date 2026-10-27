@@ -7,7 +7,7 @@
   const start = () => -2 + 7 * st.wk;
   const all = () => {
     const base = st.wk === 0 ? D.conversations[0] : st.wk < 0 ? D.conversations.prev : D.conversations.next;
-    const live = st.wk === 0 ? Object.entries(S.last || {}).filter(([, v]) => /Connected/.test(v)).map(([id]) => ['2', id, 'Connected on today’s call list', 'Callback', 'Log next step']) : [];
+    const live = st.wk === 0 ? Object.entries(S.last || {}).filter(([, v]) => /Connected|Conversation/.test(v)).map(([id, v]) => ['2', id, v.split(' · ')[1] + ' on today’s call list', 'Callback', 'Log next step']) : [];
     const mine = (S.convs || []).filter(x => x.wk === st.wk).map(x => [x.d, x.c, x.t || 'Conversation logged', x.o, 'Added today']);
     return [...base, ...live, ...mine];
   };

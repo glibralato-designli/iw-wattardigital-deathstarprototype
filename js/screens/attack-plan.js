@@ -92,7 +92,7 @@
     const S = DS.S(), w = wk(), done = DS.callsDone();
     const gRel = st.goalF === 'Daily' ? Math.sign(st.sel) : st.goalF === 'Weekly' ? Math.sign(w.wkRel) : Math.sign((w.selD.getFullYear() - 2026) * 12 + w.selD.getMonth() - 8);
     const period = st.goalF === 'Daily' ? (st.sel === 0 ? 'Today' : fmtS(w.selD)) : st.goalF === 'Weekly' ? (w.wkRel === 0 ? 'This week · ' : '') + w.range : w.selD.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    const live = { calls: done, convos: 2 + S.convos, dials: 112 + S.calls };
+    const live = { calls: done, convos: 2 + S.convos, dials: 112 + S.calls, meetings: 1 + (S.meetings || 0) };
     if (st.goalEdit !== undefined) { const rows = st.goalEdit || goalsOf(st.goalF).map(g => [...g]);
       st.goalEdit = rows;
       return `<section class="ds-card" data-pad="all" aria-label="Edit goals"><div class="ds-card__head"><div class="ds-card__title"><h2>Edit ${esc(st.goalF.toLowerCase())} goals</h2><span class="ds-meta">A target of 0 makes it a checkbox goal.</span></div></div>

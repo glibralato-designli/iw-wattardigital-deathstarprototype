@@ -8,6 +8,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
   - Oct 27, at build: fixtures rescaled per building (every building has its own 0–100 score, no derived scores; class follows the score: A 80+, B 60+, C 40+, D 20+). The lift line shows on two owners: Marchetti (up from 3, team met him in 2019) and Adler (up from 8, team did a BOV on 64 Essex St in 2011). Built Oct 27.
 - **1.2 The client's call outcomes:** Option A, The six, plus quick no-answer (recommended)
   - Note: Go with the recommend, but maybe a multiselect options for it could work
+  - Oct 27, at build: one main outcome (Connected, Conversation, Not interested, Wrong person), then optional multi-select results (Meeting set, BOV request, Asked for texts) on a reached call; No answer and Voicemail stay quick links. Callback becomes a Call back follow-up chip, not an outcome. Built Oct 27.
 - **1.3 Permanent opt-out:** Option A, One permanent switch in the tray (recommended)
 - **1.4 Meetings this week as the top number:** Option A, First tile in the pulse (recommended)
 - **1.5 Class and trust labels:** Option A, Client's names; Likely holders becomes a list (recommended)

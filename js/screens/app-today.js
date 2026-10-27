@@ -50,7 +50,7 @@
 
   const goals = () => {
     const S = DS.S(), done = DS.callsDone(), F = st.mode === 'week' ? 'Weekly' : 'Daily';
-    const live = { calls: done, convos: 2 + S.convos, dials: 112 + S.calls }, r = rel();
+    const live = { calls: done, convos: 2 + S.convos, dials: 112 + S.calls, meetings: 1 + (S.meetings || 0) }, r = rel();
     const rows = D.goals[F].filter(g => g[1]).map(([t, target, cur]) => { const n0 = typeof cur === 'string' ? live[cur] : cur, n = r === 0 || st.mode === 'week' ? n0 : r > 0 ? 0 : target;
       return `<div class="ds-atile"><span class="ds-atile__label">${esc(t)}</span><span class="ds-atile__value"><b>${Math.min(n, target)}</b><span class="ds-meta">of ${target}</span></span>${ui.progress(n / target, t, { tone: 'accent', thin: true, fill: true })}</div>`; }).join('');
     return `<section class="ds-asec" aria-label="Goals"><div class="ds-ahead"><h2>${st.mode === 'week' ? 'Weekly goals' : 'Goals'}</h2></div><div class="ds-atiles">${rows}</div></section>`;

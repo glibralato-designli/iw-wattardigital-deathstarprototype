@@ -9,11 +9,11 @@
   const st = { tab: TABS.includes(params.get('tab')) ? params.get('tab') : 'overview', whyOpen: params.get('why') === 'open', noteOpen: params.get('note') === '1', noteDraft: '', qNote: '', listPick: '', actF: 'All', othersOpen: false, saving: params.get('call') === 'saving' };
   const acc = (key, def) => { const a = DS.V.acc || {}; return key in a ? a[key] : def; };
 
-  /* Presets: call=live|outcome|saving|logged|log, choice=<outcome>, flag=<evidence index>. */
+  /* Presets: call=live|outcome|saving|logged|log, choice=<outcome>, res=<results, comma-separated>, flag=<evidence index>. */
   const call = params.get('call');
   if (call === 'live') { if (!U.call || U.call.id !== id) DS.setUI({ call: { id, t0: Date.now() - (params.has('choice') ? 0 : 74000) }, outcome: null }); }
-  if (call === 'outcome' || call === 'saving') DS.setUI({ call: null, outcome: { id, dur: '2:14', choice: params.get('choice') || (call === 'saving' ? 'No answer' : null), acts: params.get('choice') === 'Connected' ? { note: true, primary: true } : {}, notes: '', follow: '' } });
-  if (call === 'log') DS.setUI({ call: null, outcome: { id, dur: null, choice: null, acts: {}, notes: '', follow: '' } });
+  if (call === 'outcome' || call === 'saving') DS.setUI({ call: null, outcome: DS.OUT.preset(id, '2:14') });
+  if (call === 'log') DS.setUI({ call: null, outcome: DS.OUT.blank(id, null) });
   if (call === 'logged') { S.done[id] = true; S.calls += 1; S.last[id] = 'Just now · No answer'; DS.addTimeline(id, { k: 'Call', t: 'No answer · 0:42', d: 'Just now' }); }
   if (params.has('flag')) S.flags[id + ':' + params.get('flag')] = true;
   /* Presets for a saved outcome's results: primary=<digits> (that number is primary), blasts=1 (excluded from blasts), dialed=<digits> (the number on the outcome tray). */
@@ -24,7 +24,7 @@
   /* One-shot triggers from other screens (persisted, then removed from the address). */
   const trigger = params.get('act');
   if (trigger === 'call') DS.setUI({ call: { id, t0: Date.now() }, outcome: null });
-  if (trigger === 'log') DS.setUI({ call: null, outcome: { id, dur: null, choice: null, acts: {}, notes: '', follow: '' } });
+  if (trigger === 'log') DS.setUI({ call: null, outcome: DS.OUT.blank(id, null) });
   if (trigger && !Nav.exported) { params.delete('act'); const u = new URL(location.href); u.searchParams.delete('act'); history.replaceState(null, '', u); }
   DS.remember(id);
 
@@ -63,15 +63,18 @@
   const noteBox = () => st.noteOpen ? `<div class="ds-card" data-pad="all" data-anim="grow" data-key="notebox"><textarea id="note-draft" class="field__control" aria-label="Note" rows="2" placeholder="What did you learn?" data-input="noteDraft" style="border:0;padding:0;min-height:0;box-shadow:none">${esc(st.noteDraft)}</textarea><div class="ds-toolbar">${ui.btn({ label: 'Save note', act: 'save-note' })}${ui.btn({ label: 'Cancel', variant: 'outline', act: 'close-note' })}</div></div>` : '';
   const outcomeBar = () => {
     const oc = outcome(); if (!oc) return '';
-    const OUTS = ['Connected', 'Callback', 'Voicemail', 'No answer', 'Not interested', 'Bad number'];
+    const O = DS.OUT, reached = O.reached(oc.choice), res = oc.res || {};
     const ACTS = [['note', 'Save note to record'], ['primary', 'Mark number primary'], ['bad', 'Mark number bad'], ['blasts', 'Remove from blasts for 1 year']];
     const nums = DS.contactPointsOf(c).filter(x => x[0] === 'phone' && x[2] !== 'Bad').map(x => x[1]), num = oc.num || DS.bestPhone(c);
+    const chip = (k, l, on, act) => `<button type="button" class="ds-pill-btn" role="checkbox" aria-checked="${on}" aria-pressed="${on}" data-act="${act}" data-arg="${k}">${on ? icon('check') : ''}${l}</button>`;
     return `<section class="ds-outcome" aria-label="Log the outcome" data-anim="grow" data-key="outcome-${oc.dur ? 'call' : 'hand'}">
       <div style="display:flex;align-items:baseline;gap:var(--space-2)"><h2>Log the outcome</h2><span class="ds-meta">${esc((oc.dur ? 'Call lasted ' + oc.dur : 'Logged by hand') + ' · ' + num)}</span></div>
       ${nums.length > 1 ? `<div class="ds-toolbar" style="gap:var(--space-1-5)" role="radiogroup" aria-label="Number reached"><span class="field__label" style="margin-right:var(--space-1)">Number reached</span>${nums.map(x => `<button type="button" class="ds-pill-btn num" role="radio" aria-checked="${x === num}" aria-pressed="${x === num}" data-act="pick-num" data-arg="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}
-      <div class="ds-outcome__opts" role="radiogroup" aria-label="Outcome">${OUTS.map(o => `<button type="button" class="ds-opt" role="radio" aria-checked="${oc.choice === o}" data-tick="opt-${o}|${oc.choice === o ? 'on' : 'off'}" data-act="pick-outcome" data-arg="${o}">${o}</button>`).join('')}</div>
+      <div class="ds-stack" data-gap="2" role="radiogroup" aria-label="Outcome"><div class="ds-outcome__opts">${O.main.map(o => `<button type="button" class="ds-opt" role="radio" aria-checked="${oc.choice === o}" data-tick="opt-${o}|${oc.choice === o ? 'on' : 'off'}" data-act="pick-outcome" data-arg="${o}">${o}</button>`).join('')}</div>
+        <div class="ds-outcome__quick"><span class="ds-meta">Not reached</span>${O.quick.map(o => `<button type="button" class="ds-quickopt" role="radio" aria-checked="${oc.choice === o}" data-act="pick-outcome" data-arg="${o}">${oc.choice === o ? icon('check') : ''}${o}</button>`).join('')}</div></div>
+      <div class="ds-stack" data-gap="2"><span class="field__label">${reached ? 'What came out of it' : 'Follow-up'}</span><div class="ds-toolbar" style="gap:var(--space-1-5)">${reached ? O.results.map(([k, l]) => chip(k, l, !!res[k], 'toggle-res')).join('') : ''}${chip('cb', 'Call back', !!oc.follow, 'toggle-cb')}${oc.follow ? `<input id="out-follow" class="field__control ds-outcome__date" type="date" aria-label="Call back on" value="${esc(oc.follow)}" data-change="follow">` : ''}</div></div>
       <div class="ds-two"><div class="ds-stack" data-gap="2"><span class="field__label">Actions</span>${ACTS.map(([k, l]) => `<button type="button" class="ds-checkline" role="checkbox" aria-checked="${!!oc.acts[k]}" data-act="toggle-oact" data-arg="${k}"><span class="ds-box"${oc.acts[k] ? ' data-on' : ''} data-tick="oact-${k}|${oc.acts[k] ? 'on' : 'off'}">${oc.acts[k] ? icon('check') : ''}</span>${l}</button>`).join('')}</div>
-        <div class="ds-stack" data-gap="3"><div class="field"><label class="field__label" for="out-follow">Follow-up date</label><input id="out-follow" class="field__control" type="date" value="${esc(oc.follow)}" data-change="follow"></div><div class="field"><label class="field__label" for="out-notes">Notes</label><textarea id="out-notes" class="field__control" rows="2" placeholder="Optional" data-input="outNotes" style="min-height:3.5rem">${esc(oc.notes)}</textarea></div></div></div>
+        <div class="ds-stack" data-gap="3">${reached ? `<div class="field"><label class="field__label" for="out-said">What they said</label><textarea id="out-said" class="field__control" rows="2" placeholder="In their words" data-input="outSaid" style="min-height:3.5rem">${esc(oc.said || '')}</textarea><span class="ds-meta">Saved as their claim, sourced to this call.</span></div>` : ''}<div class="field"><label class="field__label" for="out-notes">Your notes</label><textarea id="out-notes" class="field__control" rows="2" placeholder="Optional" data-input="outNotes" style="min-height:3.5rem">${esc(oc.notes)}</textarea></div></div></div>
       <div class="ds-toolbar">${oc.choice ? ui.btn({ label: st.saving ? 'Saving' : 'Save outcome', act: 'save-outcome', busy: st.saving, id: 'save-outcome' }) : `<button type="button" class="button" aria-disabled="true" data-tip="Pick an outcome first">Save outcome</button>`}${ui.btn({ label: 'Skip', variant: 'outline', act: 'skip-outcome' })}</div>
     </section>`;
   };
@@ -94,7 +97,7 @@
     </section>`;
   };
   const reach = () => {
-    const phone = DS.bestPhone(c), dead = DS.badOf(c).includes(phone), mine = S.primary[id] === phone, spoke = mine || /Connected|Callback/.test(c.last), domain = c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com';
+    const phone = DS.bestPhone(c), dead = DS.badOf(c).includes(phone), mine = S.primary[id] === phone, spoke = mine || /Connected|Conversation|Callback/.test(c.last), domain = c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com';
     const tone = x => x >= 80 ? 'good' : x >= 60 ? 'ok' : x >= 45 ? 'warn' : 'bad';
     const LIFE = { 'Confirmed by us': 'good', Active: 'ok', Secondary: 'warn', Historical: 'muted', Unverified: 'muted', Rejected: 'bad' };
     const best = [['Best phone', phone, dead ? 12 : 70 + (n % 26), dead ? 'Rejected' : spoke ? 'Confirmed by us' : 'Active', dead ? 'marked bad · no other number on record' : 'mobile · 3 sources', [dead ? 'Marked bad by Thomas W. on a logged call. Find a new number before the next call.' : mine ? 'Marked primary by Thomas W. after a logged call (' + DS.lastOf(c).split(' · ')[0] + ').' : spoke ? 'Answered by the owner on a logged call (' + c.last.split(' · ')[0] + ').' : 'Matches the mailing record on ACRIS.', '3 independent sources agree: ACRIS, Apollo, PropertyShark.', 'Tied to ' + c.entity + ' filings.']],
@@ -103,7 +106,7 @@
       ['LinkedIn', c.warm ? 'linkedin.com/in/' + first + '-' + lastN : null, 40 + ((n >> 5) % 30), 'Unverified', '1 source', ['Profile name and company match the owning entity.']]];
     const cps = DS.contactPointsOf(c), others = [...cps.filter(x => x[1] !== phone).map(x => [x[1], x[2] === 'Bad' ? 'Rejected' : x[2] === 'Verified' ? 'Secondary' : 'Historical']), ['(212) 555-0' + (100 + (n % 99)), 'Historical']];
     const [top, ...rest] = best;
-    const body = `<div class="ds-best"><span class="ds-best__icon">${icon('phone')}</span><span class="ds-row__body" style="min-width:10rem"><span style="display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap"><span class="ds-best__num">${esc(top[1])}</span>${dead ? '' : `<span class="ds-chip" data-tone="outline">${icon('check')}Primary</span>`}</span><span class="ds-meta"><span class="ds-life" data-tone="${LIFE[top[3]]}">${top[3]}</span> · ${esc(top[4])}</span></span><span style="display:flex;flex-direction:column;align-items:flex-end"><span class="ds-conf" data-tone="${tone(top[2])}">${top[2]}%</span><span class="ds-meta">confidence</span></span></div>
+    const body = `<div class="ds-best"><span class="ds-best__icon">${icon('phone')}</span><span class="ds-row__body" style="min-width:10rem"><span style="display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap"><span class="ds-best__num">${esc(top[1])}</span>${dead ? '' : `<span class="ds-chip" data-tone="outline">${icon('check')}Primary</span>`}</span><span class="ds-meta"><span class="ds-life" data-tone="${LIFE[top[3]]}">${top[3]}</span> · ${esc(top[4])}${(S.texts || {})[id] ? ' · asked for texts' : ''}</span></span><span style="display:flex;flex-direction:column;align-items:flex-end"><span class="ds-conf" data-tone="${tone(top[2])}">${top[2]}%</span><span class="ds-meta">confidence</span></span></div>
       <div style="border-top:var(--border-width) solid var(--border-subtle)">${rest.map(b => `<div class="ds-cp"><span class="ds-meta">${esc(b[0])}</span><span${b[1] ? '' : ' style="color:var(--fg-disabled);font-weight:var(--weight-regular)"'}>${esc(b[1] || 'None on record')}</span>${b[1] ? `<span class="ds-conf" data-tone="${tone(b[2])}" style="font-size:var(--text-sm);line-height:var(--line-height-sm)">${b[2]}%</span>` : ''}</div>`).join('')}</div>
       <button type="button" class="ds-mute-btn" style="align-self:flex-start" aria-expanded="${st.othersOpen}" data-act="toggle-others">${icon(st.othersOpen ? 'caret-down' : 'caret-right')}${st.othersOpen ? 'Hide details' : 'Why these, and ' + others.length + ' older numbers'}</button>
       ${st.othersOpen ? `<div class="ds-panel-sub" data-anim="grow" data-key="others">${best.filter(b => b[1]).map(b => `<div class="ds-stack" style="gap:var(--space-0-5)"><span class="ds-meta font-semibold" style="color:var(--fg)">${esc(b[0])}</span>${b[5].map(w => `<span style="color:var(--fg-secondary)">${esc(w)}</span>`).join('')}</div>`).join('')}
@@ -171,7 +174,7 @@
     const all = DS.timelineOf(c), tl = st.actF === 'All' ? all : all.filter(x => x.k + 's' === st.actF);
     const groups = []; tl.forEach(x => { const yr = ((x.d || '').match(/\b(19|20)\d\d\b/) || ['2026'])[0], m = MON[(x.d || '').slice(0, 3)] ? MON[x.d.slice(0, 3)] + ' ' + yr : 'September 2026'; let g = groups.find(y => y.m === m); if (!g) groups.push(g = { m, items: [] }); g.items.push(x); });
     const hl = params.get('hl');
-    const tone = t => /Connected|Callback|replied|opened/i.test(t) ? 'good' : /Voicemail|No answer/i.test(t) ? 'warn' : /Not interested|Bad/i.test(t) ? 'bad' : '';
+    const tone = t => /Connected|Conversation|Meeting set|Callback|replied|opened/i.test(t) ? 'good' : /Voicemail|No answer/i.test(t) ? 'warn' : /Not interested|Wrong person|Bad/i.test(t) ? 'bad' : '';
     const filters = ['All', 'Calls', 'Emails', 'Texts', 'Notes', 'Events'].map(l => `<button type="button" class="ds-pill-btn" aria-pressed="${st.actF === l}" data-act="act-f" data-arg="${l}">${l}</button>`).join('');
     const upcoming = [...DS.eventsOf(c).filter(e => !e.past).map(e => [e.t + ' · ' + D.calendars[e.cal], e.when]), ...(nextCall !== 'Not set' ? [[c.name + ' · Follow-up call', nextCall]] : [])];
     return `${upcoming.length ? `<div class="ds-note--info ds-note">${icon('calendar-blank')}<span class="ds-row__body"><span class="ds-meta font-semibold" style="color:inherit">Upcoming and overdue</span>${upcoming.map(([t, w]) => `<span style="display:flex;gap:var(--space-3);justify-content:space-between;flex-wrap:wrap"><span>${esc(t)}</span><b class="num">${esc(w)}</b></span>`).join('')}</span></div>` : ''}
@@ -233,17 +236,19 @@
     scope: () => c.name,
     peekList: () => portfolio.map(x => ['p', x.id]),
     render: () => `${liveBar()}<div class="ds-record"><div class="ds-record__main">${header()}${noteBox()}${outcomeBar()}${tabs()}${body()}</div>${rail()}</div>`,
-    after: () => { if (params.get('hl') && st.tab === 'activity' && !st.hlDone) { st.hlDone = true; const el = document.getElementById('tl-' + params.get('hl')); if (el) el.scrollIntoView({ block: 'center' }); } if (st.focusNotes) { st.focusNotes = false; const el = document.getElementById('out-notes'); if (el) el.focus(); } },
+    after: () => { if (params.get('hl') && st.tab === 'activity' && !st.hlDone) { st.hlDone = true; const el = document.getElementById('tl-' + params.get('hl')); if (el) el.scrollIntoView({ block: 'center' }); } if (st.focusNotes) { st.focusNotes = false; const el = document.getElementById('out-said'); if (el) el.focus(); } },
     acts: {
       back: () => { try { const r = new URL(DS.referrer || document.referrer); if (r.origin === location.origin && history.length > 1) { history.back(); return; } } catch (_) {} Nav.go('contacts'); },
       tab: (el, k) => { st.tab = k; DS.render(); },
       'toggle-why': () => { const go = () => { st.whyOpen = !st.whyOpen; DS.render(); }; if (st.whyOpen) DS.collapse(document.querySelector('.ds-why__more'), go); else go(); },
       'toggle-others': () => { const go = () => { st.othersOpen = !st.othersOpen; DS.render(); }; if (st.othersOpen) DS.collapse(document.querySelector('.ds-panel-sub'), go); else go(); },
       'start-call': () => { DS.setUI({ call: { id, t0: Date.now() }, outcome: null }); DS.render(); },
-      'end-call': () => { const dur = callTime(); DS.setUI({ call: null, outcome: { id, dur, choice: null, acts: {}, notes: '', follow: '' } }); DS.render(); },
-      'log-call': () => { DS.setUI({ call: null, outcome: { id, dur: null, choice: null, acts: {}, notes: '', follow: '' } }); st.tab = st.tab; DS.render(); },
-      'pick-outcome': (el, o) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, choice: o, acts: o === 'Connected' ? { note: true, primary: true } : o === 'Bad number' ? { bad: true } : {} } }); if (o === 'Connected') st.focusNotes = true; DS.render(); },
+      'end-call': () => { const dur = callTime(); DS.setUI({ call: null, outcome: DS.OUT.blank(id, dur) }); DS.render(); },
+      'log-call': () => { DS.setUI({ call: null, outcome: DS.OUT.blank(id, null) }); st.tab = st.tab; DS.render(); },
+      'pick-outcome': (el, o) => { DS.setUI({ outcome: DS.OUT.pick(outcome(), o) }); if (DS.OUT.reached(o)) st.focusNotes = true; DS.render(); },
       'pick-num': (el, x) => { DS.setUI({ outcome: { ...outcome(), num: x } }); DS.render(); },
+      'toggle-res': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, res: { ...oc.res, [k]: !(oc.res || {})[k] } } }); DS.render(); },
+      'toggle-cb': () => { const oc = outcome(); DS.setUI({ outcome: { ...oc, follow: oc.follow ? '' : '2026-10-02' } }); DS.render(); },
       'toggle-oact': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, acts: { ...oc.acts, [k]: !oc.acts[k] } } }); DS.render(); },
       'save-outcome': () => { if (st.saving) return; st.saving = true; DS.render(); setTimeout(() => DS.collapse(document.querySelector('.ds-outcome'), doSave), 520); },
       'skip-outcome': () => DS.collapse(document.querySelector('.ds-outcome'), () => { DS.setUI({ outcome: null }); DS.render(); }),
@@ -262,7 +267,7 @@
     },
     inputs: {
       noteDraft: v => { st.noteDraft = v; }, qNote: v => { st.qNote = v; }, listPick: v => { st.listPick = v; },
-      outNotes: v => { DS.setUI({ outcome: { ...outcome(), notes: v } }); }, follow: v => { DS.setUI({ outcome: { ...outcome(), follow: v } }); DS.render(); },
+      outNotes: v => { DS.setUI({ outcome: { ...outcome(), notes: v } }); }, outSaid: v => { DS.setUI({ outcome: { ...outcome(), said: v } }); }, follow: v => { DS.setUI({ outcome: { ...outcome(), follow: v } }); DS.render(); },
     },
   });
 })();

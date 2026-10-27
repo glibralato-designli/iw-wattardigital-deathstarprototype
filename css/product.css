@@ -381,6 +381,13 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-opt{height:var(--control-md);padding:0 var(--space-3);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--fg);font-weight:var(--weight-medium)}
 .ds-opt:hover{border-color:var(--border-strong)}
 .ds-opt[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+/* Not reached: No answer and Voicemail as quick links under the four main outcomes (most dials end there). */
+.ds-outcome__quick{display:flex;align-items:center;flex-wrap:wrap;gap:0 var(--space-3)}
+.ds-quickopt{min-height:var(--control-sm);display:inline-flex;align-items:center;gap:var(--space-1);padding:0;border:0;background:transparent;color:var(--link);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-quickopt:hover{color:var(--link-hover);text-decoration:underline}
+.ds-quickopt[aria-checked="true"]{color:var(--fg);font-weight:var(--weight-medium);text-decoration:none}
+.ds-quickopt svg{width:.875rem;height:.875rem}
+.ds-outcome__date{width:auto;height:1.75rem;padding:0 var(--space-2);font-size:var(--text-xs)}
 .ds-checkline{display:flex;align-items:center;gap:var(--space-2);padding:0;border:0;background:transparent;text-align:left;color:var(--fg)}
 .ds-acc{border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column}
 .ds-acc>section+section{border-top:var(--border-width) solid var(--border-subtle)}

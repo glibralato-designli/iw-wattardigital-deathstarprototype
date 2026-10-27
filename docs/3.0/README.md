@@ -56,7 +56,7 @@ Small changes with the biggest effect on trust. They fix places where the protot
 
 ### 1.2 The client's call outcomes
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 (see the note in DECISIONS.md) · **Effort:** S · **Screens:** Outcome tray (web), outcome sheet (app), Activity, Home counters
+**Status:** Done, Oct 27, 2026 (Option A, main outcome + result chips) · **Decision:** Option A approved, Oct 27 (see the note in DECISIONS.md) · **Effort:** S · **Screens:** Outcome tray (web), outcome sheet (app), Activity, Home counters
 
 - **The brief:** One tap after the call: connected · conversation · meeting set · BOV request · not interested · wrong person. Capture "asked for texts". What the owner said is stored as a claim with its source. (Doc 2 §5, doc 3 Today, doc 4 §11)
 - **Today:** Connected, Callback, Voicemail, No answer, Not interested, Bad number, plus save actions.

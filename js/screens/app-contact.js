@@ -8,11 +8,11 @@
   const st = { tab: TABS.some(t => t[0] === params.get('tab')) ? params.get('tab') : 'overview', noteDraft: '', saving: params.get('call') === 'saving', logged: params.get('call') === 'logged' ? 'No answer' : null };
   const dnc = c.status === 'Do not contact';
 
-  /* Presets: call=live|outcome|saving|logged|log, choice=<outcome>, why=open, note=1, flag=<evidence index>. */
+  /* Presets: call=live|outcome|saving|logged|log, choice=<outcome>, res=<results, comma-separated>, why=open, note=1, flag=<evidence index>. */
   const call = params.get('call');
   if (call === 'live') { if (!U.call || U.call.id !== id) DS.setUI({ call: { id, t0: Date.now() - 74000 }, outcome: null }); }
-  if (call === 'outcome' || call === 'saving') DS.setUI({ call: null, outcome: { id, dur: '2:14', choice: params.get('choice') || (call === 'saving' ? 'No answer' : null), acts: params.get('choice') === 'Connected' ? { note: true, primary: true } : {}, notes: '', follow: '' } });
-  if (call === 'log') DS.setUI({ call: null, outcome: { id, dur: null, choice: null, acts: {}, notes: '', follow: '' } });
+  if (call === 'outcome' || call === 'saving') DS.setUI({ call: null, outcome: DS.OUT.preset(id, '2:14') });
+  if (call === 'log') DS.setUI({ call: null, outcome: DS.OUT.blank(id, null) });
   if (call === 'logged') { S.done[id] = true; S.calls += 1; S.last[id] = 'Just now · No answer'; DS.addTimeline(id, { k: 'Call', t: 'No answer · 0:42', d: 'Just now' }); }
   if (params.has('flag')) S.flags[id + ':' + params.get('flag')] = true;
   if (params.get('why') === 'open') DS.V.sheet = 'why';
@@ -23,7 +23,7 @@
   if (params.has('dialed') && U.outcome && U.outcome.id === id && byDigits(params.get('dialed'))) DS.setUI({ outcome: { ...U.outcome, num: byDigits(params.get('dialed')) } });
   const trigger = params.get('act');
   if (trigger === 'call' && !dnc) DS.setUI({ call: { id, t0: Date.now() }, outcome: null });
-  if (trigger === 'log') DS.setUI({ call: null, outcome: { id, dur: null, choice: null, acts: {}, notes: '', follow: '' } });
+  if (trigger === 'log') DS.setUI({ call: null, outcome: DS.OUT.blank(id, null) });
   if (trigger && !Nav.exported) { params.delete('act'); const u = new URL(location.href); u.searchParams.delete('act'); history.replaceState(null, '', u); }
   DS.remember(id);
 
@@ -76,7 +76,7 @@
   const tabs = () => `<div class="ds-achips" style="padding-block:0" data-keep-scroll="ctabs">${ui.stateTabs(TABS.map(([k, l]) => [k, k === 'ownership' ? 'Ownership (' + portfolio.length + ')' : k === 'activity' ? 'Activity (' + DS.timelineOf(c).length + ')' : l]), st.tab, 'tab', 'Record')}</div>`;
   const conf = x => x >= 80 ? 'good' : x >= 60 ? 'ok' : x >= 45 ? 'warn' : 'bad';
   const reach = () => {
-    const phone = DS.bestPhone(c), dead = DS.badOf(c).includes(phone), rows = [['phone', 'Best phone' + (dead ? ' · marked bad' : ' · Primary'), phone, dead ? 12 : 70 + (n % 26), S.primary[id] === phone ? 'confirmed by us' : 'mobile · 3 sources'], ['envelope-simple', 'Personal email', first + '.' + lastN + '@example.com', 55 + (n % 30), '2 sources'], ['briefcase', 'Business email', first[0] + lastN + '@' + c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com', 45 + ((n >> 3) % 30), '1 source']];
+    const phone = DS.bestPhone(c), dead = DS.badOf(c).includes(phone), rows = [['phone', 'Best phone' + (dead ? ' · marked bad' : ' · Primary'), phone, dead ? 12 : 70 + (n % 26), (S.primary[id] === phone ? 'confirmed by us' : 'mobile · 3 sources') + ((S.texts || {})[id] ? ' · asked for texts' : '')], ['envelope-simple', 'Personal email', first + '.' + lastN + '@example.com', 55 + (n % 30), '2 sources'], ['briefcase', 'Business email', first[0] + lastN + '@' + c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com', 45 + ((n >> 3) % 30), '1 source']];
     return `<section class="ds-asec" aria-label="Best way to reach"><div class="ds-ahead"><h2>Best way to reach</h2></div><div class="ds-alist">${rows.map(([ic, l, v, pc, src]) => `<div class="ds-arow" data-lead><span class="ds-arow__lead">${icon(ic)}</span><span class="ds-arow__body"><span class="ds-arow__sub">${esc(l)} · ${esc(src)}</span><span class="ds-arow__title" style="overflow-wrap:anywhere;white-space:normal">${esc(v).replace('@', '@<wbr>')}</span></span><span class="ds-conf" data-tone="${conf(pc)}">${pc}%</span></div>`).join('')}</div></section>`;
   };
   const facts = () => `<section class="ds-asec" aria-label="Key facts"><div class="ds-ahead"><h2>Key facts</h2><button type="button" class="ds-link-btn" data-act="tab" data-arg="intelligence">All signals</button></div><div class="ds-acard" style="padding:0 var(--space-4)">${ui.kv([['Lead property', p.addr], ['Debt', p.debt], ['Maturity', p.mat], ['Years held', c.years + ' years'], ['Last touch', DS.lastOf(c)]], { cols: 1 })}</div></section>`;
@@ -101,16 +101,18 @@
   const BODY = { overview, intelligence, ownership, activity: () => timeline(), details, history };
 
   /* ───────── Sheets ───────── */
-  const OUTS = ['Connected', 'Callback', 'Voicemail', 'No answer', 'Not interested', 'Bad number'];
   const ACTS = [['note', 'Save note to record'], ['primary', 'Mark number primary'], ['bad', 'Mark number bad'], ['blasts', 'Remove from blasts for 1 year']];
   const outcomeSheet = () => { const oc = outcome(); if (!oc) return '';
-    const FOLLOW = [['', 'None'], ['Tomorrow', 'Tomorrow'], ['Next week', 'Next week'], ['In a month', 'In a month']];
+    const FOLLOW = [['', 'No'], ['Tomorrow', 'Tomorrow'], ['Next week', 'Next week'], ['In a month', 'In a month']], O = DS.OUT, reached = O.reached(oc.choice), res = oc.res || {};
     const nums = DS.contactPointsOf(c).filter(x => x[0] === 'phone' && x[2] !== 'Bad').map(x => x[1]), num = oc.num || DS.bestPhone(c);
     return ui.sheet({ key: 'outcome-' + (oc.dur ? 'call' : 'hand'), title: 'Log the outcome', close: 'skip-outcome', size: 'full', body: `<p class="ds-meta">${esc((oc.dur ? 'Call lasted ' + oc.dur : 'Logged by hand') + ' · ' + num)}</p>
       ${nums.length > 1 ? `<div class="ds-sheet-sec"><h3>Number reached</h3><div class="ds-achips" style="margin:0;padding:0;flex-wrap:wrap" role="radiogroup" aria-label="Number reached">${nums.map(x => `<button type="button" class="ds-fchip num" role="radio" aria-checked="${x === num}" aria-pressed="${x === num}" data-act="pick-num" data-arg="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>` : ''}
-      <div class="ds-sheet-sec"><h3>Outcome</h3><div class="ds-opts" role="radiogroup" aria-label="Outcome">${OUTS.map(o => `<button type="button" class="ds-optrow" role="radio" aria-checked="${oc.choice === o}" data-act="pick-outcome" data-arg="${o}"><span>${o}</span><span class="ds-optrow__mark" data-tick="opt-${o}|${oc.choice === o ? 'on' : 'off'}">${icon('check')}</span></button>`).join('')}</div></div>
-      <div class="ds-sheet-sec"><h3>Follow up</h3><div class="ds-achips" style="margin:0;padding:0;flex-wrap:wrap">${FOLLOW.map(([k, l]) => `<button type="button" class="ds-fchip" aria-pressed="${(oc.follow || '') === k}" data-act="follow" data-arg="${k}">${l}</button>`).join('')}</div></div>
-      <div class="ds-sheet-sec"><label class="field"><span class="field__label">Notes</span><textarea id="out-notes" class="field__control" rows="3" placeholder="Optional" data-input="outNotes">${esc(oc.notes)}</textarea></label></div>
+      <div class="ds-sheet-sec" role="radiogroup" aria-label="Outcome"><h3>Outcome</h3><div class="ds-opts">${O.main.map(o => `<button type="button" class="ds-optrow" role="radio" aria-checked="${oc.choice === o}" data-act="pick-outcome" data-arg="${o}"><span>${o}</span><span class="ds-optrow__mark" data-tick="opt-${o}|${oc.choice === o ? 'on' : 'off'}">${icon('check')}</span></button>`).join('')}</div>
+        <div class="ds-achips" style="margin:0;padding:0;flex-wrap:wrap;align-items:center"><span class="ds-meta">Not reached</span>${O.quick.map(o => `<button type="button" class="ds-fchip" role="radio" aria-checked="${oc.choice === o}" aria-pressed="${oc.choice === o}" data-act="pick-outcome" data-arg="${o}">${oc.choice === o ? icon('check') : ''}${o}</button>`).join('')}</div></div>
+      ${reached ? `<div class="ds-sheet-sec"><h3>What came out of it</h3><div class="ds-achips" style="margin:0;padding:0;flex-wrap:wrap">${O.results.map(([k, l]) => `<button type="button" class="ds-fchip" role="checkbox" aria-checked="${!!res[k]}" aria-pressed="${!!res[k]}" data-act="toggle-res" data-arg="${k}">${res[k] ? icon('check') : ''}${l}</button>`).join('')}</div></div>
+      <div class="ds-sheet-sec"><label class="field"><span class="field__label">What they said</span><textarea id="out-said" class="field__control" rows="2" placeholder="In their words" data-input="outSaid">${esc(oc.said || '')}</textarea><span class="ds-meta">Saved as their claim, sourced to this call.</span></label></div>` : ''}
+      <div class="ds-sheet-sec"><h3>Call back</h3><div class="ds-achips" style="margin:0;padding:0;flex-wrap:wrap">${FOLLOW.map(([k, l]) => `<button type="button" class="ds-fchip" aria-pressed="${(oc.follow || '') === k}" data-act="follow" data-arg="${k}">${l}</button>`).join('')}</div></div>
+      <div class="ds-sheet-sec"><label class="field"><span class="field__label">Your notes</span><textarea id="out-notes" class="field__control" rows="3" placeholder="Optional" data-input="outNotes">${esc(oc.notes)}</textarea></label></div>
       <div class="ds-sheet-sec"><h3>Also</h3><div class="ds-opts">${ACTS.map(([k, l]) => `<button type="button" class="ds-optrow" data-kind="check" role="checkbox" aria-checked="${!!oc.acts[k]}" data-act="toggle-oact" data-arg="${k}"><span>${l}</span><span class="ds-optrow__mark">${icon('check')}</span></button>`).join('')}</div></div>`,
       foot: ui.btn({ label: 'Skip', variant: 'outline', act: 'skip-outcome' }) + (oc.choice ? ui.btn({ label: st.saving ? 'Saving' : 'Save outcome', act: 'save-outcome', busy: st.saving, id: 'save-outcome' }) : `<button type="button" class="button" aria-disabled="true" data-tip="Pick an outcome first">Save outcome</button>`) }); };
   const noteSheet = () => ui.sheet({ key: 'note', title: 'Add a note', body: `<label class="field" style="padding-top:var(--space-2)"><span class="field__label">What did you learn?</span><textarea id="note-draft" class="field__control" rows="4" data-input="noteDraft">${esc(st.noteDraft)}</textarea></label>`, foot: ui.btn({ label: 'Cancel', variant: 'outline', act: 'close-sheet' }) + ui.btn({ label: 'Save note', act: 'save-note' }) });
@@ -129,8 +131,9 @@
       tab: (el, k) => { st.tab = k; DS.render(); },
       sheet: (el, k) => { DS.V.sheet = k; if (k === 'note') st.focus = 'note-draft'; DS.render(); },
       'start-call': () => { if (dnc) return; st.logged = null; DS.setUI({ call: { id, t0: Date.now() }, outcome: null }); DS.render(); },
-      'end-call': () => { const dur = callTime(); DS.setUI({ call: null, outcome: { id, dur, choice: null, acts: {}, notes: '', follow: '' } }); DS.render(); },
-      'pick-outcome': (el, o) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, choice: o, acts: o === 'Connected' ? { note: true, primary: true } : o === 'Bad number' ? { bad: true } : {} } }); DS.render(); },
+      'end-call': () => { const dur = callTime(); DS.setUI({ call: null, outcome: DS.OUT.blank(id, dur) }); DS.render(); },
+      'pick-outcome': (el, o) => { DS.setUI({ outcome: DS.OUT.pick(outcome(), o) }); DS.render(); },
+      'toggle-res': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, res: { ...oc.res, [k]: !(oc.res || {})[k] } } }); DS.render(); },
       'pick-num': (el, x) => { DS.setUI({ outcome: { ...outcome(), num: x } }); DS.render(); },
       'toggle-oact': (el, k) => { const oc = outcome(); DS.setUI({ outcome: { ...oc, acts: { ...oc.acts, [k]: !oc.acts[k] } } }); DS.render(); },
       follow: (el, k) => { DS.setUI({ outcome: { ...outcome(), follow: k } }); DS.render(); },
@@ -139,6 +142,6 @@
       'save-note': () => { const t = st.noteDraft.trim(); if (!t) return; DS.addTimeline(id, { k: 'Note', t, d: 'Just now' }); DS.save(); st.noteDraft = ''; DS.V.sheet = null; DS.render(); DS.toast('Note added'); },
       flag: (el, i) => { S.flags[id + ':' + i] = true; const e = DS.evidenceOf(c)[+i]; DS.addTimeline(id, { k: 'Flag', t: e.l + ' flagged as wrong', d: 'Just now' }); DS.save(); DS.render(); DS.toast('Flagged. It now shows as disputed.'); },
     },
-    inputs: { noteDraft: v => { st.noteDraft = v; }, outNotes: v => { DS.setUI({ outcome: { ...outcome(), notes: v } }); } },
+    inputs: { noteDraft: v => { st.noteDraft = v; }, outNotes: v => { DS.setUI({ outcome: { ...outcome(), notes: v } }); }, outSaid: v => { DS.setUI({ outcome: { ...outcome(), said: v } }); } },
   });
 })();

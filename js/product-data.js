@@ -129,7 +129,7 @@
   const cats = ['Follow up', 'Research', 'Marketing', 'Admin'];
   const goals = {
     Daily: [['40 calls', 40, 'calls'], ['5 conversations', 5, 'convos'], ['Update 10 contact points', 10, 4], ['Send the LES digest', 0, 0]],
-    Weekly: [['150 dials', 150, 'dials'], ['3 first meetings', 3, 1], ['Post one market note on LinkedIn', 0, 0]],
+    Weekly: [['150 dials', 150, 'dials'], ['3 first meetings', 3, 'meetings'], ['Post one market note on LinkedIn', 0, 0]],
     Monthly: [['2 proposals delivered', 2, 1], ['1 new listing', 1, 0], ['Refresh the Q4 owner list', 0, 0]],
   };
   const weekFocus = [['Calls · Sourcing', '14 dials done'], ['Mail merge · Listings', '1 blast sent'], ['Calls · LES maturities', 'calls'], ['LinkedIn · Market info', 'Planned'], ['Constant Contact · Listings', 'Planned']];

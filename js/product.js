@@ -23,7 +23,7 @@
 
   /* ───────── Store: demo data in local storage, session UI in session storage ───────── */
   const STORE = 'ds-proto-v2', UI = 'ds-ui-v2';
-  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, blastOut: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
+  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, blastOut: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
@@ -178,18 +178,32 @@
     const team = portfolio(c).flatMap(x => D.teamOf(x.id).map(e => ({ ...e, addr: x.addr })));
     const who = [...new Set(team.map(e => e.who))].map(w => { const es = team.filter(e => e.who === w).sort((a, b) => a.year - b.year); return [w, es.map(e => e.type + ' ' + e.year).join(', ') + ' · ' + [...new Set(es.map(e => e.addr))].join(', ')]; });
     if (!who.some(x => x[0] === 'Thomas Windels') && c.last !== 'Never called') who.push(['Thomas Windels', 'Owner of the record · last touch ' + lastOf(c).split(' · ')[0]]);
-    return { since: r.since || 2026 - Math.min(c.years, 6), touches: r.touches || tl.length + (h % 5), warmth: r.warmth || 30 + (h % 40), notesOf: r.notesOf || notes.length, notes: r.notes ? r.notes.map(k => tl.find(x => x.id === k)).filter(Boolean) : notes.slice(0, 3), said: r.said || null, angle: r.angle || null, next: r.next || null, connected: r.connected || [], team, teamPid: (team[0] || {}).pid, who };
+    return { since: r.since || 2026 - Math.min(c.years, 6), touches: r.touches || tl.length + (h % 5), warmth: r.warmth || 30 + (h % 40), notesOf: r.notesOf || notes.length, notes: r.notes ? r.notes.map(k => tl.find(x => x.id === k)).filter(Boolean) : notes.slice(0, 3), said: (S.said || {})[c.id] || r.said || null, angle: r.angle || null, next: r.next || null, connected: r.connected || [], team, teamPid: (team[0] || {}).pid, who };
   };
-  // Saving an outcome: the call, its note, and its actions on the number reached (bad wins over primary) and on blasts.
+  /* The client's call outcomes (Orientation doc 2 §5, doc 4 §11), web tray and app sheet: one main outcome on a reached call, then
+     what came out of it (several at once, only on a reached call). No answer and Voicemail are quick links, since most dials end there.
+     A call back is a follow-up (oc.follow), not an outcome. What they said is saved as their claim, sourced to the call. */
+  const OUT = { main: ['Connected', 'Conversation', 'Not interested', 'Wrong person'], quick: ['No answer', 'Voicemail'], results: [['meeting', 'Meeting set'], ['bov', 'BOV request'], ['texts', 'Asked for texts']] };
+  OUT.reached = ch => ch === 'Connected' || ch === 'Conversation';
+  OUT.blank = (id, dur) => ({ id, dur, choice: null, acts: {}, res: {}, said: '', notes: '', follow: '' });
+  OUT.pick = (oc, ch) => ({ ...oc, choice: ch, acts: OUT.reached(ch) ? { note: true, primary: true } : ch === 'Wrong person' ? { bad: true } : {}, res: OUT.reached(ch) ? oc.res || {} : {}, said: OUT.reached(ch) ? oc.said || '' : '' });
+  // A preset: choice=<outcome>, res=meeting,bov,texts.
+  OUT.preset = (id, dur) => { const ch = params.get('choice') || (params.get('call') === 'saving' ? 'No answer' : null), oc = OUT.blank(id, dur); if (!ch) return oc;
+    const p = OUT.pick(oc, ch); (params.get('res') || '').split(',').filter(k => OUT.results.some(r => r[0] === k)).forEach(k => { if (OUT.reached(ch)) p.res[k] = true; }); return p; };
+  // Saving an outcome: the call and its results, its note, and its actions on the number reached (bad wins over primary) and on blasts.
   const BLAST_UNTIL = 'Sep 30, 2027';
   const applyOutcome = (c, oc) => {
-    const ch = oc.choice, num = oc.num || bestPhone(c), said = ['Call logged'], id = c.id;
-    S.done[id] = true; S.calls += 1; if (ch === 'Connected') S.convos += 1; S.last[id] = 'Just now · ' + ch;
+    const ch = oc.choice, num = oc.num || bestPhone(c), said = ['Call logged'], id = c.id, res = OUT.reached(ch) ? oc.res || {} : {}, got = OUT.results.filter(([k]) => res[k]).map(([, l]) => l);
+    S.done[id] = true; S.calls += 1; if (ch === 'Conversation') S.convos += 1; S.last[id] = 'Just now · ' + ch;
+    if (res.meeting) { S.meetings = (S.meetings || 0) + 1; said.push('meeting set'); }
+    if (res.bov) { S.tasks = [...S.tasks, { id: Date.now(), g: 'Follow up', t: 'Prepare a BOV for ' + pById[c.pid].addr, m: c.name + ' asked on today’s call', due: 0 }]; said.push('BOV request in your to-dos'); }
+    if (res.texts) { S.texts = { ...S.texts, [id]: true }; said.push('asked for texts'); }
+    if (oc.said && OUT.reached(ch)) S.said = { ...S.said, [id]: [oc.said.trim(), 'Their claim · said on a call, Sep 30 · logged by Thomas'] };
     if (oc.acts.bad) { S.bad[id] = [...badOf(c), num]; if (S.primary[id] === num) delete S.primary[id]; said.push(num + ' marked bad'); }
     else if (oc.acts.primary) { S.primary[id] = num; said.push(num + ' is now primary'); }
     if (oc.acts.blasts) { S.blastOut[id] = BLAST_UNTIL; said.push('out of blasts until ' + BLAST_UNTIL); }
     if (oc.notes && oc.acts.note) addTimeline(id, { k: 'Note', t: oc.notes, d: 'Just now' });
-    addTimeline(id, { k: 'Call', t: ch + (oc.dur ? ' · ' + oc.dur : '') + (oc.follow ? ' · Follow up ' + oc.follow : ''), d: 'Just now' });
+    addTimeline(id, { k: 'Call', t: [ch, ...got].join(' · ') + (oc.dur ? ' · ' + oc.dur : '') + (oc.follow ? ' · Call back ' + (/^\d{4}-/.test(oc.follow) ? new Date(oc.follow + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : oc.follow.toLowerCase()) : ''), d: 'Just now' });
     U.outcome = null; save();
     return said.join(' · ');
   };
@@ -251,7 +265,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, applyOutcome, BLAST_UNTIL });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, applyOutcome, OUT, BLAST_UNTIL });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
