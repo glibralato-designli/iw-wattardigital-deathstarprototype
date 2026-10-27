@@ -166,7 +166,7 @@
 
   /* Sidebar: [label, icon, page or null (disabled), badge]. Strings are group labels. */
   // Today is where the day starts (3.0 · 2.1, Orientation doc 1 §10); the Dashboard is the command centre and opens on Overview.
-  const nav = [['Today', 'sun', 'attack-plan'], ['Dashboard', 'squares-four', 'home'], ['Brain', 'sparkle', 'brain'],
+  const nav = [['Today', 'sun', 'attack-plan'], ['Approvals', 'tray', 'approvals'], ['Dashboard', 'squares-four', 'home'], ['Brain', 'sparkle', 'brain'],
     'Prospecting', ['Database', 'database', 'contacts'], ['Map', 'map-trifold'], ['Outreach', 'list-bullets'],
     'Channels', ['Phone', 'phone'], ['Email', 'envelope-simple', null, '4'], ['Texting', 'chat-text', null, '2'], ['LinkedIn', 'linkedin-logo'], ['Social', 'users'],
     'Marketing', ['Marketing', 'megaphone'], ['Website', 'globe']];
@@ -272,6 +272,22 @@
     ['Tenth Street Capital', 'Value-add walk-ups, any size', 'Bought 3 buildings this year', ['East Village', 'Chelsea', 'Midtown West', 'Upper East Side', 'Central Harlem']],
   ].map(([name, box, when, hoods]) => ({ name, box, when, hoods }));
   const buyersFor = p => buyers.filter(b => b.hoods.includes(p.hood)).slice(0, 5);
+
+  /* Approvals (3.0 · 2.3, Orientation doc 1 §10, doc 4 §5 and §8): every planned touch waits for Thomas's click, with its reason.
+     [id, lane, contact or null, building or null, title, reason, body lines, check: null | ['warn' | 'block', text], extra]. */
+  const LANES = [['email', 'Email', 'envelope-simple'], ['text', 'Text', 'chat-text'], ['letter', 'Letter', 'file-text'], ['linkedin', 'LinkedIn', 'linkedin-logo'], ['valuation', 'Valuation', 'buildings'], ['data', 'Data push', 'list-bullets']];
+  const approvals = [
+    ['a0', 'email', null, null, 'Q4 market note · LES owners', 'Mail merge to the “LES debt 2026” list. Brain suggests a first wave, then the rest if replies look healthy.', ['Subject: What changed on the Lower East Side this quarter', 'Three buildings traded on your blocks this quarter, and two lenders tightened terms for walk-ups.', 'I put the numbers on one page. If it would help to talk them through for your building, reply and I’ll call.', 'Thomas Windels · Stewart Group'], null, { n: 312, wave: 40 }],
+    ['a1', 'email', 'adler', 'p64e', 'Q3 comps for 64 Essex St', 'She asked for them on the Sep 28 call.', ['Subject: The Q3 comps you asked for', 'Ruth, as promised, here are the Q3 sales around 64 Essex. They show what’s trading near you, not a number for your building.', 'Thursday at 11 still works for me if you’d like to go through them.', 'Thomas'], null],
+    ['a2', 'email', 'marchetti', 'p118', 'Refinance next to a sale, side by side', 'He opened the Q3 report two days ago and asked to talk after the summer.', ['Subject: 118 Ludlow, refinance or sell', 'Daniel, with the June maturity coming, I laid the refinance math next to what a sale would net.', 'No pitch. Fifteen minutes this week is enough to walk through it.', 'Thomas'], null],
+    ['a3', 'email', 'baum', 'p120n', 'Q4 market note', 'In the Q4 mail merge list.', ['Subject: What changed on the Lower East Side this quarter', 'Harold, three buildings traded near 120 Norfolk this quarter…'], ['block', 'Harold Baum asked not to be contacted, on every channel. This can’t be sent.']],
+    ['a4', 'text', 'marchetti', 'p118', 'Quick text before the email', 'Next touch: a text, then LinkedIn.', ['Daniel, it’s Thomas Windels. I’m sending you the refi-vs-sale numbers for 118 Ludlow by email today. Happy to talk whenever suits.'], null],
+    ['a5', 'text', 'kowalski', 'p31b', 'First touch on 31 Avenue B', 'Never called; his loan is due in November.', ['Peter, it’s Thomas Windels at Stewart Group. I work with owners on Avenue B. Would a short call this week be useful?'], ['warn', '(212) 555-0175 is on a do-not-call list. A text is allowed; check before you send.']],
+    ['a6', 'letter', 'feld', 'p27o', 'Condolence letter, 27 Orchard St', 'He inherited the building in March. A letter before any call.', ['Dear Mr. Feld,', 'I was sorry to hear of your father’s passing. Our team worked with him on 27 Orchard Street in 2013, and he was a pleasure to know.', 'If a valuation would ever help the estate, I’d be glad to prepare one, with no obligation.', 'With sympathy, Thomas Windels'], null],
+    ['a7', 'linkedin', null, null, 'Post: LES maturities this winter', 'Tuesday’s slot, Oct 6 at 9:00 AM.', ['Twelve Lower East Side loans mature before year end. Owners who start early have the most options: refinance, recap or sell.', 'If that’s you, I’m glad to share what we’re seeing.'], null],
+    ['a8', 'valuation', 'okafor', 'p90c', 'Updated BOV for 90 Clinton St', 'The family wants a number before the August maturity. Lunch is today at 12.', ['Updated rent roll (Sep 2026) and three new comps.', 'Recap and sale side by side. The number goes to the family, never into an opener.'], null],
+    ['a9', 'data', null, null, 'Push “LES debt 2026” to Terrakotta', '142 owners with debt due by year end, from ACRIS. Opted-out owners are already removed.', ['Queue: LES debt 2026 · 142 owners', 'Channel: Phone (Terrakotta)', 'Order: by rank'], null],
+  ].map(([id, lane, cid, pid, title, why, body, check, extra]) => ({ id, lane, cid, pid, title, why, body, check, ...(extra || {}) }));
 
   /* Database-wide counts behind each criterion, so a list's size reads at the scale of the real database.
      The live count combines them (see DS.crit in js/product.js); the table shows the matching demo rows. */
@@ -476,5 +492,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

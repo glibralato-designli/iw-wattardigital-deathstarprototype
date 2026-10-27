@@ -70,6 +70,35 @@
 .ds-shell-btn svg{width:1.125rem;height:1.125rem}.ds-shell-btn svg+svg{width:.875rem;height:.875rem}
 .ds-bell{width:var(--control-lg);height:var(--control-lg);display:grid;place-items:center;position:relative;color:var(--shell-fg);cursor:not-allowed;border-radius:var(--radius-md)}
 .ds-bell svg{width:1.25rem;height:1.25rem}
+/* Approvals inbox (3.0 · 2.3): lanes on the left, the preview on the right; under 1024 they take turns. */
+.ds-inbox{display:grid;grid-template-columns:minmax(18rem,26rem) minmax(0,1fr);gap:var(--space-5);align-items:start}
+.ds-inbox__list{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.ds-inbox__group{display:flex;flex-direction:column;border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg);overflow:hidden}
+.ds-inbox__lane{display:flex;align-items:center;gap:var(--space-2);min-height:var(--control-lg);padding:var(--space-1-5) var(--space-2) var(--space-1-5) var(--space-3);background:var(--bg-subtle)}
+.ds-inbox__lane>svg{width:1rem;height:1rem;color:var(--fg-muted)}
+.ds-inbox__row{display:flex;align-items:flex-start;gap:var(--space-3);width:100%;padding:var(--space-3);border:0;border-top:var(--border-width) solid var(--border-subtle);background:transparent;color:var(--fg);text-align:left;min-height:var(--touch-target)}
+button.ds-inbox__row:hover{background:var(--bg-subtle)}
+.ds-inbox__row[aria-current="true"]{background:var(--brand-primary-subtle)}
+.ds-inbox__why{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ds-inbox__group[data-done] .ds-inbox__row{color:var(--fg-secondary)}
+.ds-inbox__preview{display:flex;flex-direction:column;gap:var(--space-4);position:sticky;top:0}
+.ds-inbox__reason{display:flex;align-items:flex-start;gap:var(--space-1-5);color:var(--fg-secondary);text-wrap:pretty}
+.ds-inbox__reason svg{width:1rem;height:1rem;flex:none;margin-top:2px;color:var(--brand-primary-text)}
+.ds-inbox__body{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);background:var(--bg-subtle);max-width:44rem;text-wrap:pretty}
+.ds-inbox__preview>.ds-inbox__back{display:none}
+@media (max-width:1023px){
+  .ds-inbox{grid-template-columns:minmax(0,1fr)}
+  .ds-inbox:not([data-picked]) .ds-inbox__preview{display:none}
+  .ds-inbox[data-picked] .ds-inbox__list{display:none}
+  .ds-inbox__preview>.ds-inbox__back{display:inline-flex;align-self:flex-start}
+  .ds-inbox__preview{position:static}
+}
+/* "Waiting for your click": a planned touch elsewhere links to its approval. */
+.ds-waiting{display:inline-flex;align-items:center;gap:var(--space-1);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium);white-space:nowrap}
+.ds-waiting svg{width:.875rem;height:.875rem}
+/* The approvals count in the top bar (3.0 · 2.3): a quiet translucent pill on navy, always visible, linking to Approvals. */
+.ds-topcount{background:var(--shell-chip);border-radius:var(--radius-full);height:var(--control-md);font-size:var(--text-sm);font-variant-numeric:tabular-nums;text-decoration:none}
+.ds-topcount:hover{text-decoration:none}
 .ds-bell__count{position:absolute;top:3px;right:2px;min-width:.875rem;border-radius:var(--radius-full);background:var(--white);color:var(--brand-primary-950);font-size:var(--text-2xs);line-height:var(--line-height-2xs);font-weight:var(--weight-semibold);text-align:center}
 .ds-topbar__sep{width:1px;height:1.25rem;background:var(--shell-active-border)}
 /* Ask Brain: the only gradient in the shell, a border on a pill. Solid white when the panel is open. */
@@ -1569,6 +1598,9 @@ a.ds-atile:hover{background:var(--bg-subtle);color:var(--fg);text-decoration:non
 /* Floating pill tab bar (Public): icons with labels, the current tab in a soft inner pill. */
 [data-shell="app"] .ds-tabbar{position:absolute;left:var(--app-pad);right:var(--app-pad);bottom:var(--app-bar-gap);height:var(--app-bar-h);padding:var(--space-1-5);gap:var(--space-0-5);border:var(--border-width) solid var(--border-subtle);border-radius:var(--radius-full);background:color-mix(in srgb,var(--app-card) 90%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(20px);backdrop-filter:saturate(1.6) blur(20px);box-shadow:var(--shadow-md)}
 [data-shell="app"] .ds-tab{min-height:0;border-radius:var(--radius-full);gap:var(--space-0-5)}
+/* The Approvals count on its tab: a count, not a status, so it is navy (the primary fill), not red. */
+.ds-tab{position:relative}
+.ds-tab__badge{position:absolute;top:.125rem;left:calc(50% + .375rem);min-width:1rem;height:1rem;padding:0 .25rem;border-radius:var(--radius-full);background:var(--brand-primary);color:var(--brand-primary-on);font-style:normal;font-size:var(--text-2xs);line-height:var(--line-height-2xs);font-weight:var(--weight-semibold);text-align:center;font-variant-numeric:tabular-nums}
 [data-shell="app"] .ds-tab[aria-current="page"]{background:var(--app-tab-on)}
 [data-shell="app"] .ds-callslot{position:absolute;left:0;right:0;padding-inline:var(--app-pad);bottom:calc(var(--app-bar-gap) + var(--app-bar-h) + var(--space-2));z-index:var(--layer-sticky)}
 [data-shell="app"] .ds-fab{bottom:calc(var(--app-bar-gap) + var(--app-bar-h) + var(--space-3))}

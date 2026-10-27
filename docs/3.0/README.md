@@ -207,7 +207,7 @@ The screens the brief describes in the most detail, and the ones every scenario 
 
 ### 2.3 Approvals page
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** L · **Screens:** New page, sidebar, top bar, Brain suggests, outcome follow-ups
+**Status:** Done, Oct 27, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** L · **Screens:** New page, sidebar, top bar, Brain suggests, outcome follow-ups
 
 - **The brief:** One queue for every planned email, text, letter, LinkedIn step, valuation and data push, each with its reason. Preview and edit, bulk approve, the first-wave button, and a count in the top bar. (Doc 1 §10, doc 3 Approvals, doc 4 §5 and §8)
 - **Today:** An inline approval bar for lists, suggestions and lessons. No page and no count.

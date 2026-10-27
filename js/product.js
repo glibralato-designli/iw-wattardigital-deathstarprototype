@@ -24,11 +24,11 @@
 
   /* ───────── Store: demo data in local storage, session UI in session storage ───────── */
   const STORE = 'ds-proto-v2', UI = 'ds-ui-v2';
-  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, optOut: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
+  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, optOut: {}, appr: {}, apprEdit: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
-  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
+  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'approved', 'decided', 'bulk', 'wave', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
   let snapshot = isSnapshot();
   let S = { ...fresh(), ...(read(localStorage, STORE) || {}) };
   if (params.get('reset') === '1') { S = fresh(); write(localStorage, STORE, S); try { sessionStorage.removeItem(UI); } catch (_) {} }
@@ -202,6 +202,18 @@
   // A preset: choice=<outcome>, res=meeting,bov,texts.
   OUT.preset = (id, dur) => { const ch = params.get('choice') || (params.get('call') === 'saving' ? 'No answer' : null), oc = OUT.blank(id, dur); if (!ch) return oc;
     const p = OUT.pick(oc, ch); (params.get('res') || '').split(',').filter(k => OUT.results.some(r => r[0] === k)).forEach(k => { if (OUT.reached(ch)) p.res[k] = true; }); return p; };
+  /* Approvals (3.0 · 2.3): one inbox for every planned touch. S.appr[id] = 'approved' | 'held' | 'removed'; S.apprEdit[id] = edited lines.
+     Blocked items (an opted-out owner) can't be approved; a warning never blocks. */
+  const apprList = () => D.approvals.map(a => ({ ...a, c: a.cid ? cById[a.cid] : null, p: a.pid ? pById[a.pid] : null, state: (S.appr || {})[a.id] || null, body: (S.apprEdit || {})[a.id] || a.body, blocked: !!(a.check && a.check[0] === 'block') || !!(a.cid && cById[a.cid].status === 'Do not contact') }));
+  const apprPending = () => apprList().filter(a => !a.state).length;
+  const apprSet = (ids, state) => { S.appr = { ...S.appr }; ids.forEach(id => { S.appr[id] = state; }); save(); };
+  // Presets: approved=<id,…>, decided=all (the empty state), bulk=<lane> (that lane approved), wave=1 (the first wave approved).
+  const apprPresets = () => { const L = apprList();
+    if (params.get('decided') === 'all') L.forEach(a => { S.appr[a.id] = a.blocked ? 'removed' : 'approved'; });
+    if (params.has('approved')) params.get('approved').split(',').forEach(id => { S.appr[id] = 'approved'; });
+    if (params.has('bulk')) L.filter(a => a.lane === params.get('bulk') && !a.blocked && !a.n).forEach(a => { S.appr[a.id] = 'approved'; });
+    if (params.get('wave') === '1') S.appr.a0 = 'wave'; };
+  ui.waiting = (id, label = 'Waiting for your click') => `<a class="ds-waiting" href="${href('approvals', id ? 'open=' + id : '')}">${icon('tray')}${esc(label)}</a>`;
   // The opener (3.0 · 2.2): Thomas's first lines, from the fixtures or written from the why now. It never names a price.
   const openerOf = c => { const p = pById[c.pid], first = c.name.split(' ')[0]; return D.openers[c.id] || [first + ', it’s Thomas Windels at Stewart Group. I work with owners around ' + p.hood + '.', 'I’m calling about ' + p.addr + ': ' + c.signal.toLowerCase() + ' is the kind of moment where owners like a second view.', 'No pitch. Would fifteen minutes this week be useful?']; };
   // The north-star number (Orientation doc 1 §2): owner meetings scheduled this week. The calendar holds 3 (Okafor lunch, Adler BOV pitch,
@@ -281,7 +293,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, openerOf, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, openerOf, apprList, apprPending, apprSet, apprPresets, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
@@ -332,7 +344,7 @@
   const chatOn = () => userCount() > 0;
 
   /* ───────── Sidebar ───────── */
-  const NAVKEY = { 'attack-plan': 'today', home: 'dashboard', brain: 'brain', contacts: 'database' };
+  const NAVKEY = { 'attack-plan': 'today', approvals: 'approvals', home: 'dashboard', brain: 'brain', contacts: 'database' };
   function sidebar() {
     const rail = isRail(), sc = DS.screen;
     const tipSide = 'right', railTip = l => rail ? ` data-tip="${esc(l)}" data-tip-side="${tipSide}"` : '';
@@ -347,7 +359,8 @@
       const [label, ic, page, badge] = n, key = NAVKEY[page];
       if (!rail && grp && U.navGrp[grp] && key !== sc.nav) return;
       if (!page) { h += `<a class="ds-nav" role="link" tabindex="0" aria-disabled="true" data-tip="${OFF}" data-tip-side="right">${icon(ic)}<span>${esc(label)}</span>${badge ? `<span class="ds-nav__badge">${badge}</span>` : ''}</a>`; return; }
-      h += `<a class="ds-nav" href="${href(page)}"${key === sc.nav ? ' aria-current="page"' : ''}${railTip(label)}>${key === sc.nav ? '<span class="ds-nav__ink" aria-hidden="true"></span>' : ''}${icon(ic)}<span>${esc(label)}</span></a>`;
+      const cnt = page === 'approvals' ? apprPending() : 0;
+      h += `<a class="ds-nav" href="${href(page)}"${key === sc.nav ? ' aria-current="page"' : ''}${railTip(cnt ? label + ' · ' + cnt + ' to approve' : label)}>${key === sc.nav ? '<span class="ds-nav__ink" aria-hidden="true"></span>' : ''}${icon(ic)}<span>${esc(label)}</span>${cnt ? `<span class="ds-nav__badge" aria-label="${cnt} to approve">${cnt}</span>` : ''}</a>`;
     });
     if (rail || !U.navGrp.Marketing) {
       const moreOpen = U.moreOpen || sc.nav === 'more';
@@ -401,6 +414,7 @@
     return `<button type="button" class="ds-icon-btn ds-topbar__menu" data-tone="shell" aria-label="Open menu" aria-expanded="${!!V.drawer}" data-act="open-drawer">${icon('list')}</button><nav class="ds-crumbs" aria-label="Breadcrumb">${cr}</nav><div class="ds-topbar__tools">
       <button type="button" class="ds-search-trigger" data-act="palette" data-arg="search" aria-label="Search contacts, properties, BBL">${icon('magnifying-glass')}<span>Search contacts, properties, BBL</span><kbd>⌘K</kbd></button>
       <div class="ds-links" style="position:relative"><button type="button" class="ds-shell-btn" aria-haspopup="menu" aria-expanded="${V.menu === 'links'}" aria-label="Links" data-act="menu" data-arg="links">${icon('link-simple')}<span class="ds-shell-btn__label">Links</span>${icon('caret-down')}</button>${links}</div>
+      ${apprPending() ? `<a class="ds-shell-btn ds-topcount" href="${href('approvals')}" aria-label="${apprPending()} to approve">${icon('tray')}<span>${apprPending()} to approve</span></a>` : ''}
       <span class="ds-bell" role="button" tabindex="0" aria-disabled="true" aria-label="Notifications, 3 unread" data-tip="${OFF}">${icon('bell')}<span class="ds-bell__count">3</span></span>
       <span class="ds-topbar__sep" aria-hidden="true"></span>
       <button type="button" class="ds-ask" aria-pressed="${open}" aria-label="${open ? 'Close Brain' : 'Open Brain'}" data-tip="Brain  ⌘J" data-act="toggle-brain">${icon('sparkle')}<span class="ds-ask__label">Ask Brain</span>${unread ? '<span class="ds-ask__dot" aria-label="Unread message"></span>' : ''}</button>
@@ -712,11 +726,11 @@
      web names (home, contact, brain…), so shared helpers and reused screen scripts link inside the app. */
   const APP = document.body.dataset.shell === 'app';
   DS.app = APP;
-  const TABS = [['today', 'Today', 'sun', 'attack-plan'], ['brain', 'Brain', 'sparkle', 'brain'], ['database', 'Database', 'database', 'contacts'], ['more', 'More', 'dots-three-circle', 'more']];
+  const TABS = [['today', 'Today', 'sun', 'attack-plan'], ['approvals', 'Approvals', 'tray', 'approvals'], ['brain', 'Brain', 'sparkle', 'brain'], ['database', 'Database', 'database', 'contacts'], ['more', 'More', 'dots-three-circle', 'more']];
   const tabOf = sc => sc.tab || ({ today: 'today', brain: 'brain', database: 'database' }[sc.nav]) || 'more';
   function tabbar() {
     const cur = tabOf(DS.screen);
-    return TABS.map(([k, l, ic, page]) => `<a class="ds-tab" href="${href(page)}"${k === cur ? ' aria-current="page"' : ''}>${icon(ic, k === cur ? 'fill' : 'regular')}<span>${l}</span></a>`).join('');
+    return TABS.map(([k, l, ic, page]) => { const n = k === 'approvals' ? apprPending() : 0; return `<a class="ds-tab" href="${href(page)}"${k === cur ? ' aria-current="page"' : ''}${n ? ` aria-label="${l}, ${n} to approve"` : ''}>${icon(ic, k === cur ? 'fill' : 'regular')}${n ? `<i class="ds-tab__badge" aria-hidden="true">${n}</i>` : ''}<span>${l}</span></a>`; }).join('');
   }
   // A screen describes its bar: { title, large, back: [label, page, query, 'history'?] or lead (a control), actions }.
   // Large-title screens render ui.large() at the top of the page; the bar shows the title once it scrolls away.
