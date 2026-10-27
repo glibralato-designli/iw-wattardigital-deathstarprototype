@@ -44,6 +44,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
   - Oct 27, at build: web only; the app stays in field mode (3.3). Bulk actions act on selected rows, with "Select the N at 85% or more"; the flagged item is never selectable. Built Oct 27.
 - **3.2 The buyer side of a person:** Option A, A Buyer tab and a header chip (recommended)
   - Note: With a good layout
+  - Oct 27, at build: summary-first layout picked over two columns. The app gets the chip and a Buyer section on the contact's Overview. Example: Michael Greene (sold Sep 3, so 1031 identify by Oct 18). Built Oct 27.
 - **3.3 Mobile app as field mode:** Option A, Near me as a tab, Scan in the header (recommended)
 - **3.4 Visual standard test:** Option A, A variant to compare (recommended)
 - **3.5 Calendar: booking page and sync:** Option A, A small card in the rail (recommended)

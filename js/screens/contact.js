@@ -5,7 +5,7 @@
   const c = D.cById[id], p = D.pById[c.pid];
   const S = DS.S(), U = DS.U();
   const dnc = () => c.status === 'Do not contact';
-  const TABS = ['overview', 'intelligence', 'ownership', 'activity', 'details', 'history'];
+  const TABS = ['overview', 'intelligence', 'ownership', 'activity', 'details', 'history', ...(D.buyerSide[id] ? ['buyer'] : [])];
   const st = { tab: TABS.includes(params.get('tab')) ? params.get('tab') : 'overview', whyOpen: params.get('why') === 'open', noteOpen: params.get('note') === '1', noteDraft: '', qNote: '', listPick: '', actF: 'All', othersOpen: false, saving: params.get('call') === 'saving', openerOpen: params.get('opener') === 'open', buyersOpen: params.get('buyers') === 'all' };
   const acc = (key, def) => { const a = DS.V.acc || {}; return key in a ? a[key] : def; };
 
@@ -55,7 +55,7 @@
       <div class="ds-rhead"><span class="ds-rhead__avatar" aria-hidden="true">${esc(DS.initials(c.name))}</span>
         <div class="ds-rhead__body"><div class="ds-rhead__title"><h1>${esc(c.name)}</h1>${ui.cls(c.cls, true)}</div>
           <div class="ds-rhead__meta">${meta.map(([l, ic]) => `<span>${icon(ic)}${esc(l)}</span>`).join('')}${teamChip()}</div>
-          <div class="ds-rhead__chips">${ui.rankChip(c)}${ui.bldChip(p)}<span class="ds-chip" data-tone="outline"><span class="ds-dot" data-tone="${ui.statusDot(c.status)}"></span>${esc(c.status)}</span><span class="ds-chip" title="Lead stage">${esc(tier)}</span>${c.status === 'Do not contact' ? `<span class="ds-chip" data-tone="danger">${icon('warning-diamond')}Asked not to be contacted</span>` : ''}</div>${ui.lift(c)}</div>
+          <div class="ds-rhead__chips">${ui.rankChip(c)}${ui.bldChip(p)}<span class="ds-chip" data-tone="outline"><span class="ds-dot" data-tone="${ui.statusDot(c.status)}"></span>${esc(c.status)}</span><span class="ds-chip" title="Lead stage">${esc(tier)}</span>${c.status === 'Do not contact' ? `<span class="ds-chip" data-tone="danger">${icon('warning-diamond')}Asked not to be contacted</span>` : ''}${ui.buyerChip(c)}</div>${ui.lift(c)}</div>
         <div class="ds-rhead__actions"><div class="ds-rhead__primary">${dnc() ? ui.btn({ label: 'Call', ic: 'phone', disabled: true, tip: DS.NO_CONTACT }) : !onCall() && !oc ? ui.btn({ label: 'Call', ic: 'phone', act: 'start-call' }) : ''}${ui.btn({ label: 'Add note', ic: 'note', variant: 'outline', act: 'open-note' })}</div>
           <div class="ds-rhead__tools">${ui.btn({ ic: 'plus', aria: 'Add to queue', tip: dnc() ? DS.NO_CONTACT : 'Add to queue', variant: 'outline', act: 'queue', disabled: dnc() })}${ui.btn({ ic: 'chat-text', aria: 'Text', variant: 'outline', disabled: true, tip: dnc() ? DS.NO_CONTACT : null })}${ui.btn({ ic: 'envelope-simple', aria: 'Email', variant: 'outline', disabled: true, tip: dnc() ? DS.NO_CONTACT : null })}${ui.btn({ ic: 'arrows-in-simple', aria: 'Show as side panel', tip: 'Show as side panel', variant: 'outline', link: href('contacts', 'peek=' + id) })}</div></div>
       </div>`;
@@ -144,7 +144,7 @@
     const op = DS.openerOf(c), bs = D.buyersFor(p), shown = st.buyersOpen ? bs : bs.slice(0, 3);
     return `<section class="ds-card ds-callprep" data-pad="all" aria-label="Before you dial"><div class="ds-two">
       <div class="ds-stack" data-gap="2"><div class="ds-callprep__h"><h3>Opener</h3><span class="ds-meta">In your voice · never a price</span></div>${(st.openerOpen ? op : op.slice(0, 2)).map(l => `<p class="ds-callprep__line">${esc(l)}</p>`).join('')}${op.length > 2 ? `<button type="button" class="ds-link-btn" style="align-self:flex-start" aria-expanded="${st.openerOpen}" data-act="toggle-opener">${st.openerOpen ? 'Show less' : 'Show the full opener'}${icon(st.openerOpen ? 'caret-up' : 'caret-down')}</button>` : ''}</div>
-      <div class="ds-stack" data-gap="2"><div class="ds-callprep__h"><h3>Buyers who fit</h3><span class="ds-meta">For ${esc(p.addr)}</span></div>${shown.length ? shown.map(b => `<div class="ds-callprep__buyer"><span class="font-medium">${esc(b.name)}</span><span class="ds-meta">${esc(b.box)} · ${esc(b.when)}</span></div>`).join('') : '<span class="ds-meta">No buyers on record for this area yet.</span>'}${bs.length > 3 ? `<button type="button" class="ds-link-btn" style="align-self:flex-start" aria-expanded="${st.buyersOpen}" data-act="toggle-buyers">${st.buyersOpen ? 'Show fewer' : 'Show ' + (bs.length - 3) + ' more'}${icon(st.buyersOpen ? 'caret-up' : 'caret-down')}</button>` : ''}</div></div></section>`;
+      <div class="ds-stack" data-gap="2"><div class="ds-callprep__h"><h3>Buyers who fit</h3><span class="ds-meta">For ${esc(p.addr)}</span></div>${shown.length ? shown.map(b => `<div class="ds-callprep__buyer">${ui.buyerName(b)}<span class="ds-meta">${esc(b.box)} · ${esc(b.when)}</span></div>`).join('') : '<span class="ds-meta">No buyers on record for this area yet.</span>'}${bs.length > 3 ? `<button type="button" class="ds-link-btn" style="align-self:flex-start" aria-expanded="${st.buyersOpen}" data-act="toggle-buyers">${st.buyersOpen ? 'Show fewer' : 'Show ' + (bs.length - 3) + ' more'}${icon(st.buyersOpen ? 'caret-up' : 'caret-down')}</button>` : ''}</div></div></section>`;
   };
   // During a live call the lower sections fold away, so the card is all that's left.
   const overview = () => whyCard() + callPrep() + (onCall() ? '<p class="ds-meta">Relationship, reach and facts are folded during the call.</p>' : relationship() + `<div class="ds-acc">${reach()}${facts()}${recent()}${notes()}</div>`);
@@ -229,8 +229,8 @@
     </aside>`;
   };
 
-  const tabs = () => ui.stateTabs([['overview', 'Overview'], ['intelligence', 'Intelligence'], ['ownership', 'Ownership (' + portfolio.length + ')'], ['activity', 'Activity (' + DS.timelineOf(c).length + ')'], ['details', 'Details'], ['history', 'History'], ['related', 'Related', true], ['map', 'Property map', true]], st.tab, 'tab', 'Record');
-  const body = () => `<div class="ds-stack" data-gap="4" style="gap:var(--space-5)" data-anim="fade" data-key="tab-${st.tab}">${({ overview, intelligence, ownership, activity, details, history: historyTab })[st.tab]()}</div>`;
+  const tabs = () => ui.stateTabs([['overview', 'Overview'], ['intelligence', 'Intelligence'], ['ownership', 'Ownership (' + portfolio.length + ')'], ['activity', 'Activity (' + DS.timelineOf(c).length + ')'], ['details', 'Details'], ['history', 'History'], ...(D.buyerSide[id] ? [['buyer', 'Buyer']] : []), ['related', 'Related', true], ['map', 'Property map', true]], st.tab, 'tab', 'Record');
+  const body = () => `<div class="ds-stack" data-gap="4" style="gap:var(--space-5)" data-anim="fade" data-key="tab-${st.tab}">${({ overview, intelligence, ownership, activity, details, history: historyTab, buyer: () => ui.buyerSide(c) })[st.tab]()}</div>`;
 
   /* ───────── Actions ───────── */
   const nextOwner = () => { const ids = DS.callIds(), cur = ids.indexOf(id), order = [...ids.slice(cur + 1), ...ids.slice(0, Math.max(cur, 0))], nx = order.find(x => !S.done[x] && x !== id); if (nx) Nav.go('contact', 'id=' + nx); else DS.toast('You’ve called everyone on today’s list.'); };

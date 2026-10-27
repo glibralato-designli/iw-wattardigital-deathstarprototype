@@ -183,17 +183,17 @@
      plain reason. Nothing changes in a record until Thomas approves. flag: Brain leaves it alone (conflicting sources), so it's never in a bulk action. */
   const QUEUES = [['contact', 'Contact', 'phone'], ['ownership', 'Ownership', 'identification-card'], ['property', 'Property', 'buildings'], ['context', 'Context', 'sparkle']];
   const cleaning = [
-    { id: 'k1', q: 'contact', cid: 'marchetti', field: 'Mobile', from: '(917) 555-0123 · unconfirmed', to: '(917) 555-0123 · confirmed mobile', conf: 96, src: 'Terrakotta call log · Oct 21', why: 'He picked up on Oct 21 and you talked for 6 minutes. The carrier lookup says it’s a mobile.' },
-    { id: 'k2', q: 'contact', cid: 'okafor', field: 'Email', from: 'grace.okafor@example.com', to: 'grace@okafor-family.example', conf: 81, src: 'Gmail bounce · Oct 24 · LinkedIn · Oct 25', why: 'The old address bounced twice this week. Her LinkedIn profile lists the new one.' },
-    { id: 'k3', q: 'contact', cid: 'rivera', field: 'Phone', from: '(212) 555-0138 · primary', to: 'Wrong person · stop calling it', conf: 92, src: 'Your call outcome · Oct 23', why: 'You logged “wrong person” on Oct 23, and an earlier call in September got the same answer.' },
-    { id: 'o1', q: 'ownership', pid: 'p236w', field: 'Owner', from: 'Chelsea 22 Realty LLC · Claire Brennan', to: 'W 22 Residential LLC · new deed owner', conf: 98, src: 'ACRIS deed · recorded Oct 20', why: 'A deed recorded on Oct 20 transfers 236 W 22nd St. Claire Brennan moves to past owners and the new owner gets a record.' },
-    { id: 'o2', q: 'ownership', pid: 'p27o', cid: 'feld', field: 'Decision-maker', from: 'Aaron Feld · sole heir', to: 'Aaron Feld and Miriam Feld · co-executors', conf: 48, src: 'Surrogate’s Court filing · Oct 14 · Aaron, on a call · Oct 9', why: 'The probate filing names a co-executor. Aaron told you on Oct 9 that he decides alone. The sources disagree, so Brain left this for you.', flag: true },
-    { id: 'o3', q: 'ownership', pid: 'p155d', cid: 'chen', field: 'Managing member', from: 'Not on record', to: 'Wei Chen · managing member', conf: 88, src: 'NY Department of State filing · Sep 30', why: 'The LLC’s latest filing names Wei Chen as managing member, matching the owner on the case file.' },
-    { id: 'p1', q: 'property', pid: 'p90c', field: 'Units', from: '41 units', to: '43 units', conf: 90, src: 'DOB certificate of occupancy · Oct 2', why: 'A new certificate of occupancy adds two basement units.' },
-    { id: 'p2', q: 'property', pid: 'p64e', field: 'Rent-stabilized units', from: '6 stabilized', to: '8 stabilized', conf: 84, src: 'DHCR registration 2026 · Oct 15', why: 'This year’s rent registration lists two more stabilized units than the record.' },
-    { id: 'p3', q: 'property', pid: 'p7s', field: 'Year built', from: '1910', to: '1899', conf: 58, src: 'Landmarks survey · single source · Sep 12', why: 'One survey gives an earlier date. No second source yet, so it’s marked single source if you approve.' },
-    { id: 'x1', q: 'context', pid: 'p155d', field: 'Class', from: 'Class B · 66', to: 'Class A · 81', conf: 87, src: 'Model run · Oct 27, 5:40 AM · Crain’s · Oct 23', why: 'Its lender is pulling back on walk-up refinancing, and the $4.9M loan is due in February.' },
-    { id: 'x2', q: 'context', pid: 'p48a', field: 'Signal', from: 'No signal', to: 'Lis pendens · filed Oct 22', conf: 95, src: 'NY County Clerk · Oct 22', why: 'A lis pendens was filed against 48 Allen St. It adds a distress signal to the building.' },
+    { id: 'k1', q: 'contact', cid: 'marchetti', field: 'Mobile', from: '(917) 555-0123 · unconfirmed', to: '(917) 555-0123 · confirmed mobile', conf: 96, src: 'Terrakotta call log · Sep 24', why: 'He picked up on Sep 24 and you talked for 6 minutes. The carrier lookup says it’s a mobile.' },
+    { id: 'k2', q: 'contact', cid: 'okafor', field: 'Email', from: 'grace.okafor@example.com', to: 'grace@okafor-family.example', conf: 81, src: 'Gmail bounce · Sep 26 · LinkedIn · Sep 27', why: 'The old address bounced twice this week. Her LinkedIn profile lists the new one.' },
+    { id: 'k3', q: 'contact', cid: 'rivera', field: 'Phone', from: '(212) 555-0138 · primary', to: 'Wrong person · stop calling it', conf: 92, src: 'Your call outcome · Sep 25', why: 'You logged “wrong person” on Sep 25, and an earlier call in August got the same answer.' },
+    { id: 'o1', q: 'ownership', pid: 'p236w', field: 'Owner', from: 'Chelsea 22 Realty LLC · Claire Brennan', to: 'W 22 Residential LLC · new deed owner', conf: 98, src: 'ACRIS deed · recorded Sep 22', why: 'A deed recorded on Sep 22 transfers 236 W 22nd St. Claire Brennan moves to past owners and the new owner gets a record.' },
+    { id: 'o2', q: 'ownership', pid: 'p27o', cid: 'feld', field: 'Decision-maker', from: 'Aaron Feld · sole heir', to: 'Aaron Feld and Miriam Feld · co-executors', conf: 48, src: 'Surrogate’s Court filing · Sep 17 · Aaron, on a call · Sep 11', why: 'The probate filing names a co-executor. Aaron told you on Sep 11 that he decides alone. The sources disagree, so Brain left this for you.', flag: true },
+    { id: 'o3', q: 'ownership', pid: 'p155d', cid: 'chen', field: 'Managing member', from: 'Not on record', to: 'Wei Chen · managing member', conf: 88, src: 'NY Department of State filing · Sep 8', why: 'The LLC’s latest filing names Wei Chen as managing member, matching the owner on the case file.' },
+    { id: 'p1', q: 'property', pid: 'p90c', field: 'Units', from: '41 units', to: '43 units', conf: 90, src: 'DOB certificate of occupancy · Sep 14', why: 'A new certificate of occupancy adds two basement units.' },
+    { id: 'p2', q: 'property', pid: 'p64e', field: 'Rent-stabilized units', from: '6 stabilized', to: '8 stabilized', conf: 84, src: 'DHCR registration 2026 · Sep 18', why: 'This year’s rent registration lists two more stabilized units than the record.' },
+    { id: 'p3', q: 'property', pid: 'p7s', field: 'Year built', from: '1910', to: '1899', conf: 58, src: 'Landmarks survey · single source · Aug 28', why: 'One survey gives an earlier date. No second source yet, so it’s marked single source if you approve.' },
+    { id: 'x1', q: 'context', pid: 'p155d', field: 'Class', from: 'Class B · 66', to: 'Class A · 81', conf: 87, src: 'Model run · today, 5:40 AM · Crain’s · Sep 26', why: 'Its lender is pulling back on walk-up refinancing, and the $4.9M loan is due in February.' },
+    { id: 'x2', q: 'context', pid: 'p48a', field: 'Signal', from: 'No signal', to: 'Lis pendens · filed Sep 29', conf: 95, src: 'NY County Clerk · Sep 29', why: 'A lis pendens was filed against 48 Allen St. It adds a distress signal to the building.' },
   ];
 
   /* Database scale: about 40,000 contacts and 18,600 properties (Thomas, P3 25:14). The table shows the fictional demo rows. */
@@ -294,10 +294,10 @@
 
   /* What changed (3.0 · 2.5, Orientation doc 1 §9): [id, area, date, what changed, how it was before, who approved it]. */
   const changes = [
-    ['ranking', 'Ranking', 'Oct 25', 'Paid-off loans weigh more, so owners with no debt rank lower.', 'A paid-off loan counted the same as any long hold.', 'Model v4.1 · approved by Thomas W.'],
-    ['lesson', 'Brain lesson', 'Oct 24', 'Family owners who say “not selling” are read as “not yet”, unless they just refinanced.', 'Brain took “not selling” at face value.', 'Lesson approved by Thomas W.'],
-    ['dnc-check', 'Approvals', 'Oct 23', 'A text to a number on a do-not-call list shows a check before you send.', 'It went into the queue with no check.', 'Thomas W.'],
-    ['callbacks', 'Today', 'Oct 22', 'Callbacks come first in Call next.', 'Callbacks were mixed into the ranked list.', 'Thomas W.'],
+    ['ranking', 'Ranking', 'Sep 28', 'Paid-off loans weigh more, so owners with no debt rank lower.', 'A paid-off loan counted the same as any long hold.', 'Model v4.1 · approved by Thomas W.'],
+    ['lesson', 'Brain lesson', 'Sep 25', 'Family owners who say “not selling” are read as “not yet”, unless they just refinanced.', 'Brain took “not selling” at face value.', 'Lesson approved by Thomas W.'],
+    ['dnc-check', 'Approvals', 'Sep 23', 'A text to a number on a do-not-call list shows a check before you send.', 'It went into the queue with no check.', 'Thomas W.'],
+    ['callbacks', 'Today', 'Sep 21', 'Callbacks come first in Call next.', 'Callbacks were mixed into the ranked list.', 'Thomas W.'],
   ].map(([id, area, date, what, before, by]) => ({ id, area, date, what, before, by }));
 
   /* The first touch per owner (3.0 · 2.4, Orientation doc 1 §6, doc 2 §3): [channel icon, plan, because, sequence step, why it stopped, approval id]. */
@@ -325,7 +325,20 @@
     ['Eighth Avenue Capital', 'Mixed-use with retail on the ground floor', 'Cash, closes in 60 days', ['Chelsea', 'Midtown West']],
     ['Tenth Street Capital', 'Value-add walk-ups, any size', 'Bought 3 buildings this year', ['East Village', 'Chelsea', 'Midtown West', 'Upper East Side', 'Central Harlem']],
   ].map(([name, box, when, hoods]) => ({ name, box, when, hoods }));
-  const buyersFor = p => buyers.filter(b => b.hoods.includes(p.hood)).slice(0, 5);
+  /* The buyer side of a person (3.0 · 3.2, Orientation doc 1 §14 and §23): one record, two sides. Michael Greene owns 19 Rivington St and
+     sold 210 E 5th St on Sep 3, so a 1031 clock runs: 45 days to identify (Oct 18), 180 to close (Mar 2, 2027). What he said is a claim with its source. */
+  const buyerSide = {
+    greene: { box: 'Lower East Side and East Village walk-ups, 10–20 units, $5–9M, free-market or mixed', hoods: ['Lower East Side', 'East Village'], units: [10, 20],
+      score: 78, scoreWhy: '1031 money to place and two opens of the 41 Ludlow St OM', src: 'His Sep 12 call · ACRIS',
+      said: ['Something I can manage myself, close to Rivington.', 'Sep 12 call'],
+      clock: { start: 'Sep 3', id: 'Oct 18', close: 'Mar 2, 2027', day: 27, left: 18 },
+      deals: [['Sold', '210 E 5th St', 'Sep 3, 2026', '$7.1M', 'ACRIS deed'], ['Bought', '19 Rivington St', 'Jun 2009', '$2.4M', 'ACRIS deed']],
+      listings: [['230 E 7th St', 'East Village · 16 units · $8.2M', 'Our listing']] },
+  };
+  const fitsBuyer = (b, p) => b.hoods.includes(p.hood) && p.units >= b.units[0] && p.units <= b.units[1];
+  const buyersFor = p => [...Object.entries(buyerSide).filter(([cid, b]) => p.owner !== cid && fitsBuyer(b, p)).map(([cid, b]) => ({ cid, name: cById[cid].name, box: 'Also an owner · ' + b.hoods.map(h => h === 'Lower East Side' ? 'LES' : h).join(' and ') + ' walk-ups, ' + b.units.join('–') + ' units', when: '1031 · identify by ' + b.clock.id })), ...buyers.filter(b => b.hoods.includes(p.hood))].slice(0, 5);
+  // Off-market buildings in a buyer's box, best scored first (his own excluded).
+  const fitsFor = cid => P.filter(p => p.owner !== cid && fitsBuyer(buyerSide[cid], p)).sort((x, y) => y.score - x.score);
 
   /* Approvals (3.0 · 2.3, Orientation doc 1 §10, doc 4 §5 and §8): every planned touch waits for Thomas's click, with its reason.
      [id, lane, contact or null, building or null, title, reason, body lines, check: null | ['warn' | 'block', text], extra]. */
@@ -546,5 +559,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { QUEUES, cleaning, teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { buyerSide, fitsFor, QUEUES, cleaning, teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

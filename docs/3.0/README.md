@@ -322,7 +322,7 @@ Features that close the loop between calls, plus the visual standard test.
 
 ### 3.2 The buyer side of a person
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 (see the note in DECISIONS.md) · **Effort:** M · **Screens:** Case file, Buyers who fit, Listings
+**Status:** Done, Oct 27, 2026 (Option A, summary-first layout) · **Decision:** Option A approved, Oct 27 (see the note in DECISIONS.md) · **Effort:** M · **Screens:** Case file, Buyers who fit, Listings
 
 - **The brief:** Every person is one record with a seller side and a buyer side: buy box, buyer score, 1031 clock, recent purchases. Three to five buyers who fit appear on every owner card. (Doc 1 §14 and §23)
 - **Today:** Listings show who viewed. No buyer profile.

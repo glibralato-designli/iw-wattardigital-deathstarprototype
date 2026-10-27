@@ -454,6 +454,35 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-callprep__h h3{font-size:var(--text-base);line-height:var(--line-height-base);font-weight:var(--weight-semibold);color:var(--fg)}
 .ds-callprep__line{color:var(--fg);text-wrap:pretty}
 .ds-callprep__buyer{display:flex;flex-direction:column;gap:var(--space-0-5)}
+/* The buyer side (3.0 · 3.2): a quiet header chip (outline, handshake icon) that opens the Buyer tab; the tab reads summary first in
+   plain cards: the buy box with its score and the 1031 clock, recent deals, then what fits (rows that link). */
+.ds-buyerchip{cursor:pointer;color:var(--fg);text-decoration:none}
+.ds-buyerchip svg{color:var(--brand-primary-text)}
+button.ds-buyerchip:hover,a.ds-buyerchip:hover{background:var(--bg-muted);text-decoration:none}
+.ds-buyer{display:flex;flex-direction:column;gap:var(--space-3)}
+.ds-buyer__h{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap}
+.ds-buyer__h h2{font-size:var(--text-base);line-height:var(--line-height-base);font-weight:var(--weight-semibold)}
+.ds-buyer__h h3{font-size:var(--text-sm);line-height:var(--line-height-sm);font-weight:var(--weight-medium)}
+.ds-buyer__box{max-width:60ch;font-size:var(--text-lg);line-height:var(--line-height-lg);font-weight:var(--weight-medium);text-wrap:pretty}
+.ds-buyer__said{max-width:62ch;color:var(--fg-secondary);font-style:italic;text-wrap:pretty}
+.ds-buyer__said .ds-meta{font-style:normal}
+.ds-buyer__clock{display:flex;flex-direction:column;gap:var(--space-2);padding-top:var(--space-3);border-top:var(--border-width) solid var(--border-subtle)}
+.ds-clock{display:flex;flex-direction:column;gap:var(--space-1-5)}
+.ds-clock__track{position:relative;height:.375rem;border-radius:var(--radius-full);background:var(--bg-muted)}
+.ds-clock__fill{position:absolute;inset:0 auto 0 0;border-radius:var(--radius-full);background:var(--brand-primary)}
+.ds-clock__mark{position:absolute;top:-.25rem;left:25%;width:2px;height:.875rem;border-radius:var(--radius-full);background:var(--fg)}
+.ds-clock__labels{display:grid;grid-template-columns:25% 1fr auto;gap:var(--space-2);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+.ds-clock__labels>span:nth-child(2){margin-left:-1px;color:var(--fg);white-space:nowrap}
+.ds-clock__labels>span:nth-child(3){text-align:right}
+.ds-buyer__rows{display:flex;flex-direction:column}
+.ds-buyer__row{display:grid;grid-template-columns:4rem minmax(0,1fr) auto;align-items:center;gap:var(--space-3);padding:var(--space-2-5) 0;color:var(--fg);text-decoration:none}
+.ds-buyer__row+.ds-buyer__row{border-top:var(--border-width) solid var(--border-subtle)}
+a.ds-buyer__row:hover{text-decoration:none}
+a.ds-buyer__row:hover .font-medium{color:var(--link);text-decoration:underline}
+.ds-buyer__k{color:var(--fg-muted);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-buyer__k svg{width:1.125rem;height:1.125rem;display:block}
+@media (max-width:767px){.ds-buyer__row{grid-template-columns:3.25rem minmax(0,1fr) auto}}
+.ds-abuyer .ds-buyer__row{padding-inline:var(--space-4);grid-template-columns:1.5rem minmax(0,1fr) auto}
 .ds-why__actions{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;padding-top:var(--space-1)}
 .ds-why__more{display:flex;flex-direction:column;gap:var(--space-4);padding-top:var(--space-1)}
 .ds-driver{display:flex;align-items:center;gap:var(--space-2-5)}

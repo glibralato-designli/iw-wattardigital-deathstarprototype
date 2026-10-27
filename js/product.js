@@ -228,6 +228,26 @@
     if (params.has('cleanbulk')) L.filter(x => x.q === params.get('cleanbulk') && !x.flag && x.conf >= 85).forEach(x => { S.clean[x.id] = 'approved'; }); };
   // The Database tabs, with the Cleaning count.
   ui.dbTabs = cur => ui.tabs(D.databaseTabs.map(t => t[0] === 'cleaning' ? [t[0], t[1], false, cleanPending() || 0] : t), cur, 'Database');
+  /* The buyer side of a person (3.0 · 3.2): a quiet header chip only when the person is an active buyer, the 1031 clock (sold → identify
+     by day 45 → close by day 180), and the Buyer tab read summary first: the buy box, the clock, recent deals, then what fits. */
+  ui.buyerChip = (c, attrs) => { const b = D.buyerSide[c.id]; return b ? `<${attrs ? 'a' : 'button type="button"'} class="ds-chip ds-buyerchip" ${attrs || 'data-act="tab" data-arg="buyer"'}>${icon('handshake')}Also a buyer · 1031 · identify by ${esc(b.clock.id)}</${attrs ? 'a' : 'button'}>` : ''; };
+  ui.clock = k => `<div class="ds-clock" role="img" aria-label="1031 exchange: sold ${esc(k.start)}, identify by ${esc(k.id)}, close by ${esc(k.close)}. ${k.left} days left to identify.">
+      <div class="ds-clock__track"><span class="ds-clock__fill" style="width:${(k.day / 180 * 100).toFixed(1)}%"></span><span class="ds-clock__mark"></span></div>
+      <div class="ds-clock__labels"><span>Sold ${esc(k.start)}</span><span><b>Identify by ${esc(k.id)}</b></span><span>Close by ${esc(k.close)}</span></div></div>`;
+  ui.buyerName = b => b.cid ? `<a class="font-medium" href="${href('contact', 'id=' + b.cid + '&tab=buyer')}">${esc(b.name)}</a>` : `<span class="font-medium">${esc(b.name)}</span>`;
+  // The three parts, so the app can wrap them in its own sections.
+  ui.buyerParts = c => { const b = D.buyerSide[c.id]; if (!b) return null; const fits = D.fitsFor(c.id);
+    return {
+      box: `<p class="ds-buyer__box">${esc(b.box)}.</p><p class="ds-meta">Buyer score <b class="num" style="color:var(--fg)">${b.score}</b>/100, from ${esc(b.scoreWhy)} · ${esc(b.src)}</p>
+        <p class="ds-buyer__said">“${esc(b.said[0])}”<span class="ds-meta"> Said on the ${esc(b.said[1])}</span></p>
+        <div class="ds-buyer__clock"><div class="ds-buyer__h"><h3>1031 clock</h3><span class="badge">${b.clock.left} days to identify</span></div>${ui.clock(b.clock)}</div>`,
+      deals: `<div class="ds-buyer__rows">${b.deals.map(([k, a, d, v, src]) => `<div class="ds-buyer__row"><span class="ds-buyer__k">${esc(k)}</span><span class="ds-row__body"><span class="font-medium">${esc(a)}</span><span class="ds-meta">${esc(d)} · ${esc(src)}</span></span><span class="num">${esc(v)}</span></div>`).join('')}</div>`,
+      fits: `<div class="ds-buyer__rows">${b.listings.map(([a, sub, tag]) => `<a class="ds-buyer__row" href="${href('listings')}"><span class="ds-buyer__k">${icon('tag')}</span><span class="ds-row__body"><span class="font-medium">${esc(a)}</span><span class="ds-meta">${esc(sub)}</span></span><span class="badge" data-status="info">${esc(tag)}</span></a>`).join('')}${fits.map(p => `<a class="ds-buyer__row" href="${href('property', 'id=' + p.id)}"><span class="ds-buyer__k">${icon('buildings')}</span><span class="ds-row__body"><span class="font-medium">${esc(p.addr)}</span><span class="ds-meta">Off-market · ${esc(cById[p.owner].name)} · ${p.units} units</span></span><span class="ds-meta num" title="Building score">${p.score}</span></a>`).join('')}</div>`,
+      nFits: b.listings.length + fits.length };
+  };
+  ui.buyerSide = c => { const x = ui.buyerParts(c); if (!x) return '';
+    const sec = (h, sub, body) => `<section class="ds-card ds-buyer" data-pad="all" aria-label="${h}"><div class="ds-buyer__h"><h2>${h}</h2>${sub ? `<span class="ds-meta">${sub}</span>` : ''}</div>${body}</section>`;
+    return sec('Buy box', '', x.box) + sec('Recent deals', '', x.deals) + sec('What fits', x.nFits + ' in the box', x.fits); };
   ui.waiting = (id, label = 'Waiting for your click') => `<a class="ds-waiting" href="${href('approvals', id ? 'open=' + id : '')}">${icon('tray')}${esc(label)}</a>`;
   /* Changes note (3.0 · 2.5): a quiet line where the old behaviour was, with Restore (and Undo once restored). The full list is System › Changes. */
   ui.changeNote = id => { const ch = D.changes.find(x => x.id === id); if (!ch) return ''; const back = !!(S.restored || {})[id];
