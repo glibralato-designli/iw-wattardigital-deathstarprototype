@@ -378,7 +378,7 @@ Features that close the loop between calls, plus the visual standard test.
 
 ### 3.5 Calendar: booking page and sync
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Dashboard › Calendar
+**Status:** Done, Oct 28, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Dashboard › Calendar
 
 - **The brief:** Meetings are synced from Microsoft 365, plus a public booking page. Meetings, valuation pitches and tours feed the funnel. (Doc 3 Dashboard)
 - **Today:** Meetings, call blocks, BOV pitches and tours. Booking pages were left out.

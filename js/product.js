@@ -28,13 +28,15 @@
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
-  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'approved', 'decided', 'bulk', 'wave', 'cleaned', 'cleanbulk', 'restored', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
+  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'approved', 'decided', 'bulk', 'wave', 'booked', 'cleaned', 'cleanbulk', 'restored', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
   let snapshot = isSnapshot();
   let S = { ...fresh(), ...(read(localStorage, STORE) || {}) };
   if (params.get('reset') === '1') { S = fresh(); write(localStorage, STORE, S); try { sessionStorage.removeItem(UI); } catch (_) {} }
   // Opt-out is permanent, on every channel (Orientation doc 1 §9): an owner who asked is Do not contact from then on.
   const optOut = c => { c.status0 = c.status0 || c.status; c.status = 'Do not contact'; };
   D.C.forEach(c => { if ((S.optOut || {})[c.id]) optOut(c); });
+  // Booking page (3.0 · 3.5): booked=1, an owner booked through the public page; the meeting is on the calendar and counts in Meetings this week.
+  if (params.get('booked') === '1') { S.calNew = [...(S.calNew || []), { t: 'Booked · Marisol Rivera', off: 1, s: 11, dur: 0.5, cal: 'mtg', cid: 'rivera', n: 'Booked through your booking page', booked: true }]; S.meetings = (S.meetings || 0) + 1; }
   if (params.has('restored')) params.get('restored').split(',').forEach(id => { S.restored = { ...S.restored, [id]: true }; });
   const loadU = () => ({ navRail: null, moreOpen: false, navGrp: {}, brainUser: null, msgs: null, chatTitle: null, chatId: null, seen: false, scopeOff: false, call: null, outcome: null, ...(read(sessionStorage, UI) || {}) });
   let U = loadU();

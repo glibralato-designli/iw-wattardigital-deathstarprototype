@@ -30,10 +30,15 @@
     return `<section class="ds-stack" data-gap="2" style="gap:var(--space-1-5)"><div style="display:flex;align-items:center;gap:var(--space-0-5)"><span class="ds-grow font-semibold" style="padding-left:var(--space-1-5)">${first.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>${ui.iconBtn({ ic: 'caret-left', aria: 'Previous month', act: 'mini-m', arg: mOff - 1 })}${ui.iconBtn({ ic: 'caret-right', aria: 'Next month', act: 'mini-m', arg: mOff + 1 })}</div>
       <div class="ds-minical" data-size="sm">${['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(x => `<span class="ds-minical__dow">${x}</span>`).join('')}${[...Array(cells)].map((_, i) => { const d = new Date(2026, 8 + mOff, 1 - lead + i), o = dOff(d); return `<button type="button" class="ds-minical__d" aria-label="${esc(fmtL(d))}"${d.getMonth() !== first.getMonth() ? ' data-out' : ''}${o === 0 ? ' data-today' : ''}${o === st.off && o !== 0 ? ' data-sel' : ''} data-act="goto" data-arg="${o}">${d.getDate()}</button>`; }).join('')}</div></section>`;
   };
+  // The booking page and the Microsoft 365 sync, two quiet additions to the rail.
+  const booking = () => { const b = S.calNew.find(x => x.booked);
+    return `<section class="ds-booking" aria-label="Booking page"><div class="ds-booking__h">${icon('link-simple')}<b>Booking page</b></div><span class="ds-meta ds-ellipsis">stewartgroup.example/meet-thomas</span>${b ? `<span class="ds-booking__new">${esc(D.cById[b.cid].name)} booked ${esc(fmtMD(addD(b.off)))}, ${esc(tFmt(b.s))} · counts as a meeting</span>` : ''}${ui.btn({ label: 'Copy link', ic: 'copy', size: 'sm', variant: 'outline', act: 'copy-booking' })}</section>
+      <p class="ds-sync">${icon('arrow-clockwise')}Microsoft 365 · synced 2 min ago</p>`; };
   const aside = () => {
     const shown = cols().flatMap(evOn);
     return `<aside class="ds-cal__aside" aria-label="Calendar options">${ui.btn({ label: 'New event', ic: 'plus', size: 'lg', act: 'new-event' })}${miniMonth()}
       <section class="ds-stack" style="gap:1px"><span class="ds-meta font-semibold" style="padding:0 var(--space-1-5) var(--space-1-5)">My calendars</span>${Object.entries(CALS).map(([k, l]) => { const on = !st.hide[k], n = shown.filter(x => x.cal === k).length; return `<button type="button" class="ds-calrow" role="checkbox" aria-checked="${on}" data-cal="${k}" data-act="cal-toggle" data-arg="${k}"><span class="ds-calbox"${on ? ' data-on' : ''} data-tick="cal-${k}|${on ? 'on' : 'off'}">${on ? icon('check') : ''}</span><span>${esc(l)}</span><span>${n || ''}</span></button>`; }).join('')}</section>
+      ${booking()}
       <section class="ds-stack" style="gap:1px"><span class="ds-meta font-semibold" style="padding:0 var(--space-1-5) var(--space-1-5)">Other calendars</span>${['Birthdays', 'Holidays in United States'].map(l => `<span class="ds-calrow" role="checkbox" aria-checked="false" tabindex="0" aria-disabled="true" data-tip="${DS.OFF}" data-tip-side="left"><span class="ds-calbox" style="border-color:var(--fg-disabled)"></span><span>${l}</span><span></span></span>`).join('')}</section></aside>`;
   };
   const label = () => { if (st.view === 'day') return fmtL(sel()); const a = addD(st.view === 'month' ? st.off : wkStart()), b = addD(st.view === 'month' ? st.off : wkStart() + 6); return a.getMonth() === b.getMonth() ? a.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : a.toLocaleDateString('en-US', { month: 'short' }) + ' – ' + b.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); };
@@ -95,6 +100,7 @@
     overlays: dialog,
     after: () => { if (st.focusDraft) { st.focusDraft = false; const el = document.getElementById('draft-title'); if (el) el.focus(); } const sc = document.querySelector('[data-keep-scroll="cal-body"]'); if (sc && !st.scrolled) { sc.scrollTop = 96; st.scrolled = true; } },
     acts: {
+      'copy-booking': () => { try { navigator.clipboard.writeText('https://stewartgroup.example/meet-thomas'); } catch (_) {} DS.toast('Booking link copied'); },
       view: (el, k) => { st.view = k; st.ev = null; DS.render(); },
       today: () => { st.dir = st.off > 0 ? -1 : 1; st.off = 0; st.m = null; st.ev = null; DS.render(); },
       prev: () => { st.dir = -1; st.off = st.view === 'month' ? dOff(new Date(sel().getFullYear(), sel().getMonth() - 1, 1)) : st.off - (st.view === 'week' ? 7 : 1); st.m = null; st.ev = null; DS.render(); },

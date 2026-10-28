@@ -50,6 +50,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 - **3.4 Visual standard test:** Option A, A variant to compare (recommended)
   - Oct 28, at build: Look switch in the review menu (Current look / Standard test); warm white applies to the light theme only. Screenshots in docs/3.0/look/. Switching for real still needs a separate yes. Built Oct 28.
 - **3.5 Calendar: booking page and sync:** Option A, A small card in the rail (recommended)
+  - Oct 28, at build: web calendar only. A booking adds a meeting and counts in Meetings this week (preset booked=1). Built Oct 28.
 - **3.6 Dashboard names and Funnel and trends:** Option A, Keep the video names, add the funnel to Performance (recommended)
 - **3.7 Best way to reach, and why:** Option A, Add the why and the state (recommended)
 

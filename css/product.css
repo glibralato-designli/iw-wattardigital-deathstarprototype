@@ -1795,3 +1795,11 @@ button.ds-voice svg{width:1.125rem;height:1.125rem;color:var(--brand-primary-tex
 @media (prefers-reduced-motion:reduce){.ds-voice__dot{animation:none}}
 .ds-voice__done{display:flex;align-items:center;gap:var(--space-1-5);margin-top:var(--space-2)}
 .ds-voice__done svg{width:1rem;height:1rem;color:var(--brand-primary-text)}
+/* Calendar rail (3.0 · 3.5): the booking page as a quiet block on --bg-subtle, and the Microsoft 365 sync line under it. */
+.ds-booking{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-1-5);padding:var(--space-3);border-radius:var(--radius-lg);background:var(--bg-subtle);min-width:0;font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-booking>.ds-meta{max-width:100%}
+.ds-booking__h{display:flex;align-items:center;gap:var(--space-1-5)}
+.ds-booking__h svg{width:1rem;height:1rem;color:var(--brand-primary-text)}
+.ds-booking__new{color:var(--fg-secondary)}
+.ds-sync{display:flex;align-items:center;gap:var(--space-1-5);padding:0 var(--space-1-5);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+.ds-sync svg{width:.875rem;height:.875rem}
