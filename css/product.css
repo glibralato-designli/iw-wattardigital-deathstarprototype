@@ -1838,3 +1838,7 @@ button.ds-voice svg{width:1.125rem;height:1.125rem;color:var(--brand-primary-tex
 .ds-cp[data-why]{border-bottom:0;padding-bottom:var(--space-0-5)}
 .ds-cp__why{padding:0 0 var(--space-2-5) calc(8.25rem + var(--space-3));border-bottom:var(--border-width) solid var(--border-subtle);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
 @media (max-width:767px){.ds-cp__why{padding-left:0}}
+/* Database tables (Oct 28): rank and score as compact tags; the lead building and its score tag share one cell. */
+.ds-numtag{font-variant-numeric:tabular-nums;font-weight:var(--weight-medium)}
+.ds-td-bld{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.ds-td-bld>.ds-numtag{flex:none}

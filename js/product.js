@@ -93,6 +93,9 @@
   ui.scoreChip = (label, score) => `<span class="ds-chip" data-tone="strong">${esc(label)}<span class="ds-chip__bar" aria-hidden="true"><span style="width:${score}%"></span></span></span>`;
   // Buildings are scored (0–100), people are ranked by their most pressing building; team history moves the rank, never the score.
   ui.rankChip = c => `<span class="ds-chip" data-tone="outline">Rank ${c.rank}</span>`;
+  // Table tags (Oct 28): rank and a building score as compact tags, the same chips the record headers use.
+  ui.rankTag = n => `<span class="ds-chip ds-numtag" data-tone="outline" aria-label="Rank ${n}">${n}</span>`;
+  ui.scoreTag = n => `<span class="ds-chip ds-numtag" data-tone="strong" title="Building score, out of 100" aria-label="Score ${n} of 100">${n}</span>`;
   ui.bldChip = p => ui.scoreChip(p.addr + ' · ' + p.score, p.score);
   ui.leadLine = c => 'Rank ' + c.rank + ' · ' + pById[c.pid].addr + ' · ' + pById[c.pid].score;
   /* Source freshness (Orientation doc 3, doc 1 §8): each source's rhythm and its last update, one quiet line under an evidence list,
