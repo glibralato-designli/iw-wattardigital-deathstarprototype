@@ -82,7 +82,8 @@ button.ds-inbox__row:hover{background:var(--bg-subtle)}
 .ds-inbox__why{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .ds-inbox__group[data-done] .ds-inbox__row{color:var(--fg-secondary)}
 .ds-inbox__preview{display:flex;flex-direction:column;gap:var(--space-4);position:sticky;top:0}
-.ds-inbox__reason{display:flex;align-items:flex-start;gap:var(--space-1-5);color:var(--fg-secondary);text-wrap:pretty}
+.ds-inbox__reason{display:flex;align-items:flex-start;gap:var(--space-2);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--brand-primary-subtle);color:var(--fg-secondary);text-wrap:pretty}
+.ds-inbox__reason b{color:var(--brand-primary-text)}
 .ds-inbox__reason svg{width:1rem;height:1rem;flex:none;margin-top:2px;color:var(--brand-primary-text)}
 .ds-inbox__body{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);background:var(--bg-subtle);max-width:44rem;text-wrap:pretty}
 .ds-inbox__preview>.ds-inbox__back{display:none}
@@ -96,27 +97,36 @@ button.ds-inbox__row:hover{background:var(--bg-subtle)}
 .ds-fixq__n{color:var(--fg-subtle);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-regular)}
 .ds-fixbar{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2);min-height:var(--control-lg);font-size:var(--text-sm);line-height:var(--line-height-sm)}
 .ds-fixlist{display:flex;flex-direction:column;border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg);overflow:hidden}
-.ds-fix{display:grid;grid-template-columns:1.125rem minmax(0,1fr) auto;gap:var(--space-1) var(--space-3);align-items:start;padding:var(--space-4)}
+.ds-fix{display:grid;grid-template-columns:1.125rem minmax(0,1fr);gap:var(--space-3);align-items:start;padding:var(--space-5)}
 .ds-fix+.ds-fix{border-top:var(--border-width) solid var(--border-subtle)}
 .ds-fix[data-flag]{background:var(--bg-subtle)}
 .ds-fix__pick{min-height:0;padding-top:2px}
-.ds-fix__body{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.ds-fix__body{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
 .ds-fix__top{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1-5) var(--space-2)}
 .ds-fix__who{font-size:var(--text-sm);line-height:var(--line-height-sm);color:var(--fg-secondary)}
-.ds-fix__change{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1) var(--space-2);margin-top:var(--space-0-5)}
-.ds-fix__change svg{width:1rem;height:1rem;flex:none;color:var(--fg-subtle)}
-.ds-fix__from{color:var(--fg-muted)}
-.ds-fix__to{color:var(--fg);font-weight:var(--weight-medium)}
-.ds-fix__why{max-width:62ch;color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm);text-wrap:pretty}
-.ds-fix__src{color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
-.ds-fix__acts{display:flex;align-items:center;gap:var(--space-1)}
+.ds-fix__conf{color:var(--fg-muted);font-size:var(--text-sm);line-height:var(--line-height-sm);white-space:nowrap}
+.ds-fix__conf b{color:var(--fg);font-weight:var(--weight-semibold)}
+.ds-fix__change{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--space-2)}
+.ds-fix__change>svg{width:1rem;height:1rem;color:var(--fg-subtle)}
+.ds-fix__cell{display:flex;flex-direction:column;gap:var(--space-0-5);min-width:0;padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--bg-subtle)}
+.ds-fix[data-flag] .ds-fix__cell{background:var(--bg)}
+.ds-fix__lbl{color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+.ds-fix__from{color:var(--fg-secondary);overflow-wrap:anywhere}
+.ds-fix__to{color:var(--fg);font-weight:var(--weight-semibold);overflow-wrap:anywhere}
+.ds-fix__why{display:flex;align-items:flex-start;gap:var(--space-2);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--brand-primary-subtle);color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm);text-wrap:pretty}
+.ds-fix__why svg{width:1rem;height:1rem;flex:none;margin-top:2px;color:var(--brand-primary-text)}
+.ds-fix__foot{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1) var(--space-1-5)}
+.ds-fix__src{display:inline-flex;align-items:center;gap:var(--space-1-5);min-width:0;color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+.ds-fix__src svg{width:.875rem;height:.875rem;flex:none}
 .ds-fixdone{border-radius:var(--radius-lg);background:var(--bg-subtle);font-size:var(--text-sm);line-height:var(--line-height-sm)}
 .ds-fixdone summary{display:flex;align-items:center;gap:var(--space-2);min-height:var(--touch-target);padding:0 var(--space-3);cursor:pointer}
 .ds-fixdone summary svg{width:1rem;height:1rem;color:var(--fg-muted)}
 .ds-fixdone__row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-top:var(--border-width) solid var(--border-subtle);color:var(--fg-secondary)}
 @media (max-width:767px){
-  .ds-fix{grid-template-columns:1.125rem minmax(0,1fr)}
-  .ds-fix__acts{grid-column:2;margin-top:var(--space-2)}
+  .ds-fix{padding:var(--space-4)}
+  .ds-fix__change{grid-template-columns:minmax(0,1fr)}
+  .ds-fix__change>svg{transform:rotate(90deg);justify-self:center}
+  .ds-fix__src{flex-basis:100%}
   .ds-fixq{display:grid;grid-template-columns:1fr 1fr;align-self:stretch}
   .ds-fixq .segmented__item svg{display:none}
   .ds-fixdone__row{grid-template-columns:minmax(0,1fr) auto}
@@ -353,14 +363,14 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-weekrow[data-today]{background:var(--bg-muted);font-weight:var(--weight-medium)}
 
 /* ───────── Attack Plan ───────── */
-.ds-callrow{display:grid;grid-template-columns:2.25rem minmax(0,1fr) auto;gap:var(--space-3);align-items:center;padding:var(--space-3-5) var(--space-2);border-radius:var(--radius-md)}
+.ds-callrow{display:grid;grid-template-columns:2.5rem minmax(0,1fr) auto;gap:var(--space-4);align-items:center;padding:var(--space-5) var(--space-2);border-radius:var(--radius-md)}
 .ds-callrow+.ds-callrow{border-top:var(--border-width) solid var(--border-subtle);border-radius:0}
 .ds-callrow[data-done]{background:var(--bg-subtle)}
 .ds-callrow__rank{align-self:start;display:flex;flex-direction:column;align-items:center;gap:var(--space-0-5);padding-top:2px}
 .ds-callrow__rank>b{font-size:var(--text-lg);line-height:var(--line-height-lg);font-weight:var(--weight-semibold);font-variant-numeric:tabular-nums;color:var(--fg-subtle)}
 .ds-callrow__lift{display:inline-flex;align-items:center;gap:1px;font-size:var(--text-2xs);line-height:var(--line-height-2xs);font-weight:var(--weight-medium);color:var(--brand-secondary-text);white-space:nowrap;cursor:help}
 .ds-callrow__lift svg{width:.625rem;height:.625rem}
-.ds-callrow__body{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.ds-callrow__body{display:flex;flex-direction:column;gap:var(--space-1-5);min-width:0}
 .ds-callrow__top{display:flex;align-items:center;gap:var(--space-2);min-width:0}
 .ds-callrow__name{min-width:0;font-weight:var(--weight-semibold);color:var(--fg);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ds-callrow__name:hover{color:var(--fg);text-decoration:underline}
@@ -436,7 +446,12 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 /* Plan notes and the changes note (3.0 · 2.5). Two kinds of block, coloured by who is speaking:
    Brain's note about where the list came from uses Brain's surface (the tint of Brain suggests);
    a change to how the product behaves is a neutral system notice, never a status colour (it is not an alert). */
-.ds-plan-notes{display:flex;flex-direction:column;gap:var(--space-2)}
+.ds-plan-notes{display:flex;flex-direction:column;gap:var(--space-2-5)}
+/* Today's plan (polish, Oct 28): room between the head, the notes and the rows; the footer note sits apart under the last row. */
+.ds-plan{gap:var(--space-5)}
+.ds-plan__top{display:flex;flex-direction:column;gap:var(--space-3)}
+.ds-plan__rows{display:flex;flex-direction:column;margin-top:calc(var(--space-2) * -1)}
+.ds-plan__foot{padding:var(--space-4) var(--space-2) 0;border-top:var(--border-width) solid var(--border-subtle)}
 .ds-change{display:grid;grid-template-columns:1rem minmax(0,1fr) auto;align-items:center;gap:var(--space-1) var(--space-2-5);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--bg-muted);font-size:var(--text-sm);line-height:var(--line-height-sm);color:var(--fg-secondary);text-wrap:pretty}
 .ds-change>svg{width:1rem;height:1rem;color:var(--fg-muted)}
 .ds-change b{font-weight:var(--weight-semibold);color:var(--fg)}
@@ -1022,8 +1037,8 @@ span.ds-ldetail__img svg{display:block;width:100%;height:100%}
 .ds-inq__who b{font-weight:var(--weight-medium)}
 .ds-inq__body p{color:var(--fg-secondary);text-wrap:pretty}
 .ds-inq__acts{display:flex;gap:var(--space-2);flex-wrap:wrap;justify-content:flex-end}
-.ds-insight{display:flex;gap:var(--space-2-5);align-items:flex-start;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--border-subtle)}
-.ds-insight:last-child{border-bottom:0}
+.ds-insight{display:flex;gap:var(--space-2-5);align-items:flex-start;padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--brand-primary-subtle);color:var(--fg-secondary)}
+.ds-insight+.ds-insight{margin-top:var(--space-2)}
 .ds-insight svg{width:1rem;height:1rem;margin-top:2px;color:var(--brand-primary-text);flex:none}
 
 /* ───────── Lists: the criteria builder (Database › Contacts), "Turn into a list", approvals ─────────
@@ -1140,7 +1155,7 @@ a.ds-teamchip:hover{background:var(--brand-secondary-subtle)}
 .ds-goaledit{display:grid;grid-template-columns:minmax(0,1fr) 5.5rem;gap:var(--space-2);align-items:center;padding:var(--space-1-5) 0}
 .ds-weekedit{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--space-2)}
 .ds-weekedit .field__label{white-space:nowrap}
-.ds-convsum{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1) var(--space-3);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-convsum{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1) var(--space-3);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--brand-primary-subtle);font-size:var(--text-sm);line-height:var(--line-height-sm)}
 .ds-convsum b{font-weight:var(--weight-semibold)}
 .ds-post{gap:var(--space-2-5)}
 .ds-post__step{display:flex;align-items:center;gap:var(--space-2);margin-top:var(--space-1)}

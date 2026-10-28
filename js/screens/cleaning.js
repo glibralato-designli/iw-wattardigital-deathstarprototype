@@ -14,15 +14,15 @@
   const WORD = { approved: 'Approved', rejected: 'Rejected', deferred: 'Deferred to tomorrow' };
 
   const whose = x => x.c ? `<a href="${href('contact', 'id=' + x.c.id)}">${esc(x.c.name)}</a>${x.p ? `<span class="ds-meta"> · ${esc(x.p.addr)}</span>` : ''}` : `<a href="${href('property', 'id=' + x.p.id)}">${esc(x.p.addr)}</a>`;
+  // A fix: the field and whose record with the confidence; Now → Proposed side by side; Brain's reason in its tint; the source and the actions.
   const row = x => `<div class="ds-fix"${x.flag ? ' data-flag' : ''}>
       ${x.flag ? '<span class="ds-fix__pick" aria-hidden="true"></span>' : `<label class="choice ds-fix__pick"><input type="checkbox" data-change="sel" value="${x.id}"${st.sel.has(x.id) ? ' checked' : ''}><span class="sr-only">Select ${esc(x.field)}, ${esc(x.c ? x.c.name : x.p.addr)}</span></label>`}
       <div class="ds-fix__body">
-        <div class="ds-fix__top"><b>${esc(x.field)}</b><span class="ds-fix__who">${whose(x)}</span>${x.flag ? `<span class="badge" data-status="warning">${icon('flag')}Left for you</span>` : ''}</div>
-        <p class="ds-fix__change"><span class="ds-fix__from">${esc(x.from)}</span>${icon('arrow-right')}<span class="ds-fix__to">${esc(x.to)}</span></p>
-        <p class="ds-fix__why">${esc(x.why)}</p>
-        <p class="ds-fix__src">${esc(x.src)} · <span class="num">${x.conf}%</span> confidence</p>
+        <div class="ds-fix__top"><b>${esc(x.field)}</b><span class="ds-fix__who">${whose(x)}</span>${x.flag ? `<span class="badge" data-status="warning">${icon('flag')}Left for you</span>` : ''}<span class="ds-grow"></span><span class="ds-fix__conf"><b class="num">${x.conf}%</b> confidence</span></div>
+        <div class="ds-fix__change"><div class="ds-fix__cell"><span class="ds-fix__lbl">Now</span><span class="ds-fix__from">${esc(x.from)}</span></div>${icon('arrow-right')}<div class="ds-fix__cell" data-to><span class="ds-fix__lbl">Proposed</span><span class="ds-fix__to">${esc(x.to)}</span></div></div>
+        <p class="ds-fix__why">${icon('sparkle')}<span>${esc(x.why)}</span></p>
+        <div class="ds-fix__foot"><span class="ds-fix__src">${icon('file-text')}${esc(x.src)}</span><span class="ds-grow"></span>${ui.btn({ label: 'Defer', size: 'sm', variant: 'ghost', act: 'fix', arg: x.id + '|deferred' })}${ui.btn({ label: 'Reject', size: 'sm', variant: 'ghost', act: 'fix', arg: x.id + '|rejected' })}${ui.btn({ label: 'Approve', ic: 'check', size: 'sm', variant: 'outline', act: 'fix', arg: x.id + '|approved' })}</div>
       </div>
-      <div class="ds-fix__acts">${ui.btn({ label: 'Approve', ic: 'check', size: 'sm', variant: 'outline', act: 'fix', arg: x.id + '|approved' })}${ui.btn({ label: 'Reject', size: 'sm', variant: 'ghost', act: 'fix', arg: x.id + '|rejected' })}${ui.btn({ label: 'Defer', size: 'sm', variant: 'ghost', act: 'fix', arg: x.id + '|deferred' })}</div>
     </div>`;
 
   const queues = () => `<div class="segmented ds-fixq" role="group" aria-label="Cleaning queues">${D.QUEUES.map(([k, l, ic]) => { const n = open(k).length; return `<button type="button" class="segmented__item" aria-pressed="${k === st.q}" data-act="queue" data-arg="${k}">${icon(ic)}${esc(l)}${n ? `<span class="num ds-fixq__n">${n}</span>` : ''}</button>`; }).join('')}</div>`;
