@@ -13,7 +13,7 @@
   "entryPoints": [
     {
       "from": "Start",
-      "to": "01-Home"
+      "to": "01-AttackPlan"
     }
   ],
   "devices": [
@@ -23,92 +23,115 @@
   "steps": [
     {
       "n": "01",
-      "id": "Home",
-      "kind": "data",
-      "title": "01 Home",
-      "states": {
-        "Default": {
-          "desktop": "01-Home-Default.html",
-          "mobile": "01-Home-Default-Mobile.html"
-        },
-        "Custom-ClassicLayout": {
-          "desktop": "01-Home-Custom-ClassicLayout.html",
-          "mobile": "01-Home-Custom-ClassicLayout-Mobile.html"
-        },
-        "Custom-UpNextFirst": {
-          "desktop": "01-Home-Custom-UpNextFirst.html",
-          "mobile": "01-Home-Custom-UpNextFirst-Mobile.html"
-        },
-        "Custom-SidebarCollapsed": {
-          "desktop": "01-Home-Custom-SidebarCollapsed.html",
-          "mobile": "01-Home-Custom-SidebarCollapsed-Mobile.html"
-        },
-        "Custom-BrainMinimized": {
-          "desktop": "01-Home-Custom-BrainMinimized.html",
-          "mobile": "01-Home-Custom-BrainMinimized-Mobile.html"
-        },
-        "Custom-BrainClosed": {
-          "desktop": "01-Home-Custom-BrainClosed.html",
-          "mobile": "01-Home-Custom-BrainClosed-Mobile.html"
-        },
-        "Custom-GuideFlows": {
-          "desktop": "01-Home-Custom-GuideFlows.html",
-          "mobile": "01-Home-Custom-GuideFlows-Mobile.html"
-        },
-        "Custom-GuideStructure": {
-          "desktop": "01-Home-Custom-GuideStructure.html",
-          "mobile": "01-Home-Custom-GuideStructure-Mobile.html"
-        },
-        "Custom-AccountMenu": {
-          "desktop": "01-Home-Custom-AccountMenu.html",
-          "mobile": "01-Home-Custom-AccountMenu-Mobile.html"
-        },
-        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
-        "Error": "n/a: demo data is local fixtures; nothing is fetched",
-        "Empty": "n/a: Home always has today\u2019s plan"
-      },
-      "purpose": "Greeting, today\u2019s Attack Plan, the pulse strip, metric tabs, Up next and meetings. Brain is open.",
-      "primaryAction": "Open Attack Plan"
-    },
-    {
-      "n": "02",
       "id": "AttackPlan",
       "kind": "data",
-      "title": "02 Dashboard \u00b7 Attack Plan",
+      "title": "01 Today",
       "states": {
         "Default": {
-          "desktop": "02-AttackPlan-Default.html",
-          "mobile": "02-AttackPlan-Default-Mobile.html"
+          "desktop": "01-AttackPlan-Default.html",
+          "mobile": "01-AttackPlan-Default-Mobile.html"
+        },
+        "Custom-TeachExample": {
+          "desktop": "01-AttackPlan-Custom-TeachExample.html",
+          "mobile": "01-AttackPlan-Custom-TeachExample-Mobile.html"
         },
         "Empty": {
-          "desktop": "02-AttackPlan-Empty.html",
-          "mobile": "02-AttackPlan-Empty-Mobile.html"
+          "desktop": "01-AttackPlan-Empty.html",
+          "mobile": "01-AttackPlan-Empty-Mobile.html"
         },
         "Custom-PastDay": {
-          "desktop": "02-AttackPlan-Custom-PastDay.html",
-          "mobile": "02-AttackPlan-Custom-PastDay-Mobile.html"
+          "desktop": "01-AttackPlan-Custom-PastDay.html",
+          "mobile": "01-AttackPlan-Custom-PastDay-Mobile.html"
         },
         "Custom-FutureDay": {
-          "desktop": "02-AttackPlan-Custom-FutureDay.html",
-          "mobile": "02-AttackPlan-Custom-FutureDay-Mobile.html"
+          "desktop": "01-AttackPlan-Custom-FutureDay.html",
+          "mobile": "01-AttackPlan-Custom-FutureDay-Mobile.html"
         },
         "Custom-Week": {
-          "desktop": "02-AttackPlan-Custom-Week.html",
-          "mobile": "02-AttackPlan-Custom-Week-Mobile.html"
+          "desktop": "01-AttackPlan-Custom-Week.html",
+          "mobile": "01-AttackPlan-Custom-Week-Mobile.html"
         },
         "Custom-DatePicker": {
-          "desktop": "02-AttackPlan-Custom-DatePicker.html",
-          "mobile": "02-AttackPlan-Custom-DatePicker-Mobile.html"
+          "desktop": "01-AttackPlan-Custom-DatePicker.html",
+          "mobile": "01-AttackPlan-Custom-DatePicker-Mobile.html"
         },
         "Custom-Resolved": {
-          "desktop": "02-AttackPlan-Custom-Resolved.html",
-          "mobile": "02-AttackPlan-Custom-Resolved-Mobile.html"
+          "desktop": "01-AttackPlan-Custom-Resolved.html",
+          "mobile": "01-AttackPlan-Custom-Resolved-Mobile.html"
+        },
+        "Custom-RankingRestored": {
+          "desktop": "01-AttackPlan-Custom-RankingRestored.html",
+          "mobile": "01-AttackPlan-Custom-RankingRestored-Mobile.html"
+        },
+        "Custom-SuggestionSaved": {
+          "desktop": "01-AttackPlan-Custom-SuggestionSaved.html",
+          "mobile": "01-AttackPlan-Custom-SuggestionSaved-Mobile.html"
+        },
+        "Custom-SuggestionsDismissed": {
+          "desktop": "01-AttackPlan-Custom-SuggestionsDismissed.html",
+          "mobile": "01-AttackPlan-Custom-SuggestionsDismissed-Mobile.html"
+        },
+        "Custom-SuggestionsCollapsed": {
+          "desktop": "01-AttackPlan-Custom-SuggestionsCollapsed.html",
+          "mobile": "01-AttackPlan-Custom-SuggestionsCollapsed-Mobile.html"
+        },
+        "Custom-EditGoals": {
+          "desktop": "01-AttackPlan-Custom-EditGoals.html",
+          "mobile": "01-AttackPlan-Custom-EditGoals-Mobile.html"
+        },
+        "Custom-EditWeek": {
+          "desktop": "01-AttackPlan-Custom-EditWeek.html",
+          "mobile": "01-AttackPlan-Custom-EditWeek-Mobile.html"
         },
         "Loading": "n/a: demo data is local fixtures; nothing is fetched",
         "Error": "n/a: demo data is local fixtures; nothing is fetched"
       },
-      "purpose": "Today\u2019s plan with Call next, to-dos, the week strip, goals and meetings. Day and week stepper with a date picker.",
+      "purpose": "Where the day starts (first in the sidebar): the greeting with Meetings this week and Brain\u2019s line, then Today\u2019s plan with Call next (and where the list comes from), to-dos and the editable week template; the right column opens with Brain suggests (compact, collapsible lists to save or dismiss), then editable goals and meetings. Day and week stepper with a date picker.",
       "primaryAction": "Call Daniel Marchetti"
+    },
+    {
+      "n": "02",
+      "id": "Approvals",
+      "kind": "form",
+      "title": "02 Approvals",
+      "states": {
+        "Default": {
+          "desktop": "02-Approvals-Default.html",
+          "mobile": "02-Approvals-Default-Mobile.html"
+        },
+        "Custom-DraftOpen": {
+          "desktop": "02-Approvals-Custom-DraftOpen.html",
+          "mobile": "02-Approvals-Custom-DraftOpen-Mobile.html"
+        },
+        "Custom-Blocked": {
+          "desktop": "02-Approvals-Custom-Blocked.html",
+          "mobile": "02-Approvals-Custom-Blocked-Mobile.html"
+        },
+        "Custom-Warning": {
+          "desktop": "02-Approvals-Custom-Warning.html",
+          "mobile": "02-Approvals-Custom-Warning-Mobile.html"
+        },
+        "Custom-Editing": {
+          "desktop": "02-Approvals-Custom-Editing.html",
+          "mobile": "02-Approvals-Custom-Editing-Mobile.html"
+        },
+        "Custom-BulkApproved": {
+          "desktop": "02-Approvals-Custom-BulkApproved.html",
+          "mobile": "02-Approvals-Custom-BulkApproved-Mobile.html"
+        },
+        "Custom-FirstWave": {
+          "desktop": "02-Approvals-Custom-FirstWave.html",
+          "mobile": "02-Approvals-Custom-FirstWave-Mobile.html"
+        },
+        "Empty": {
+          "desktop": "02-Approvals-Empty.html",
+          "mobile": "02-Approvals-Empty-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched"
+      },
+      "purpose": "One inbox for every planned touch (sidebar item and top-bar count): lanes on the left with the owner, building, reason and checks; the preview on the right to edit, approve or hold; Approve all per lane and First wave on Email; a blocked item (opted out) can only be removed.",
+      "primaryAction": "Approve"
     }
   ]
 }

@@ -63,9 +63,53 @@
           "desktop": "01-Brain-Custom-History.html",
           "mobile": "01-Brain-Custom-History-Mobile.html"
         },
+        "Custom-HistoryHidden": {
+          "desktop": "01-Brain-Custom-HistoryHidden.html",
+          "mobile": "01-Brain-Custom-HistoryHidden-Mobile.html"
+        },
+        "Custom-ChatsDrawer": {
+          "desktop": "01-Brain-Custom-ChatsDrawer.html",
+          "mobile": "01-Brain-Custom-ChatsDrawer-Mobile.html"
+        },
+        "Custom-OkaforAnswer": {
+          "desktop": "01-Brain-Custom-OkaforAnswer.html",
+          "mobile": "01-Brain-Custom-OkaforAnswer-Mobile.html"
+        },
+        "Custom-TeachCorrection": {
+          "desktop": "01-Brain-Custom-TeachCorrection.html",
+          "mobile": "01-Brain-Custom-TeachCorrection-Mobile.html"
+        },
+        "Custom-TeachRemembered": {
+          "desktop": "01-Brain-Custom-TeachRemembered.html",
+          "mobile": "01-Brain-Custom-TeachRemembered-Mobile.html"
+        },
+        "Custom-LearningMode": {
+          "desktop": "01-Brain-Custom-LearningMode.html",
+          "mobile": "01-Brain-Custom-LearningMode-Mobile.html"
+        },
+        "Custom-LearningAfterTeach": {
+          "desktop": "01-Brain-Custom-LearningAfterTeach.html",
+          "mobile": "01-Brain-Custom-LearningAfterTeach-Mobile.html"
+        },
+        "Custom-DropFiles": {
+          "desktop": "01-Brain-Custom-DropFiles.html",
+          "mobile": "01-Brain-Custom-DropFiles-Mobile.html"
+        },
+        "Custom-FileAdded": {
+          "desktop": "01-Brain-Custom-FileAdded.html",
+          "mobile": "01-Brain-Custom-FileAdded-Mobile.html"
+        },
+        "Custom-PostDraft": {
+          "desktop": "01-Brain-Custom-PostDraft.html",
+          "mobile": "01-Brain-Custom-PostDraft-Mobile.html"
+        },
+        "Custom-PostApproved": {
+          "desktop": "01-Brain-Custom-PostApproved.html",
+          "mobile": "01-Brain-Custom-PostApproved-Mobile.html"
+        },
         "Error": "n/a: answers are scripted and always return"
       },
-      "purpose": "History, the empty state with suggestions, and a centred conversation with why-now, list and lookup answers.",
+      "purpose": "Chat history (a collapsible column; a drawer on a phone), the empty state with suggestions, and a centred conversation with why-now, list (the builder\u2019s chips) and lookup answers; a correction Brain asks to remember; the headline-to-post flow (story, audience, draft, approve); Learning Mode (what Brain has been taught); and the paperclip\u2019s Drop files.",
       "primaryAction": "Send"
     }
   ]

@@ -8,7 +8,7 @@
   "entryPoints": [
     {
       "from": "Start",
-      "to": "01-Calendar"
+      "to": "07-Calendar"
     }
   ],
   "devices": [
@@ -18,130 +18,348 @@
   "steps": [
     {
       "n": "01",
-      "id": "Calendar",
-      "kind": "form",
-      "title": "08 Dashboard \u00b7 Calendar",
+      "id": "Email",
+      "kind": "data",
+      "title": "Channels \u00b7 Email",
       "states": {
         "Default": {
-          "desktop": "01-Calendar-Default.html",
-          "mobile": "01-Calendar-Default-Mobile.html"
+          "desktop": "01-Email-Default.html",
+          "mobile": "01-Email-Default-Mobile.html"
+        },
+        "Custom-SplitPane": {
+          "desktop": "01-Email-Custom-SplitPane.html",
+          "mobile": "01-Email-Custom-SplitPane-Mobile.html"
+        },
+        "Custom-RailCollapsed": {
+          "desktop": "01-Email-Custom-RailCollapsed.html",
+          "mobile": "01-Email-Custom-RailCollapsed-Mobile.html"
+        },
+        "Custom-EndOfDay": {
+          "desktop": "01-Email-Custom-EndOfDay.html",
+          "mobile": "01-Email-Custom-EndOfDay-Mobile.html"
+        },
+        "Custom-EndOfDaySent": {
+          "desktop": "01-Email-Custom-EndOfDaySent.html",
+          "mobile": "01-Email-Custom-EndOfDaySent-Mobile.html"
+        },
+        "Custom-ThreadOpen": {
+          "desktop": "01-Email-Custom-ThreadOpen.html",
+          "mobile": "01-Email-Custom-ThreadOpen-Mobile.html"
+        },
+        "Custom-BrainRead": {
+          "desktop": "01-Email-Custom-BrainRead.html",
+          "mobile": "01-Email-Custom-BrainRead-Mobile.html"
+        },
+        "Custom-Bounces": {
+          "desktop": "01-Email-Custom-Bounces.html",
+          "mobile": "01-Email-Custom-Bounces-Mobile.html"
+        },
+        "Custom-Starred": {
+          "desktop": "01-Email-Custom-Starred.html",
+          "mobile": "01-Email-Custom-Starred-Mobile.html"
+        },
+        "Custom-Compose": {
+          "desktop": "01-Email-Custom-Compose.html",
+          "mobile": "01-Email-Custom-Compose-Mobile.html"
+        },
+        "Custom-Sent": {
+          "desktop": "01-Email-Custom-Sent.html",
+          "mobile": "01-Email-Custom-Sent-Mobile.html"
+        },
+        "Custom-Scheduled": {
+          "desktop": "01-Email-Custom-Scheduled.html",
+          "mobile": "01-Email-Custom-Scheduled-Mobile.html"
+        },
+        "Custom-Campaigns": {
+          "desktop": "01-Email-Custom-Campaigns.html",
+          "mobile": "01-Email-Custom-Campaigns-Mobile.html"
+        },
+        "Custom-NewCampaign": {
+          "desktop": "01-Email-Custom-NewCampaign.html",
+          "mobile": "01-Email-Custom-NewCampaign-Mobile.html"
+        },
+        "Custom-CampaignPreview": {
+          "desktop": "01-Email-Custom-CampaignPreview.html",
+          "mobile": "01-Email-Custom-CampaignPreview-Mobile.html"
+        },
+        "Custom-Templates": {
+          "desktop": "01-Email-Custom-Templates.html",
+          "mobile": "01-Email-Custom-Templates-Mobile.html"
+        },
+        "Custom-Domains": {
+          "desktop": "01-Email-Custom-Domains.html",
+          "mobile": "01-Email-Custom-Domains-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched"
+      },
+      "purpose": "Ported from the old Mail page, Gmail\u2019s structure in our style: a mail rail (Compose; Inbox, Starred, Sent, Scheduled, Bounces; Mail merge: Campaigns, Templates, Domains), a pill search, a full-width list (select, star, sender, subject and snippet, time; All \u00b7 Unread; paging) and a thread that opens in place with Brain\u2019s read in sky blue, Reply and Forward, record actions (Add note, Off blasts \u00b7 1 yr, Mark primary, Mark bad) and a reply that sends on Thomas\u2019s click; Sent; Campaigns (mail merges with stats, Send to the rest, and the New campaign builder that previews on a real owner and sends to Approvals); Templates (the eight narratives); Domains (capacity per domain and inbox). Compose opens a docked composer.",
+      "primaryAction": "Compose"
+    },
+    {
+      "n": "02",
+      "id": "Texting",
+      "kind": "data",
+      "title": "Channels \u00b7 Texting",
+      "states": {
+        "Default": {
+          "desktop": "02-Texting-Default.html",
+          "mobile": "02-Texting-Default-Mobile.html"
+        },
+        "Custom-StopReceived": {
+          "desktop": "02-Texting-Custom-StopReceived.html",
+          "mobile": "02-Texting-Custom-StopReceived-Mobile.html"
+        },
+        "Custom-QuietHours": {
+          "desktop": "02-Texting-Custom-QuietHours.html",
+          "mobile": "02-Texting-Custom-QuietHours-Mobile.html"
+        },
+        "Custom-NoOptIn": {
+          "desktop": "02-Texting-Custom-NoOptIn.html",
+          "mobile": "02-Texting-Custom-NoOptIn-Mobile.html"
+        },
+        "Custom-Conversation": {
+          "desktop": "02-Texting-Custom-Conversation.html",
+          "mobile": "02-Texting-Custom-Conversation-Mobile.html"
+        },
+        "Custom-OptedOut": {
+          "desktop": "02-Texting-Custom-OptedOut.html",
+          "mobile": "02-Texting-Custom-OptedOut-Mobile.html"
+        },
+        "Custom-NewThread": {
+          "desktop": "02-Texting-Custom-NewThread.html",
+          "mobile": "02-Texting-Custom-NewThread-Mobile.html"
+        },
+        "Custom-Sent": {
+          "desktop": "02-Texting-Custom-Sent.html",
+          "mobile": "02-Texting-Custom-Sent-Mobile.html"
+        },
+        "Custom-Campaigns": {
+          "desktop": "02-Texting-Custom-Campaigns.html",
+          "mobile": "02-Texting-Custom-Campaigns-Mobile.html"
+        },
+        "Custom-NewCampaign": {
+          "desktop": "02-Texting-Custom-NewCampaign.html",
+          "mobile": "02-Texting-Custom-NewCampaign-Mobile.html"
+        },
+        "Custom-CampaignPreview": {
+          "desktop": "02-Texting-Custom-CampaignPreview.html",
+          "mobile": "02-Texting-Custom-CampaignPreview-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched"
+      },
+      "purpose": "Ported from the old Texting page: Conversations (Replied \u00b7 Sent \u00b7 All) beside the thread, Brain\u2019s four tailored drafts in sky blue above the composer, a one-to-one text that sends on Thomas\u2019s click, and an opted-out owner (STOP) who can\u2019t be texted; Campaigns with past blasts and the New text campaign builder (class, ZIPs, list, topic, message, Brain rewrite, preview, cap 200) that sends to Approvals.",
+      "primaryAction": "Send"
+    },
+    {
+      "n": "03",
+      "id": "Home",
+      "kind": "data",
+      "title": "Dashboard \u00b7 Overview",
+      "states": {
+        "Default": {
+          "desktop": "03-Home-Default.html",
+          "mobile": "03-Home-Default-Mobile.html"
+        },
+        "Custom-SidebarCollapsed": {
+          "desktop": "03-Home-Custom-SidebarCollapsed.html",
+          "mobile": "03-Home-Custom-SidebarCollapsed-Mobile.html"
+        },
+        "Custom-BrainMinimized": {
+          "desktop": "03-Home-Custom-BrainMinimized.html",
+          "mobile": "03-Home-Custom-BrainMinimized-Mobile.html"
+        },
+        "Custom-BrainClosed": {
+          "desktop": "03-Home-Custom-BrainClosed.html",
+          "mobile": "03-Home-Custom-BrainClosed-Mobile.html"
+        },
+        "Custom-GuideFlows": {
+          "desktop": "03-Home-Custom-GuideFlows.html",
+          "mobile": "03-Home-Custom-GuideFlows-Mobile.html"
+        },
+        "Custom-GuideStructure": {
+          "desktop": "03-Home-Custom-GuideStructure.html",
+          "mobile": "03-Home-Custom-GuideStructure-Mobile.html"
+        },
+        "Custom-AccountMenu": {
+          "desktop": "03-Home-Custom-AccountMenu.html",
+          "mobile": "03-Home-Custom-AccountMenu-Mobile.html"
+        },
+        "Custom-QueuePushed": {
+          "desktop": "03-Home-Custom-QueuePushed.html",
+          "mobile": "03-Home-Custom-QueuePushed-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched",
+        "Empty": "n/a: The overview always has numbers"
+      },
+      "purpose": "Dashboard \u203a Overview, the Dashboard\u2019s first tab: the pulse strip (Meetings this week first), metric tabs, Up next and meetings.",
+      "primaryAction": "Calls today"
+    },
+    {
+      "n": "04",
+      "id": "Changes",
+      "kind": "data",
+      "title": "System \u00b7 Changes",
+      "states": {
+        "Default": {
+          "desktop": "04-Changes-Default.html",
+          "mobile": "04-Changes-Default-Mobile.html"
+        },
+        "Custom-Restored": {
+          "desktop": "04-Changes-Custom-Restored.html",
+          "mobile": "04-Changes-Custom-Restored-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched",
+        "Empty": "n/a: Changes are fixtures; the list is never empty in the demo"
+      },
+      "purpose": "System \u203a Changes (the sidebar\u2019s System item): what changed, newest first, with the before and who approved it, each with Restore. Settings, Health and Controls are drawn.",
+      "primaryAction": "Restore"
+    },
+    {
+      "n": "05",
+      "id": "Conversations",
+      "kind": "data",
+      "title": "08 Dashboard \u00b7 Activity",
+      "states": {
+        "Default": {
+          "desktop": "05-Conversations-Default.html",
+          "mobile": "05-Conversations-Default-Mobile.html"
+        },
+        "Empty": {
+          "desktop": "05-Conversations-Empty.html",
+          "mobile": "05-Conversations-Empty-Mobile.html"
+        },
+        "Custom-PreviousWeek": {
+          "desktop": "05-Conversations-Custom-PreviousWeek.html",
+          "mobile": "05-Conversations-Custom-PreviousWeek-Mobile.html"
+        },
+        "Custom-NewConversation": {
+          "desktop": "05-Conversations-Custom-NewConversation.html",
+          "mobile": "05-Conversations-Custom-NewConversation-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched"
+      },
+      "purpose": "A weekly summary line, then a Monday to Friday board plus Proposals. Connected calls from the case file land on today.",
+      "primaryAction": "Conversation"
+    },
+    {
+      "n": "06",
+      "id": "Reporting",
+      "kind": "info",
+      "title": "09 Dashboard \u00b7 Who to call",
+      "states": {
+        "Default": {
+          "desktop": "06-Reporting-Default.html",
+          "mobile": "06-Reporting-Default-Mobile.html"
+        }
+      },
+      "purpose": "Coverage by ZIP weakest first, one email funnel with its rates beside Clicked what, engagement by channel. Every ZIP tile, funnel stage and Clicked what row turns into a list. Channel filters are off."
+    },
+    {
+      "n": "07",
+      "id": "Calendar",
+      "kind": "form",
+      "title": "10 Dashboard \u00b7 Calendar",
+      "states": {
+        "Default": {
+          "desktop": "07-Calendar-Default.html",
+          "mobile": "07-Calendar-Default-Mobile.html"
+        },
+        "Custom-Booked": {
+          "desktop": "07-Calendar-Custom-Booked.html",
+          "mobile": "07-Calendar-Custom-Booked-Mobile.html"
+        },
+        "Custom-BrainRoleMenu": {
+          "desktop": "07-Calendar-Custom-BrainRoleMenu.html",
+          "mobile": "07-Calendar-Custom-BrainRoleMenu-Mobile.html"
         },
         "Custom-Day": {
-          "desktop": "01-Calendar-Custom-Day.html",
-          "mobile": "01-Calendar-Custom-Day-Mobile.html"
+          "desktop": "07-Calendar-Custom-Day.html",
+          "mobile": "07-Calendar-Custom-Day-Mobile.html"
         },
         "Custom-Month": {
-          "desktop": "01-Calendar-Custom-Month.html",
-          "mobile": "01-Calendar-Custom-Month-Mobile.html"
+          "desktop": "07-Calendar-Custom-Month.html",
+          "mobile": "07-Calendar-Custom-Month-Mobile.html"
         },
         "Selected": {
-          "desktop": "01-Calendar-Selected.html",
-          "mobile": "01-Calendar-Selected-Mobile.html"
+          "desktop": "07-Calendar-Selected.html",
+          "mobile": "07-Calendar-Selected-Mobile.html"
         },
         "Custom-Draft": {
-          "desktop": "01-Calendar-Custom-Draft.html",
-          "mobile": "01-Calendar-Custom-Draft-Mobile.html"
+          "desktop": "07-Calendar-Custom-Draft.html",
+          "mobile": "07-Calendar-Custom-Draft-Mobile.html"
         },
         "Custom-NewEvent": {
-          "desktop": "01-Calendar-Custom-NewEvent.html",
-          "mobile": "01-Calendar-Custom-NewEvent-Mobile.html"
+          "desktop": "07-Calendar-Custom-NewEvent.html",
+          "mobile": "07-Calendar-Custom-NewEvent-Mobile.html"
         },
         "Validation": {
-          "desktop": "01-Calendar-Validation.html",
-          "mobile": "01-Calendar-Validation-Mobile.html"
+          "desktop": "07-Calendar-Validation.html",
+          "mobile": "07-Calendar-Validation-Mobile.html"
         },
         "Success": {
-          "desktop": "01-Calendar-Success.html",
-          "mobile": "01-Calendar-Success-Mobile.html"
+          "desktop": "07-Calendar-Success.html",
+          "mobile": "07-Calendar-Success-Mobile.html"
         },
         "Loading": "n/a: demo data is local fixtures; nothing is fetched",
         "Error": "n/a: demo data is local fixtures; nothing is fetched",
         "Empty": "n/a: the week always has events",
         "Submitting": "n/a: saving an event is instant and confirmed by a toast (Success)"
       },
-      "purpose": "Day, week and month. A click on a slot drops a draft with an inline card; New event opens the full dialog.",
+      "purpose": "Meetings, call blocks, BOV pitches and tours in day, week and month. A click on a slot drops a draft with an inline card; New event opens the full dialog.",
       "primaryAction": "New event"
     },
     {
-      "n": "02",
-      "id": "Conversations",
-      "kind": "data",
-      "title": "09 Dashboard \u00b7 Conversations",
-      "states": {
-        "Default": {
-          "desktop": "02-Conversations-Default.html",
-          "mobile": "02-Conversations-Default-Mobile.html"
-        },
-        "Empty": {
-          "desktop": "02-Conversations-Empty.html",
-          "mobile": "02-Conversations-Empty-Mobile.html"
-        },
-        "Custom-PreviousWeek": {
-          "desktop": "02-Conversations-Custom-PreviousWeek.html",
-          "mobile": "02-Conversations-Custom-PreviousWeek-Mobile.html"
-        },
-        "Custom-NewConversation": {
-          "desktop": "02-Conversations-Custom-NewConversation.html",
-          "mobile": "02-Conversations-Custom-NewConversation-Mobile.html"
-        },
-        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
-        "Error": "n/a: demo data is local fixtures; nothing is fetched"
-      },
-      "purpose": "A Monday to Friday board plus Proposals. Connected calls from the case file land on today.",
-      "primaryAction": "Conversation"
-    },
-    {
-      "n": "03",
+      "n": "08",
       "id": "OutreachPerformance",
       "kind": "info",
-      "title": "10 Dashboard \u00b7 Outreach performance",
+      "title": "11 Dashboard \u00b7 Performance",
       "states": {
         "Default": {
-          "desktop": "03-OutreachPerformance-Default.html",
-          "mobile": "03-OutreachPerformance-Default-Mobile.html"
+          "desktop": "08-OutreachPerformance-Default.html",
+          "mobile": "08-OutreachPerformance-Default-Mobile.html"
         }
       },
-      "purpose": "Display-only, from the portal tab: Outreach (today vs previous day vs week, calling efficiency, LinkedIn, blasts), Business generation with deltas, Workflow efficacy. Drill-downs and logging are off."
+      "purpose": "From the portal tab: a diagnosis when a number drops, Outreach (today vs previous day vs week, calling efficiency, LinkedIn, blasts; each count turns into a list), Business generation with deltas, Workflow efficacy. Logging is off."
     },
     {
-      "n": "04",
-      "id": "Reporting",
-      "kind": "info",
-      "title": "11 Dashboard \u00b7 Reporting",
-      "states": {
-        "Default": {
-          "desktop": "04-Reporting-Default.html",
-          "mobile": "04-Reporting-Default-Mobile.html"
-        }
-      },
-      "purpose": "Display-only: coverage by ZIP weakest first, one email funnel with its rates beside Clicked what, engagement by channel. Channel filters are off."
-    },
-    {
-      "n": "05",
+      "n": "09",
       "id": "Listings",
       "kind": "info",
       "title": "12 Dashboard \u00b7 Listings",
       "states": {
         "Default": {
-          "desktop": "05-Listings-Default.html",
-          "mobile": "05-Listings-Default-Mobile.html"
+          "desktop": "09-Listings-Default.html",
+          "mobile": "09-Listings-Default-Mobile.html"
+        },
+        "Custom-OtherListing": {
+          "desktop": "09-Listings-Custom-OtherListing.html",
+          "mobile": "09-Listings-Custom-OtherListing-Mobile.html"
+        },
+        "Custom-InContract": {
+          "desktop": "09-Listings-Custom-InContract.html",
+          "mobile": "09-Listings-Custom-InContract-Mobile.html"
         }
       },
-      "purpose": "Listing cards with Auto and logged counts and their own viewers (rows open the contact), website inquiries awaiting follow-up first, other requests and the events page.",
+      "purpose": "Four compact listing cards (street view, status, views, known viewers, offers); the selected one opens its counts, viewers (rows open the contact; Turn into a list offers \u201cowns in the same neighborhood\u201d) and written offers. Then website inquiries awaiting follow-up, other requests and the events page.",
       "primaryAction": "Open a viewer"
     },
     {
-      "n": "06",
+      "n": "10",
       "id": "WebAnalytics",
       "kind": "info",
-      "title": "13 Dashboard \u00b7 Web analytics",
+      "title": "13 Dashboard \u00b7 Website",
       "states": {
         "Default": {
-          "desktop": "06-WebAnalytics-Default.html",
-          "mobile": "06-WebAnalytics-Default-Mobile.html"
+          "desktop": "10-WebAnalytics-Default.html",
+          "mobile": "10-WebAnalytics-Default-Mobile.html"
         }
       },
-      "purpose": "Display-only: audience and outcomes, traffic with its summary, channels and campaigns, known contacts (open the contact), content tables, and collapsed site speed and tracking notes."
+      "purpose": "Audience and outcomes, traffic with its summary, channels and campaigns, known contacts (open the contact, or turn them into a list), content tables with a list per OM and document, and collapsed site speed and tracking notes."
     }
   ]
 }

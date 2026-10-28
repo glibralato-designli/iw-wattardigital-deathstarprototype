@@ -67,6 +67,10 @@
           "desktop": "01-Contacts-Custom-SearchResults.html",
           "mobile": "01-Contacts-Custom-SearchResults-Mobile.html"
         },
+        "Custom-SearchEmail": {
+          "desktop": "01-Contacts-Custom-SearchEmail.html",
+          "mobile": "01-Contacts-Custom-SearchEmail-Mobile.html"
+        },
         "Custom-SearchNoMatch": {
           "desktop": "01-Contacts-Custom-SearchNoMatch.html",
           "mobile": "01-Contacts-Custom-SearchNoMatch-Mobile.html"
@@ -74,9 +78,65 @@
         "Custom-LogCall": {
           "desktop": "01-Contacts-Custom-LogCall.html",
           "mobile": "01-Contacts-Custom-LogCall-Mobile.html"
+        },
+        "Custom-OutsideTerritory": {
+          "desktop": "01-Contacts-Custom-OutsideTerritory.html",
+          "mobile": "01-Contacts-Custom-OutsideTerritory-Mobile.html"
+        },
+        "Custom-OnlyOutside": {
+          "desktop": "01-Contacts-Custom-OnlyOutside.html",
+          "mobile": "01-Contacts-Custom-OnlyOutside-Mobile.html"
+        },
+        "Custom-BuilderEmpty": {
+          "desktop": "01-Contacts-Custom-BuilderEmpty.html",
+          "mobile": "01-Contacts-Custom-BuilderEmpty-Mobile.html"
+        },
+        "Custom-FromReport": {
+          "desktop": "01-Contacts-Custom-FromReport.html",
+          "mobile": "01-Contacts-Custom-FromReport-Mobile.html"
+        },
+        "Custom-BuilderFilled": {
+          "desktop": "01-Contacts-Custom-BuilderFilled.html",
+          "mobile": "01-Contacts-Custom-BuilderFilled-Mobile.html"
+        },
+        "Custom-BuilderEditing": {
+          "desktop": "01-Contacts-Custom-BuilderEditing.html",
+          "mobile": "01-Contacts-Custom-BuilderEditing-Mobile.html"
+        },
+        "Custom-BuilderAddCriteria": {
+          "desktop": "01-Contacts-Custom-BuilderAddCriteria.html",
+          "mobile": "01-Contacts-Custom-BuilderAddCriteria-Mobile.html"
+        },
+        "Custom-BuilderSaved": {
+          "desktop": "01-Contacts-Custom-BuilderSaved.html",
+          "mobile": "01-Contacts-Custom-BuilderSaved-Mobile.html"
+        },
+        "Custom-BuilderPush": {
+          "desktop": "01-Contacts-Custom-BuilderPush.html",
+          "mobile": "01-Contacts-Custom-BuilderPush-Mobile.html"
+        },
+        "Custom-BuilderPushed": {
+          "desktop": "01-Contacts-Custom-BuilderPushed.html",
+          "mobile": "01-Contacts-Custom-BuilderPushed-Mobile.html"
+        },
+        "Custom-ListingViewers": {
+          "desktop": "01-Contacts-Custom-ListingViewers.html",
+          "mobile": "01-Contacts-Custom-ListingViewers-Mobile.html"
+        },
+        "Custom-TeamCriteria": {
+          "desktop": "01-Contacts-Custom-TeamCriteria.html",
+          "mobile": "01-Contacts-Custom-TeamCriteria-Mobile.html"
+        },
+        "Custom-BrainList": {
+          "desktop": "01-Contacts-Custom-BrainList.html",
+          "mobile": "01-Contacts-Custom-BrainList-Mobile.html"
+        },
+        "Custom-ZipList": {
+          "desktop": "01-Contacts-Custom-ZipList.html",
+          "mobile": "01-Contacts-Custom-ZipList-Mobile.html"
         }
       },
-      "purpose": "Lists, filters and the contacts table. A row opens the peek; \u2318K finds anything.",
+      "purpose": "Lists and the criteria builder over the contacts table, at the scale of a 40,000-contact database: stackable chips (AND across, OR within), a live count, Save as list and Push to queue (Phone, Mail merge, Constant Contact). Every \u201cTurn into a list\u201d lands here. Search covers name, phone, email and address; a row opens the peek; \u2318K finds anything.",
       "primaryAction": "Open record"
     },
     {
@@ -108,6 +168,10 @@
         "Error": {
           "desktop": "02-Properties-Error.html",
           "mobile": "02-Properties-Error-Mobile.html"
+        },
+        "Custom-OutsideTerritory": {
+          "desktop": "02-Properties-Custom-OutsideTerritory.html",
+          "mobile": "02-Properties-Custom-OutsideTerritory-Mobile.html"
         }
       },
       "purpose": "The properties table. A row opens the property peek.",
@@ -115,44 +179,109 @@
     },
     {
       "n": "03",
+      "id": "Cleaning",
+      "kind": "form",
+      "title": "Database \u00b7 Cleaning",
+      "states": {
+        "Default": {
+          "desktop": "03-Cleaning-Default.html",
+          "mobile": "03-Cleaning-Default-Mobile.html"
+        },
+        "Custom-Flagged": {
+          "desktop": "03-Cleaning-Custom-Flagged.html",
+          "mobile": "03-Cleaning-Custom-Flagged-Mobile.html"
+        },
+        "Custom-Property": {
+          "desktop": "03-Cleaning-Custom-Property.html",
+          "mobile": "03-Cleaning-Custom-Property-Mobile.html"
+        },
+        "Custom-Context": {
+          "desktop": "03-Cleaning-Custom-Context.html",
+          "mobile": "03-Cleaning-Custom-Context-Mobile.html"
+        },
+        "Selected": {
+          "desktop": "03-Cleaning-Selected.html",
+          "mobile": "03-Cleaning-Selected-Mobile.html"
+        },
+        "Custom-BulkApproved": {
+          "desktop": "03-Cleaning-Custom-BulkApproved.html",
+          "mobile": "03-Cleaning-Custom-BulkApproved-Mobile.html"
+        },
+        "Empty": {
+          "desktop": "03-Cleaning-Empty.html",
+          "mobile": "03-Cleaning-Empty-Mobile.html"
+        },
+        "Loading": "n/a: demo data is local fixtures; nothing is fetched",
+        "Error": "n/a: demo data is local fixtures; nothing is fetched"
+      },
+      "purpose": "Ten minutes a day of data upkeep (sidebar count on Database): four queues (Contact, Ownership, Property, Context), one row per fix with current \u2192 proposed, the reason, a dated source and the confidence; Approve, Reject or Defer, a selection bar for bulk actions, and Done today with Undo. A flagged item, where sources disagree, is left for Thomas and never bulk-selected.",
+      "primaryAction": "Approve"
+    },
+    {
+      "n": "04",
       "id": "Property",
       "kind": "data",
       "title": "07 Property record",
       "states": {
         "Default": {
-          "desktop": "03-Property-Default.html",
-          "mobile": "03-Property-Default-Mobile.html"
+          "desktop": "04-Property-Default.html",
+          "mobile": "04-Property-Default-Mobile.html"
         },
         "Custom-Evidence": {
-          "desktop": "03-Property-Custom-Evidence.html",
-          "mobile": "03-Property-Custom-Evidence-Mobile.html"
+          "desktop": "04-Property-Custom-Evidence.html",
+          "mobile": "04-Property-Custom-Evidence-Mobile.html"
         },
         "Custom-Violations": {
-          "desktop": "03-Property-Custom-Violations.html",
-          "mobile": "03-Property-Custom-Violations-Mobile.html"
+          "desktop": "04-Property-Custom-Violations.html",
+          "mobile": "04-Property-Custom-Violations-Mobile.html"
         },
         "Custom-Ownership": {
-          "desktop": "03-Property-Custom-Ownership.html",
-          "mobile": "03-Property-Custom-Ownership-Mobile.html"
+          "desktop": "04-Property-Custom-Ownership.html",
+          "mobile": "04-Property-Custom-Ownership-Mobile.html"
         },
         "Custom-NoDeals": {
-          "desktop": "03-Property-Custom-NoDeals.html",
-          "mobile": "03-Property-Custom-NoDeals-Mobile.html"
+          "desktop": "04-Property-Custom-NoDeals.html",
+          "mobile": "04-Property-Custom-NoDeals-Mobile.html"
         },
         "Custom-MixedUse": {
-          "desktop": "03-Property-Custom-MixedUse.html",
-          "mobile": "03-Property-Custom-MixedUse-Mobile.html"
+          "desktop": "04-Property-Custom-MixedUse.html",
+          "mobile": "04-Property-Custom-MixedUse-Mobile.html"
         },
         "Custom-PortfolioProperty": {
-          "desktop": "03-Property-Custom-PortfolioProperty.html",
-          "mobile": "03-Property-Custom-PortfolioProperty-Mobile.html"
+          "desktop": "04-Property-Custom-PortfolioProperty.html",
+          "mobile": "04-Property-Custom-PortfolioProperty-Mobile.html"
+        },
+        "Custom-TeamHistory": {
+          "desktop": "04-Property-Custom-TeamHistory.html",
+          "mobile": "04-Property-Custom-TeamHistory-Mobile.html"
+        },
+        "Custom-TeamHistoryEmpty": {
+          "desktop": "04-Property-Custom-TeamHistoryEmpty.html",
+          "mobile": "04-Property-Custom-TeamHistoryEmpty-Mobile.html"
         },
         "Loading": "n/a: demo data is local fixtures; nothing is fetched",
         "Error": "n/a: demo data is local fixtures; nothing is fetched",
         "Empty": "n/a: every property has an owner and facts"
       },
-      "purpose": "118 Ludlow St: key facts, why now with distress signals, Overview (building, units, debt, sale, zoning), Violations, Ownership, Deals, Evidence, and the owner rail.",
+      "purpose": "118 Ludlow St: key facts, why now with distress signals, Overview (building, units, debt, sale, zoning), Violations, Ownership, Deals, Evidence, Team history (with the Team knows this building chip, apart from the score), and the owner rail.",
       "primaryAction": "Call owner"
+    },
+    {
+      "n": "05",
+      "id": "Bov",
+      "kind": "info",
+      "title": "15 More \u00b7 BOV & OM",
+      "states": {
+        "Default": {
+          "desktop": "05-Bov-Default.html",
+          "mobile": "05-Bov-Default-Mobile.html"
+        },
+        "Custom-OtherBuilding": {
+          "desktop": "05-Bov-Custom-OtherBuilding.html",
+          "mobile": "05-Bov-Custom-OtherBuilding-Mobile.html"
+        }
+      },
+      "purpose": "Next phase, drawn: a BOV for 118 Ludlow St with inputs pre-filled from the property record, comps with trust badges and a price range. Generate deck is off."
     }
   ]
 }

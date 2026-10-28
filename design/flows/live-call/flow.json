@@ -26,6 +26,30 @@
           "desktop": "01-Contact-Default.html",
           "mobile": "01-Contact-Default-Mobile.html"
         },
+        "Custom-WrongPerson": {
+          "desktop": "01-Contact-Custom-WrongPerson.html",
+          "mobile": "01-Contact-Custom-WrongPerson-Mobile.html"
+        },
+        "Custom-BuyerTab": {
+          "desktop": "01-Contact-Custom-BuyerTab.html",
+          "mobile": "01-Contact-Custom-BuyerTab-Mobile.html"
+        },
+        "Custom-BuyerWhoFits": {
+          "desktop": "01-Contact-Custom-BuyerWhoFits.html",
+          "mobile": "01-Contact-Custom-BuyerWhoFits-Mobile.html"
+        },
+        "Custom-NoRankLift": {
+          "desktop": "01-Contact-Custom-NoRankLift.html",
+          "mobile": "01-Contact-Custom-NoRankLift-Mobile.html"
+        },
+        "Custom-SequenceStopped": {
+          "desktop": "01-Contact-Custom-SequenceStopped.html",
+          "mobile": "01-Contact-Custom-SequenceStopped-Mobile.html"
+        },
+        "Custom-CallCardOpen": {
+          "desktop": "01-Contact-Custom-CallCardOpen.html",
+          "mobile": "01-Contact-Custom-CallCardOpen-Mobile.html"
+        },
         "Custom-WhyThis": {
           "desktop": "01-Contact-Custom-WhyThis.html",
           "mobile": "01-Contact-Custom-WhyThis-Mobile.html"
@@ -86,12 +110,52 @@
           "desktop": "01-Contact-Custom-PropertyPeek.html",
           "mobile": "01-Contact-Custom-PropertyPeek-Mobile.html"
         },
+        "Custom-OutcomeResults": {
+          "desktop": "01-Contact-Custom-OutcomeResults.html",
+          "mobile": "01-Contact-Custom-OutcomeResults-Mobile.html"
+        },
+        "Custom-OutcomeOtherNumber": {
+          "desktop": "01-Contact-Custom-OutcomeOtherNumber.html",
+          "mobile": "01-Contact-Custom-OutcomeOtherNumber-Mobile.html"
+        },
+        "Custom-PrimaryMoved": {
+          "desktop": "01-Contact-Custom-PrimaryMoved.html",
+          "mobile": "01-Contact-Custom-PrimaryMoved-Mobile.html"
+        },
+        "Custom-OptOutConfirm": {
+          "desktop": "01-Contact-Custom-OptOutConfirm.html",
+          "mobile": "01-Contact-Custom-OptOutConfirm-Mobile.html"
+        },
+        "Custom-OptedOut": {
+          "desktop": "01-Contact-Custom-OptedOut.html",
+          "mobile": "01-Contact-Custom-OptedOut-Mobile.html"
+        },
+        "Custom-DoNotCallList": {
+          "desktop": "01-Contact-Custom-DoNotCallList.html",
+          "mobile": "01-Contact-Custom-DoNotCallList-Mobile.html"
+        },
+        "Custom-OutcomeHistory": {
+          "desktop": "01-Contact-Custom-OutcomeHistory.html",
+          "mobile": "01-Contact-Custom-OutcomeHistory-Mobile.html"
+        },
+        "Custom-EventsInActivity": {
+          "desktop": "01-Contact-Custom-EventsInActivity.html",
+          "mobile": "01-Contact-Custom-EventsInActivity-Mobile.html"
+        },
+        "Custom-NoteInActivity": {
+          "desktop": "01-Contact-Custom-NoteInActivity.html",
+          "mobile": "01-Contact-Custom-NoteInActivity-Mobile.html"
+        },
+        "Custom-ConnectedPeople": {
+          "desktop": "01-Contact-Custom-ConnectedPeople.html",
+          "mobile": "01-Contact-Custom-ConnectedPeople-Mobile.html"
+        },
         "Loading": "n/a: demo data is local fixtures; nothing is fetched",
         "Error": "n/a: demo data is local fixtures; nothing is fetched",
         "Empty": "n/a: every contact has a why now",
         "Validation": "n/a: the only required input is the outcome; Save stays disabled until one is picked (Outcome state)"
       },
-      "purpose": "Daniel Marchetti\u2019s record: why now with trust, the live-call bar, the outcome bar, and the record tabs.",
+      "purpose": "Daniel Marchetti\u2019s record: why now with trust and the Relationship beside it (touches since 2014, the notes that matter, who on the team knew him, what he said, a suggested angle), the live-call bar, the outcome bar (the client\u2019s outcomes, results and call back; its actions apply on save: primary number, bad number, do not contact on every channel, permanently), and the record tabs. Calendar events with the contact show in Activity.",
       "primaryAction": "Call"
     }
   ]

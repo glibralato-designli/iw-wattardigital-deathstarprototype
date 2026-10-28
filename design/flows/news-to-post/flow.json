@@ -1,0 +1,59 @@
+{
+  "schema": 2,
+  "slug": "news-to-post",
+  "title": "Headline to post",
+  "goal": "Turn a headline into a list and a LinkedIn post for the owners it matters to, then approve it.",
+  "order": 6,
+  "next": [
+    {
+      "flow": "ask-brain",
+      "on": "Draft a post"
+    }
+  ],
+  "entryPoints": [
+    {
+      "from": "Start",
+      "to": "01-Headlines"
+    }
+  ],
+  "devices": [
+    "desktop",
+    "mobile"
+  ],
+  "steps": [
+    {
+      "n": "01",
+      "id": "Headlines",
+      "kind": "info",
+      "title": "14 More \u00b7 Headlines",
+      "states": {
+        "Default": {
+          "desktop": "01-Headlines-Default.html",
+          "mobile": "01-Headlines-Default-Mobile.html"
+        },
+        "Custom-Lending": {
+          "desktop": "01-Headlines-Custom-Lending.html",
+          "mobile": "01-Headlines-Custom-Lending-Mobile.html"
+        },
+        "Custom-SixMonths": {
+          "desktop": "01-Headlines-Custom-SixMonths.html",
+          "mobile": "01-Headlines-Custom-SixMonths-Mobile.html"
+        },
+        "Custom-RelevantFirst": {
+          "desktop": "01-Headlines-Custom-RelevantFirst.html",
+          "mobile": "01-Headlines-Custom-RelevantFirst-Mobile.html"
+        },
+        "Custom-Search": {
+          "desktop": "01-Headlines-Custom-Search.html",
+          "mobile": "01-Headlines-Custom-Search-Mobile.html"
+        },
+        "Empty": {
+          "desktop": "01-Headlines-Empty.html",
+          "mobile": "01-Headlines-Empty-Mobile.html"
+        }
+      },
+      "purpose": "A news front page: search, Today to 6 months, topics, sources, Relevant to my lists and sort; a lead story, a grid of stories and a rail (Brain\u2019s take, most relevant to your owners, topics). Each story says how many owners it matters to; Draft a post opens Brain\u2019s headline-to-post flow, Turn into a list opens the builder.",
+      "primaryAction": "Draft a post"
+    }
+  ]
+}
