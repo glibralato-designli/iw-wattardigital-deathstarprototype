@@ -114,7 +114,7 @@
   };
 
   // Where the day starts (3.0 · 2.1): the greeting with this week's meetings, Brain's line, then the ranked list.
-  const dayHead = () => { const m = DS.meetingsWeek(); return `<div class="ds-dayhead"><div class="ds-greeting"><h1>Good morning, Thomas</h1></div><a class="ds-dayhead__num" href="${href('calendar')}"><b data-count="meetings">${m}</b><span class="ds-row__body"><span class="font-medium">meetings this week</span><span class="ds-meta">With owners · +${m - 1} vs. last week (1)</span></span></a></div>${ui.teach()}${ui.nudge(D.nudges['attack-plan'])}`; };
+  const dayHead = () => { const m = DS.meetingsWeek(); return `<div class="ds-dayhead"><div class="ds-greeting"><h1>Good morning, Thomas</h1>${ui.teach()}</div><a class="ds-dayhead__num" href="${href('calendar')}"><b data-count="meetings">${m}</b><span class="ds-row__body"><span class="font-medium">meetings this week</span><span class="ds-meta">With owners · +${m - 1} vs. last week</span></span></a></div>${ui.nudge(D.nudges['attack-plan'])}`; };
 
   DS.define({
     id: 'attack-plan', nav: 'today', brain: 'min',

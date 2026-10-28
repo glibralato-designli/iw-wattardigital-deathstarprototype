@@ -172,16 +172,19 @@ a.ds-struct-row:hover{background:var(--bg-subtle);text-decoration:none;color:var
 .ds-org{font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-subtle)}
 .ds-greeting{display:flex;flex-direction:column;gap:var(--space-1)}
 /* Today's head: the greeting and Brain's line, with this week's owner meetings as the strongest number (3.0 · 2.1). */
-.ds-dayhead{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap}
-.ds-dayhead>.ds-greeting{flex:1 1 16rem;min-width:0}
-.ds-dayhead__num{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-lg);color:var(--fg);text-decoration:none}
-.ds-dayhead__num:hover{background:var(--bg-subtle);color:var(--fg);text-decoration:none}
-.ds-dayhead__num[data-app]{margin-top:calc(var(--space-4) * -1);align-self:flex-start;padding-left:0}
+.ds-dayhead{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4) var(--space-6);flex-wrap:wrap}
+.ds-dayhead>.ds-greeting{flex:1 1 20rem;min-width:0;display:flex;flex-direction:column;gap:var(--space-1-5)}
+.ds-dayhead__num{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-xl);background:var(--bg-subtle);color:var(--fg);text-decoration:none}
+.ds-dayhead__num:hover{background:var(--bg-muted);color:var(--fg);text-decoration:none}
+.ds-dayhead__num[data-app]{align-self:flex-start;margin-top:calc(var(--space-2) * -1)}
 .ds-dayhead__num b{font-size:var(--text-3xl);line-height:var(--line-height-2xl);font-weight:var(--weight-semibold);letter-spacing:var(--letter-spacing-tighter);font-variant-numeric:tabular-nums;color:var(--brand-primary-text)}
 .ds-lede{color:var(--fg-muted)}
-.ds-nudge{display:flex;align-items:center;gap:var(--space-2);margin-top:calc(var(--space-2) * -1);color:var(--fg-muted)}
-.ds-nudge svg{width:1rem;height:1rem;color:var(--brand-primary-text)}
-.ds-nudge a{font-weight:var(--weight-medium)}
+.ds-nudge{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--space-2-5);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--brand-primary-subtle);color:var(--fg-secondary);text-wrap:pretty}
+.ds-nudge>svg{width:1rem;height:1rem;color:var(--brand-primary-text)}
+.ds-nudge b{font-weight:var(--weight-semibold);color:var(--brand-primary-text)}
+.ds-nudge .ds-link-btn{display:inline-flex;align-items:center;gap:var(--space-1);white-space:nowrap}
+.ds-nudge .ds-link-btn svg{width:.875rem;height:.875rem}
+@media (max-width:767px){.ds-nudge{grid-template-columns:auto minmax(0,1fr)}.ds-nudge>.ds-link-btn{grid-column:2;justify-self:start}}
 .ds-split{display:grid;grid-template-columns:minmax(0,1fr) 18.75rem;gap:var(--space-6);align-items:start}
 .ds-stack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
 .ds-stack[data-gap="4"]{gap:var(--space-4)}.ds-stack[data-gap="3"]{gap:var(--space-3)}.ds-stack[data-gap="2"]{gap:var(--space-2)}
@@ -1398,7 +1401,7 @@ a.ds-row:hover .ds-row__end svg,button.ds-row:hover .ds-row__end svg,.ds-link-bt
   .ds-month__chip>span:nth-child(2){display:none}
   /* Nudge: icon on the first line, Ask Brain under the sentence. */
   .ds-nudge{display:grid;grid-template-columns:1rem minmax(0,1fr);column-gap:var(--space-2);row-gap:var(--space-1);align-items:start}
-  .ds-nudge svg{margin-top:3px}
+  .ds-nudge>svg{margin-top:3px}
   .ds-nudge>button{grid-column:2;justify-self:start}
   /* Date toolbars stay on one row: steppers and the date on the left, the range on the right; titles drop below. */
   .ds-datebar .ds-datepick__btn .ds-meta{display:none}
