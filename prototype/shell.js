@@ -4,7 +4,7 @@
   const requested=params.get('mode');
   const mode=Object.hasOwn(project.modes,requested)?requested:project.type;
   const config=project.modes[mode];
-  const themeUrl=(path)=>{const next=new URL(path,location.href);next.searchParams.set('theme',document.documentElement.dataset.theme||'light');return next.href;};
+  const themeUrl=(path)=>{const next=new URL(path,location.href);next.searchParams.set('theme',document.documentElement.dataset.theme||'light');next.searchParams.set('look',document.documentElement.dataset.look||'current');return next.href;};
   const modeUrl=(path,selectedMode)=>{const next=new URL(themeUrl(path));next.searchParams.set('mode',selectedMode);return next.href;};
   const url=(path)=>modeUrl(path,mode);
   const reviewUrl=(path)=>{
@@ -54,6 +54,18 @@
         const target=new URL(link.href,location.href);
         if(target.origin===location.origin && target.pathname.endsWith('.html'))link.href=themeUrl(target.href);
       });
+      document.querySelectorAll('iframe[src]').forEach(frame=>{frame.src=themeUrl(frameUrl(frame));});
+    });
+  });
+  // Look (3.0 · 3.4): the current direction or the visual standard test, carried into every embedded screen like the theme.
+  document.querySelectorAll('[data-look-choice]').forEach(choice=>{
+    choice.checked=choice.value===(document.documentElement.dataset.look||'current');
+    choice.addEventListener('change',()=>{
+      if(!choice.checked)return;
+      if(choice.value==='standard')document.documentElement.dataset.look='standard';else delete document.documentElement.dataset.look;
+      try{localStorage.setItem('design-project-look',choice.value);}catch(_){}
+      const next=new URL(location.href);next.searchParams.set('look',choice.value);history.replaceState(null,'',next);
+      document.querySelectorAll('a[href]').forEach(link=>{const target=new URL(link.href,location.href);if(target.origin===location.origin && target.pathname.endsWith('.html'))link.href=themeUrl(target.href);});
       document.querySelectorAll('iframe[src]').forEach(frame=>{frame.src=themeUrl(frameUrl(frame));});
     });
   });

@@ -17,6 +17,11 @@
         <label><input class="sr-only" type="radio" name="review-theme" value="light" data-theme-choice><span>Light</span></label>
         <label><input class="sr-only" type="radio" name="review-theme" value="dark" data-theme-choice><span>Dark</span></label>
       </fieldset>
+      <fieldset class="review__theme">
+        <legend class="sr-only">Look</legend>
+        <label><input class="sr-only" type="radio" name="review-look" value="current" data-look-choice><span>Current look</span></label>
+        <label><input class="sr-only" type="radio" name="review-look" value="standard" data-look-choice><span>Standard test</span></label>
+      </fieldset>
       ${page==='player'?`<button class="review-menu__item" type="button" data-restart>${restartIcon}Restart prototype</button>`:''}
       <nav class="review-menu__links" aria-label="Review views">
         <a class="review-menu__item" href="system.html" data-review-destination="system" ${page==='system'?'aria-current="page"':''}>${paintIcon}Design system</a>

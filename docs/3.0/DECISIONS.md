@@ -48,6 +48,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 - **3.3 Mobile app as field mode:** Option A, Near me as a tab, Scan in the header (recommended)
   - Oct 27, at build: tabs Today · Near me · Approvals · Database · More; Brain moves to a header button (Approvals stays a tab from 2.3). More keeps Calendar, Activity, Changes and settings. Scan also on Near me's header. The app's look is kept. Built Oct 27.
 - **3.4 Visual standard test:** Option A, A variant to compare (recommended)
+  - Oct 28, at build: Look switch in the review menu (Current look / Standard test); warm white applies to the light theme only. Screenshots in docs/3.0/look/. Switching for real still needs a separate yes. Built Oct 28.
 - **3.5 Calendar: booking page and sync:** Option A, A small card in the rail (recommended)
 - **3.6 Dashboard names and Funnel and trends:** Option A, Keep the video names, add the funnel to Performance (recommended)
 - **3.7 Best way to reach, and why:** Option A, Add the why and the state (recommended)

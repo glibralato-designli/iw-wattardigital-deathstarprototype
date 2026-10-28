@@ -193,3 +193,15 @@
     color-scheme:dark;
   }
 }
+/* Visual standard test (3.0 · 3.4): the client's written standard as a variant, behind the review menu's Look switch (data-look="standard").
+   Warm-white surfaces (light theme) and one royal-blue action colour; dark keeps its surfaces. The navy navigation and every status colour stay. Not the established direction. */
+:root[data-look="standard"]{
+  --bg:#fffdf9; --bg-subtle:#faf7f1; --bg-muted:#f3eee5;
+  --border:#e6dfd3; --border-strong:#d5cdbf; --border-subtle:#f0ebe2;
+  --accent:#1f4fd8; --accent-hover:#1a44bb; --accent-pressed:#15389b; --accent-fg:var(--white); --accent-subtle:#ebf0fe;
+}
+:root[data-look="standard"][data-theme="dark"]{
+  --bg:#0b1220; --bg-subtle:#0f1828; --bg-muted:#172235;
+  --border:#24324a; --border-strong:#33445f; --border-subtle:#172235;
+  --accent:#8fb0ff; --accent-hover:#a9c2ff; --accent-pressed:#7399f5; --accent-fg:#0b1b3f; --accent-subtle:#14244a;
+}

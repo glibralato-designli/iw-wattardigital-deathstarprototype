@@ -359,7 +359,7 @@ Features that close the loop between calls, plus the visual standard test.
 
 ### 3.4 Visual standard test
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Tokens, review menu
+**Status:** Done, Oct 28, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Tokens, review menu
 
 - **The brief:** Midnight-blue navigation, warm-white surfaces, one royal-blue action colour. References: Attio, Linear, Juniper Square. (Doc 1 §11, doc 3 page 1)
 - **Today:** Navy shell, cool white and slate, navy action buttons.
