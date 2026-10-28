@@ -5,7 +5,7 @@
    The old Email Cleaning actions live on each reply (Add note, Off blasts · 1 yr, Mark primary, Mark bad).
    Step 2 (Oct 28): End of day, Brain drafts a follow-up for each of today's conversations (eod=1); campaigns run a cross-channel sequence
    (email, then a text if they open or click, then LinkedIn).
-   Presets: tab=starred|sent|scheduled|bounces|campaigns|templates|domains, open=<thread id>, filter=unread|starred|bounces, compose=1, build=1, preview=1, eod=1, eodsent=1. */
+   Presets: rail=min, pane=split, tab=starred|sent|scheduled|bounces|campaigns|templates|domains, open=<thread id>, filter=unread|starred|bounces, compose=1, build=1, preview=1, eod=1, eodsent=1. */
 (() => {
   const { D, ui, esc, icon, href, params } = DS;
   const S = DS.S();
@@ -16,7 +16,10 @@
   const ALL = [...FOLDERS, ...MANAGE].map(f => f[0]);
   const CAP = D.mailDomains.reduce((a, d) => a + d.inboxes.reduce((b, i) => b + i.day, 0), 0), USED = 186;
   const pTab = params.get('tab') || ({ bounces: 'bounces', starred: 'starred' })[params.get('filter')] || 'inbox';
-  const st = { tab: ALL.includes(pTab) ? pTab : 'inbox', unread: params.get('filter') === 'unread', q: '', open: params.get('open') || null, sel: new Set(), replying: false,
+  // Viewer preferences (Oct 28): the rail collapsed to icons, and mail opening full width or in a pane on the right. Kept in this browser.
+  const PREF = 'ds-mail-prefs'; let pref = {}; try { pref = JSON.parse(localStorage.getItem(PREF) || '{}'); } catch (_) {}
+  const savePref = () => { try { localStorage.setItem(PREF, JSON.stringify({ rail: st.rail, pane: st.pane })); } catch (_) {} };
+  const st = { rail: params.get('rail') || pref.rail || 'full', pane: params.get('pane') || pref.pane || 'full', tab: ALL.includes(pTab) ? pTab : 'inbox', unread: params.get('filter') === 'unread', q: '', open: params.get('open') || null, sel: new Set(), replying: false,
     reply: '', compose: params.get('compose') === '1' ? { to: 'marchetti', from: D.mailDomains[0].inboxes[0].addr, subject: '', body: '', tpl: '', when: '', min: false } : null,
     build: params.get('build') === '1' || params.get('preview') === '1' ? { list: 'Class A sellers', tpl: 0, subject: D.mailTemplates[0].subject, body: D.mailTemplates[0].body, limit: 50, previewed: params.get('preview') === '1', ask: '' } : null,
     tpl: 0, domain: '', domainMsg: '', eod: params.get('eod') === '1', eodOff: {}, eodOpen: 'adler' };
@@ -31,13 +34,16 @@
   const count = k => k === 'inbox' ? DS.mailUnread() : k === 'bounces' ? threads().filter(t => t.kind === 'bounce').length : k === 'scheduled' ? sentAll().filter(x => x.status === 'scheduled').length : 0;
 
   /* ── The rail ── */
-  const rail = () => `<nav class="ds-gmrail" aria-label="Mail">${ui.btn({ label: 'Compose', ic: 'note-pencil', size: 'lg', act: 'compose', cls: 'ds-gmrail__compose' })}
-      <div class="ds-gmrail__group">${FOLDERS.map(([k, l, ic]) => { const n = count(k); return `<button type="button" class="ds-gmrail__item" aria-current="${st.tab === k}" data-act="tab" data-arg="${k}">${icon(ic)}<span>${l}</span>${n ? `<b class="num">${n}</b>` : ''}</button>`; }).join('')}</div>
-      <div class="ds-gmrail__group"><span class="ds-gmrail__h">Mail merge</span>${MANAGE.map(([k, l, ic]) => `<button type="button" class="ds-gmrail__item" aria-current="${st.tab === k}" data-act="tab" data-arg="${k}">${icon(ic)}<span>${l}</span></button>`).join('')}</div></nav>`;
-  const search = () => `<label class="ds-gmsearch">${icon('magnifying-glass')}<input id="mail-q" aria-label="Search mail" placeholder="Search mail" value="${esc(st.q)}" data-input="q" autocomplete="off"></label>`;
+  const mini = () => st.rail === 'min';
+  const item = ([k, l, ic], n) => `<button type="button" class="ds-gmrail__item" aria-current="${st.tab === k}" data-act="tab" data-arg="${k}"${mini() ? ` aria-label="${l}${n ? ', ' + n : ''}" data-tip="${l}" data-tip-side="right"` : ''}>${icon(ic)}${mini() ? (n && k === 'inbox' ? '<i class="ds-gmrail__dot" aria-hidden="true"></i>' : '') : `<span>${l}</span>${n ? `<b class="num">${n}</b>` : ''}`}</button>`;
+  const rail = () => `<nav class="ds-gmrail"${mini() ? ' data-min' : ''} aria-label="Mail"><div class="ds-gmrail__top">${ui.iconBtn({ ic: 'list', aria: mini() ? 'Expand the mail menu' : 'Collapse the mail menu', act: 'rail' })}</div>
+      ${mini() ? `<button type="button" class="button ds-gmrail__compose" data-icon-only aria-label="Compose" data-tip="Compose" data-tip-side="right" data-act="compose">${icon('note-pencil')}</button>` : ui.btn({ label: 'Compose', ic: 'note-pencil', size: 'lg', act: 'compose', cls: 'ds-gmrail__compose' })}
+      <div class="ds-gmrail__group">${FOLDERS.map(f => item(f, count(f[0]))).join('')}</div>
+      <div class="ds-gmrail__group">${mini() ? '<span class="ds-gmrail__rule" aria-hidden="true"></span>' : '<span class="ds-gmrail__h">Mail merge</span>'}${MANAGE.map(f => item(f, 0)).join('')}</div></nav>`;
+  const search = () => `<div class="ds-gmtop"><label class="ds-gmsearch">${icon('magnifying-glass')}<input id="mail-q" aria-label="Search mail" placeholder="Search mail" value="${esc(st.q)}" data-input="q" autocomplete="off"></label>${['inbox', 'starred', 'bounces'].includes(st.tab) ? `<div class="ds-gmview"><span class="ds-meta">Open mail</span>${ui.segmented([['full', 'Full'], ['split', 'Split']], st.pane, 'pane', 'Open mail', 'sm')}</div>` : ''}</div>`;
 
   /* ── A row and the list ── */
-  const row = t => `<div class="ds-gmrow"${t.unread ? ' data-unread' : ''}${st.sel.has(t.id) ? ' data-sel' : ''}>
+  const row = t => `<div class="ds-gmrow"${t.unread ? ' data-unread' : ''}${st.sel.has(t.id) ? ' data-sel' : ''}${st.pane === 'split' && st.open === t.id ? ' aria-current="true"' : ''}>
       <label class="choice ds-gmrow__pick"><input type="checkbox" data-change="sel" value="${t.id}"${st.sel.has(t.id) ? ' checked' : ''}><span class="sr-only">Select ${esc(t.subject)}</span></label>
       <button type="button" class="ds-gmrow__star" aria-label="${t.starred ? 'Unstar' : 'Star'}" aria-pressed="${t.starred}" data-act="star" data-arg="${t.id}">${icon('star', t.starred ? 'fill' : 'regular')}</button>
       <button type="button" class="ds-gmrow__main" data-act="pick" data-arg="${t.id}"><span class="ds-gmrow__from">${esc(t.from)}</span>
@@ -76,7 +82,9 @@
         ${t.kind !== 'reply' ? '' : st.replying ? `<div class="ds-gmreply"><span class="ds-gmmsg__av" aria-hidden="true">TW</span><div class="ds-gmreply__box"><span class="ds-meta">${icon('arrow-bend-up-left')}Reply to ${esc(t.from)}</span><textarea id="mail-reply" class="field__control" rows="4" placeholder="Write your reply…" data-input="reply">${esc(st.reply)}</textarea><div class="ds-toolbar">${ui.btn({ label: 'Send', ic: 'paper-plane-tilt', act: 'send-reply', arg: t.id })}${ui.btn({ label: 'Open in composer', variant: 'ghost', act: 'reply-compose', arg: t.id })}<span class="ds-grow"></span>${ui.iconBtn({ ic: 'trash', aria: 'Discard reply', act: 'reply-discard' })}</div></div></div>`
           : `<div class="ds-gmactions">${ui.btn({ label: 'Reply', ic: 'arrow-bend-up-left', variant: 'outline', act: 'reply-open' })}${ui.btn({ label: 'Forward', ic: 'arrow-bend-up-right', variant: 'outline', act: 'forward', arg: t.id })}</div>`}
       </div></section>`; };
-  const mailView = () => { if (st.eod) return eodPanel(); const t = current(); return t && ['inbox', 'starred', 'bounces'].includes(st.tab) ? threadView(t) : listView(); };
+  const mailView = () => { const t = current();
+    if (st.pane === 'split') return `<div class="ds-gmsplit"><div class="ds-gmsplit__list">${listView()}</div>${st.eod ? eodPanel() : t ? threadView(t) : `<section class="ds-gmpanel ds-gmthread" data-empty>${ui.empty({ ic: 'envelope-simple', title: 'No conversation selected', text: 'Pick one on the left to read it here.' })}</section>`}</div>`;
+    if (st.eod) return eodPanel(); return t && ['inbox', 'starred', 'bounces'].includes(st.tab) ? threadView(t) : listView(); };
 
   /* ── Sent and Scheduled ── */
   const sent = () => { const xs = sentAll().filter(x => st.tab === 'scheduled' ? x.status === 'scheduled' : x.status !== 'scheduled');
@@ -144,6 +152,8 @@
       'eod-close': () => { st.eod = false; DS.render(); },
       'eod-open': (el, cid) => { st.eodOpen = st.eodOpen === cid ? null : cid; DS.render(); },
       'eod-send': () => { const on = D.eodFollowups.filter(x => !st.eodOff[x.cid]); on.forEach(x => DS.apprAdd({ lane: 'email', cid: x.cid, pid: D.cById[x.cid].pid, title: x.subject, why: 'End-of-day follow-up. Your note: ' + x.note + '.', body: ['Subject: ' + x.subject, x.body] })); S.mail = { ...S.mail, eodSent: true }; DS.save(); st.eod = false; DS.render(); DS.toast(on.length + ' follow-ups in Approvals · they wait for your click'); },
+      rail: () => { st.rail = mini() ? 'full' : 'min'; savePref(); DS.render(); },
+      pane: (el, k) => { st.pane = k; savePref(); DS.render(); },
       unreadf: (el, k) => { st.unread = k === 'unread'; DS.render(); },
       refresh: () => DS.toast('Up to date · mailbox sync runs every 30 to 60 minutes'),
       bulk: (el, k) => { [...st.sel].forEach(id => setMail(id, k === 'archive' ? { archived: true } : { read: true })); DS.toast(st.sel.size + (k === 'archive' ? ' archived' : ' marked read')); st.sel.clear(); DS.render(); },

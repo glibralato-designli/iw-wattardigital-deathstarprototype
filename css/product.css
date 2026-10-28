@@ -2045,3 +2045,37 @@ button.ds-maildock[data-min] svg{width:1rem;height:1rem}
   .ds-gmthread__body{padding:var(--space-4)}
   .ds-gmactions{padding-left:0}
 }
+/* Email options (Oct 28): the rail collapses to icons (a dot marks a folder with unread), mail opens full width or in a pane on the right,
+   and the list panel fills the screen however many emails there are. */
+.ds-gmail:has(.ds-gmrail[data-min]){grid-template-columns:3.5rem minmax(0,1fr)}
+.ds-gmrail__top{display:flex;align-items:center;min-height:var(--control-md);padding-left:var(--space-1)}
+.ds-gmrail[data-min]{align-items:center}
+.ds-gmrail[data-min] .ds-gmrail__top{padding-left:0}
+.ds-gmrail[data-min] .ds-gmrail__compose{width:3.25rem;padding:0;justify-content:center}
+.ds-gmrail[data-min] .ds-gmrail__group{align-items:center}
+.ds-gmrail[data-min] .ds-gmrail__item{position:relative;justify-content:center;width:2.75rem;padding:0}
+.ds-gmrail__dot{position:absolute;top:.4rem;right:.55rem;width:.45rem;height:.45rem;border-radius:var(--radius-full);background:var(--brand-primary-text)}
+.ds-gmrail__rule{display:block;width:1.5rem;height:1px;margin:var(--space-1) 0;background:var(--border)}
+.ds-gmtop{display:flex;align-items:center;gap:var(--space-4)}
+.ds-gmtop>.ds-gmsearch{flex:1;min-width:0}
+.ds-gmview{display:flex;align-items:center;gap:var(--space-2);flex:none}
+.ds-gmail__main>.ds-gmpanel,.ds-gmail__main>.ds-gmsplit{min-height:max(28rem,calc(100dvh - 19rem))}
+.ds-gmail__main>.ds-gmpanel>.ds-empty,.ds-gmsplit .ds-gmthread[data-empty]{margin:auto}
+.ds-gmsplit{display:grid;grid-template-columns:minmax(18rem,26rem) minmax(0,1fr);gap:var(--space-3);height:max(28rem,calc(100dvh - 19rem))}
+.ds-gmsplit__list{display:flex;flex-direction:column;gap:var(--space-3);min-height:0;min-width:0}
+.ds-gmsplit__list>.ds-gmpanel{flex:1;min-height:0;overflow:auto}
+.ds-gmsplit>.ds-gmpanel{min-height:0;overflow:auto}
+.ds-gmsplit .ds-gmthread[data-empty]{display:flex;align-items:center;justify-content:center}
+.ds-gmsplit .ds-gmbar{flex-wrap:wrap;position:sticky;top:0;z-index:2;background:var(--bg)}
+.ds-gmsplit .ds-gmrow__main{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"from time" "text text";row-gap:var(--space-0-5);padding:var(--space-2-5) var(--space-3) var(--space-2-5) 0}
+.ds-gmsplit .ds-gmrow__from{grid-area:from}.ds-gmsplit .ds-gmrow__time{grid-area:time}.ds-gmsplit .ds-gmrow__text{grid-area:text}
+.ds-gmsplit .ds-gmrow[aria-current="true"]{background:var(--brand-primary-subtle);box-shadow:inset 3px 0 0 var(--brand-primary-text)}
+.ds-gmsplit .ds-gmrow__pick{display:none}
+.ds-gmsplit .ds-gmrow{grid-template-columns:2rem minmax(0,1fr)}
+@media (max-width:1023px){
+  .ds-gmail:has(.ds-gmrail[data-min]){grid-template-columns:minmax(0,1fr)}
+  .ds-gmsplit{grid-template-columns:minmax(0,1fr);height:auto}
+  .ds-gmsplit:has(.ds-gmthread:not([data-empty])) .ds-gmsplit__list{display:none}
+  .ds-gmsplit .ds-gmthread[data-empty]{display:none}
+  .ds-gmview{display:none}
+}
