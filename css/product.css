@@ -1803,3 +1803,11 @@ button.ds-voice svg{width:1.125rem;height:1.125rem;color:var(--brand-primary-tex
 .ds-booking__new{color:var(--fg-secondary)}
 .ds-sync{display:flex;align-items:center;gap:var(--space-1-5);padding:0 var(--space-1-5);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
 .ds-sync svg{width:.875rem;height:.875rem}
+/* Funnel and trends (3.0 · 3.6): one bordered strip of six steps divided by subtle rules; three a row under 1024, two on a phone. */
+.ds-funnel{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg);overflow:hidden}
+.ds-funnel__step{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);min-width:0;box-shadow:inset 1px 0 0 var(--border-subtle)}
+.ds-funnel__step:first-child{box-shadow:none}
+.ds-funnel__v{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--space-2)}
+.ds-funnel__v b{font-size:var(--text-xl);line-height:var(--line-height-xl);font-weight:var(--weight-semibold)}
+@media (max-width:1023px){.ds-funnel{grid-template-columns:repeat(3,minmax(0,1fr))}.ds-funnel__step{box-shadow:inset 1px 0 0 var(--border-subtle),inset 0 1px 0 var(--border-subtle)}}
+@media (max-width:767px){.ds-funnel{grid-template-columns:repeat(2,minmax(0,1fr))}}

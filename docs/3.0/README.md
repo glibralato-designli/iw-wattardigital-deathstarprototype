@@ -395,7 +395,7 @@ Features that close the loop between calls, plus the visual standard test.
 
 ### 3.6 Dashboard names and Funnel and trends
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Dashboard tabs, Performance
+**Status:** Done, Oct 28, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Dashboard tabs, Performance
 
 - **The brief:** Doc 3 lists Attack Plan, Calendar, Conversation Tracker, Outreach Performance, Reporting, Listing Activity, plus Funnel and trends (90 days versus the prior period). (Doc 3 Dashboard)
 - **Today:** Today, Activity, Who to call, Calendar, Performance, Listings, Website (from the Oct 22 video).
