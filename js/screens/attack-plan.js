@@ -46,17 +46,17 @@
     const n = st.mode === 'week' ? (r === 0 ? 112 + S.calls : r < 0 ? 150 : 0) : (r === 0 ? done : r < 0 ? 40 - (Math.abs(st.sel) * 7) % 13 : 0), of = st.mode === 'week' ? 150 : 40;
     const allCalled = r === 0 && ids.every(id => S.done[id]);
     const rows = r === 0 ? ids.map(id => callRow(id)) : r < 0 ? ids.map(id => callRow(id, true)) : [];
-    return `<section class="ds-card ds-plan" aria-label="${esc(title)}">
+    return `<section class="ds-card ds-dayplan" aria-label="${esc(title)}">
       <div class="ds-card__head"><div class="ds-card__title"><h2>${esc(title)}</h2><span class="ds-meta">${esc(sub)}</span></div><span class="ds-meta-strong num"><span data-count="${r === 0 && st.mode === 'day' ? 'calls' : 'plan-' + st.mode + st.sel}">${n}</span> of ${of} ${st.mode === 'week' ? 'dials' : 'calls'}</span>${ui.progress(n / of, 'Calls', { key: r === 0 && st.mode === 'day' ? 'calls' : 'plan-' + st.mode + st.sel })}</div>
-      <div class="ds-plan__top">
+      <div class="ds-dayplan__top">
         <div class="ds-subhead"><h3>${r < 0 ? 'Outreach · Called' : 'Outreach · Call next'}</h3><a class="small" href="${href('contacts', 'list=A')}">View all Class A</a></div>
         ${r === 0 ? ui.planNotes() : ''}</div>
-      <div class="ds-plan__rows">
+      <div class="ds-dayplan__rows">
         ${r > 0 ? `<div class="ds-note" style="margin-bottom:var(--space-1)">${icon('calendar-blank')}<span class="ds-grow">${esc(st.mode === 'week' ? 'Brain builds each day’s call list that morning. 200 owners are queued for ' + w.range + '.' : 'Brain builds this call list the morning of ' + fmtL(w.selD) + '. 40 owners are queued from your Class A segments.')}</span></div>` : ''}
         ${rows.join('')}
         ${allCalled ? `<div class="ds-note" style="color:var(--fg)"><span class="ds-grow">You’ve called everyone on today’s list.</span>${ui.btn({ label: 'Build a new list', variant: 'outline', act: 'build-list' })}</div>` : ''}
         </div>
-        <p class="ds-meta ds-plan__foot">5 Class A owners have no verified reason yet</p>
+        <p class="ds-meta ds-dayplan__foot">5 Class A owners have no verified reason yet</p>
       </div>
     </section>`;
   };

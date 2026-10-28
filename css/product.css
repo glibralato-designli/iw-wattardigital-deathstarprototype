@@ -363,7 +363,7 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-weekrow[data-today]{background:var(--bg-muted);font-weight:var(--weight-medium)}
 
 /* ───────── Attack Plan ───────── */
-.ds-callrow{display:grid;grid-template-columns:2.5rem minmax(0,1fr) auto;gap:var(--space-4);align-items:center;padding:var(--space-5) var(--space-2);border-radius:var(--radius-md)}
+.ds-callrow{display:grid;grid-template-columns:2.5rem minmax(0,1fr) auto;gap:var(--space-4);align-items:center;padding:var(--space-4) var(--space-2);border-radius:var(--radius-md)}
 .ds-callrow+.ds-callrow{border-top:var(--border-width) solid var(--border-subtle);border-radius:0}
 .ds-callrow[data-done]{background:var(--bg-subtle)}
 .ds-callrow__rank{align-self:start;display:flex;flex-direction:column;align-items:center;gap:var(--space-0-5);padding-top:2px}
@@ -388,7 +388,9 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 .ds-task .ds-icon-btn:hover{color:var(--danger)}
 .ds-task__meta{display:flex;align-items:center;gap:var(--space-1);font-size:var(--text-xs);line-height:var(--line-height-xs);color:var(--fg-subtle)}
 .ds-task__meta svg{width:.75rem;height:.75rem}
-.ds-inline-add{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2);margin-top:var(--space-1)}
+.ds-inline-add{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2);padding:var(--space-2);margin-top:var(--space-1)}
+.ds-inline-add>.ds-input-icon{flex:1 1 14rem;min-width:0}
+.ds-inline-add>.select{flex:1 1 7rem}
 .ds-input-icon{flex:1;height:var(--control-md);display:flex;align-items:center;gap:var(--space-2);padding:0 var(--space-2-5);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--fg-subtle)}
 .ds-input-icon:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px var(--focus-halo)}
 .ds-input-icon svg{width:1rem;height:1rem;flex:none}
@@ -446,12 +448,14 @@ button.ds-chip:hover{background:var(--bg-subtle)}
 /* Plan notes and the changes note (3.0 · 2.5). Two kinds of block, coloured by who is speaking:
    Brain's note about where the list came from uses Brain's surface (the tint of Brain suggests);
    a change to how the product behaves is a neutral system notice, never a status colour (it is not an alert). */
-.ds-plan-notes{display:flex;flex-direction:column;gap:var(--space-2-5)}
-/* Today's plan (polish, Oct 28): room between the head, the notes and the rows; the footer note sits apart under the last row. */
-.ds-plan{gap:var(--space-5)}
-.ds-plan__top{display:flex;flex-direction:column;gap:var(--space-3)}
-.ds-plan__rows{display:flex;flex-direction:column;margin-top:calc(var(--space-2) * -1)}
-.ds-plan__foot{padding:var(--space-4) var(--space-2) 0;border-top:var(--border-width) solid var(--border-subtle)}
+.ds-plan-notes{display:flex;flex-direction:column;gap:var(--space-2)}
+/* Today's plan (polish, Oct 28): the same spacing between blocks, more room inside them: card padding, note padding, row padding. */
+.ds-card.ds-dayplan{gap:var(--space-1);padding:var(--space-6)}
+.ds-dayplan__top{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-2)}
+.ds-dayplan__rows{display:flex;flex-direction:column}
+.ds-dayplan__foot{padding:var(--space-3) var(--space-2) 0}
+.ds-dayplan .ds-plan-src,.ds-dayplan .ds-change{padding:var(--space-3-5) var(--space-4)}
+@media (max-width:767px){.ds-card.ds-dayplan{padding:var(--space-4)}.ds-dayplan .ds-plan-src,.ds-dayplan .ds-change{padding:var(--space-3)}}
 .ds-change{display:grid;grid-template-columns:1rem minmax(0,1fr) auto;align-items:center;gap:var(--space-1) var(--space-2-5);padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--bg-muted);font-size:var(--text-sm);line-height:var(--line-height-sm);color:var(--fg-secondary);text-wrap:pretty}
 .ds-change>svg{width:1rem;height:1rem;color:var(--fg-muted)}
 .ds-change b{font-weight:var(--weight-semibold);color:var(--fg)}
