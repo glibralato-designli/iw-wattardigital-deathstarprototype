@@ -24,7 +24,7 @@
 
   /* ───────── Store: demo data in local storage, session UI in session storage ───────── */
   const STORE = 'ds-proto-v2', UI = 'ds-ui-v2';
-  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, optOut: {}, restored: {}, appr: {}, apprEdit: {}, clean: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
+  const fresh = () => ({ done: {}, calls: 0, convos: 0, tl: {}, last: {}, bad: {}, flags: {}, tasks: D.tasks.map(t => ({ ...t })), goalDone: {}, calNew: [], convs: [], clists: {}, ctog: {}, ranked: {}, recent: ['marchetti', 'p118', 'feld'], lists: [], storefront: {}, pnotes: {}, primary: {}, optOut: {}, restored: {}, appr: {}, apprEdit: {}, apprNew: [], clean: {}, mail: {}, sms: {}, smsRead: {}, meetings: 0, texts: {}, said: {}, queues: [], dismissed: {}, taught: [], docsAdded: [], goalEdits: null, weekTpl: null, posts: [] });
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
@@ -232,8 +232,14 @@
     const p = OUT.pick(oc, ch); (params.get('res') || '').split(',').filter(k => OUT.results.some(r => r[0] === k)).forEach(k => { if (OUT.reached(ch)) p.res[k] = true; }); return p; };
   /* Approvals (3.0 · 2.3): one inbox for every planned touch. S.appr[id] = 'approved' | 'held' | 'removed'; S.apprEdit[id] = edited lines.
      Blocked items (an opted-out owner) can't be approved; a warning never blocks. */
-  const apprList = () => D.approvals.map(a => ({ ...a, c: a.cid ? cById[a.cid] : null, p: a.pid ? pById[a.pid] : null, state: (S.appr || {})[a.id] || null, body: (S.apprEdit || {})[a.id] || a.body, blocked: !!(a.check && a.check[0] === 'block') || !!(a.cid && cById[a.cid].status === 'Do not contact') }));
+  const apprList = () => [...D.approvals, ...(S.apprNew || [])].map(a => ({ ...a, c: a.cid ? cById[a.cid] : null, p: a.pid ? pById[a.pid] : null, state: (S.appr || {})[a.id] || null, body: (S.apprEdit || {})[a.id] || a.body, blocked: !!(a.check && a.check[0] === 'block') || !!(a.cid && cById[a.cid].status === 'Do not contact') }));
   const apprPending = () => apprList().filter(a => !a.state).length;
+  // A campaign or blast built on Email or Texting lands in Approvals; nothing goes out until Thomas approves it there.
+  const apprAdd = a => { S.apprNew = [...(S.apprNew || []), { id: 'n' + Date.now().toString(36), cid: null, pid: null, check: null, ...a }]; save(); };
+  /* Email and Texting (Oct 28): S.mail[id] = { read, star, archived, replies: [text] }; S.sms[cid] = [[from, when, text]] sent from here. */
+  const mailOf = t => ({ ...t, ...(S.mail || {})[t.id], unread: t.unread && !((S.mail || {})[t.id] || {}).read, starred: ((S.mail || {})[t.id] || {}).star ?? t.starred });
+  const mailUnread = () => D.mailThreads.map(mailOf).filter(t => t.unread && !t.archived && t.kind === 'reply').length;
+  const textUnread = () => D.textThreads.filter(t => t.replied && !(S.smsRead || {})[t.cid] && t.msgs[t.msgs.length - 1][0] === 'them' && t.msgs[t.msgs.length - 1][2] !== 'STOP').length;
   const apprSet = (ids, state) => { S.appr = { ...S.appr }; ids.forEach(id => { S.appr[id] = state; }); save(); };
   // Presets: approved=<id,…>, decided=all (the empty state), bulk=<lane> (that lane approved), wave=1 (the first wave approved).
   const apprPresets = () => { const L = apprList();
@@ -372,7 +378,7 @@
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;
-  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, openerOf, touchOf, apprList, apprPending, apprSet, apprPresets, cleanList, cleanPending, cleanSet, cleanPresets, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
+  Object.assign(DS, { crit, savedLists, saveList, queues, facade, streetArt, mapTile, ago, relOf, openerOf, touchOf, apprList, apprPending, apprSet, apprPresets, apprAdd, mailOf, mailUnread, textUnread, cleanList, cleanPending, cleanSet, cleanPresets, applyOutcome, meetingsWeek, OUT, optOut, NO_CONTACT });
 
   /* ───────── Toast and tooltip (direct DOM, outside the render loop) ───────── */
   let toastTimer;
@@ -423,7 +429,7 @@
   const chatOn = () => userCount() > 0;
 
   /* ───────── Sidebar ───────── */
-  const NAVKEY = { 'attack-plan': 'today', approvals: 'approvals', home: 'dashboard', brain: 'brain', contacts: 'database' };
+  const NAVKEY = { 'attack-plan': 'today', approvals: 'approvals', home: 'dashboard', brain: 'brain', contacts: 'database', email: 'email', texting: 'texting' };
   function sidebar() {
     const rail = isRail(), sc = DS.screen;
     const tipSide = 'right', railTip = l => rail ? ` data-tip="${esc(l)}" data-tip-side="${tipSide}"` : '';
@@ -438,7 +444,7 @@
       const [label, ic, page, badge] = n, key = NAVKEY[page];
       if (!rail && grp && U.navGrp[grp] && key !== sc.nav) return;
       if (!page) { h += `<a class="ds-nav" role="link" tabindex="0" aria-disabled="true" data-tip="${OFF}" data-tip-side="right">${icon(ic)}<span>${esc(label)}</span>${badge ? `<span class="ds-nav__badge">${badge}</span>` : ''}</a>`; return; }
-      const cnt = page === 'approvals' ? apprPending() : page === 'contacts' ? cleanPending() : 0, what = page === 'approvals' ? ' to approve' : ' to clean';
+      const cnt = page === 'approvals' ? apprPending() : page === 'contacts' ? cleanPending() : page === 'email' ? mailUnread() : page === 'texting' ? textUnread() : 0, what = page === 'approvals' ? ' to approve' : page === 'contacts' ? ' to clean' : ' unread';
       h += `<a class="ds-nav" href="${href(page)}"${key === sc.nav ? ' aria-current="page"' : ''}${railTip(cnt ? label + ' · ' + cnt + what : label)}>${key === sc.nav ? '<span class="ds-nav__ink" aria-hidden="true"></span>' : ''}${icon(ic)}<span>${esc(label)}</span>${cnt ? `<span class="ds-nav__badge" aria-label="${cnt}${what}">${cnt}</span>` : ''}</a>`;
     });
     if (rail || !U.navGrp.Marketing) {

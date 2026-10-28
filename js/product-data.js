@@ -168,7 +168,7 @@
   // Today is where the day starts (3.0 · 2.1, Orientation doc 1 §10); the Dashboard is the command centre and opens on Overview.
   const nav = [['Today', 'sun', 'attack-plan'], ['Approvals', 'tray', 'approvals'], ['Dashboard', 'squares-four', 'home'], ['Brain', 'sparkle', 'brain'],
     'Prospecting', ['Database', 'database', 'contacts'], ['Map', 'map-trifold'], ['Outreach', 'list-bullets'],
-    'Channels', ['Phone', 'phone'], ['Email', 'envelope-simple', null, '4'], ['Texting', 'chat-text', null, '2'], ['LinkedIn', 'linkedin-logo'], ['Social', 'users'],
+    'Channels', ['Phone', 'phone'], ['Email', 'envelope-simple', 'email', '2'], ['Texting', 'chat-text', 'texting', '3'], ['LinkedIn', 'linkedin-logo'], ['Social', 'users'],
     'Marketing', ['Marketing', 'megaphone'], ['Website', 'globe']];
   const more = [['Field Mode', 'device-mobile'], ['Headlines', 'newspaper', 'headlines'], ['Market Data', 'chart-line'], ['Ledger', 'book'], ['Prediction Model', 'brain'], ['BOV & OM', 'file-text', 'bov'], ['Integrations', 'puzzle-piece']];
   const links = [{ h: 'Research', items: ['PincusCo', 'UniCourt', 'LoopNet', 'Zillow', 'StreetEasy', 'Hunter', 'PropertyShark', 'Apollo', 'CoStar', 'NYC ACRIS', 'NYC Open Data'] }, { h: 'Media', items: ['The Real Deal', 'Bisnow', 'Commercial Observer', 'WSJ Real Estate', 'Crain’s New York', 'YIMBY NY', 'GlobeSt'] }];
@@ -180,6 +180,72 @@
   const databaseTabs = [['contacts', 'Contacts'], ['properties', 'Properties'], ['cleaning', 'Cleaning']];
 
   /* Near me (3.0 · 3.3, field mode): where Thomas stands (simulated) and owners whose lead building is within a ten-minute walk, closest first. */
+  /* Email (ported from the old Mail page, Oct 28): a Gmail / Notion Mail style client. Replies thread in from the mail merges (Smartlead);
+     one-to-one replies send on Thomas's click; campaigns wait in Approvals. Capacity: 540 sends a day across 3 domains, 30–50 per inbox.
+     Thread: [id, contact id or null, sender, email, subject, day ('Today'|'Yesterday'|'Earlier'), time, unread, starred, kind ('reply'|'auto'|'bounce'), messages [[from 'them'|'me', when, text]], brain]. */
+  const mailThreads = [
+    ['m1', 'adler', 'Ruth Adler', 'ruth.adler@example.com', 'Re: The Q3 comps you asked for', 'Today', '9:42 AM', true, true, 'reply', [['me', 'Sep 29, 4:10 PM', 'Ruth, as promised, here are the Q3 sales around 64 Essex. They show what’s trading near you, not a number for your building.'], ['them', 'Today, 9:42 AM', 'Thanks Thomas. My brother and I have been talking about this. Could we meet next week? Tuesday or Wednesday works.']], 'She asks to meet next week (Tue or Wed). Suggested reply: offer Tuesday 11 AM at 64 Essex; the meeting counts toward this week.'],
+    ['m2', 'okafor', 'Grace Okafor', 'grace.okafor@example.com', 'Re: Updated BOV for 90 Clinton St', 'Today', '8:15 AM', true, false, 'reply', [['me', 'Sep 28, 10:02 AM', 'Grace, the updated rent roll and three new comps are in. Lunch today still works for walking through the recap next to a sale.'], ['them', 'Today, 8:15 AM', 'See you at 12. Please bring the recap numbers printed, my son will join.']], 'Lunch is confirmed for 12 and her son joins. Suggested: print the recap and add him to the record as family.'],
+    ['m3', 'marchetti', 'Daniel Marchetti', 'd.marchetti@example.com', 'Re: 118 Ludlow, refinance or sell', 'Yesterday', '5:51 PM', false, true, 'reply', [['me', 'Sep 29, 11:20 AM', 'Daniel, with the June maturity coming, I laid the refinance next to what a sale would net, so you can compare the two.'], ['them', 'Yesterday, 5:51 PM', 'Interesting. What are buildings like mine trading for right now?']], 'He asks what similar buildings trade for. Never quote a price for his own building in writing: offer three recent LES comps and a call.'],
+    ['m4', 'shah', 'Anita Shah', 'anita.shah@example.com', 'Re: Q4 market note', 'Yesterday', '2:07 PM', false, false, 'reply', [['me', 'Sep 28, 9:00 AM', 'Anita, three buildings traded on your blocks this quarter, and two lenders tightened terms for walk-ups.'], ['them', 'Yesterday, 2:07 PM', 'Not selling now, but keep me posted.']], 'A “not now”, not a no. Suggested: keep her on the quarterly note and set a Q1 check-in.'],
+    ['m5', 'lindqvist', 'Erik Lindqvist', 'erik.lindqvist@example.com', 'Automatic reply: Q4 market note', 'Yesterday', '9:01 AM', false, false, 'auto', [['them', 'Yesterday, 9:01 AM', 'Out of office until Monday, Oct 5. For urgent matters contact the office.']], null],
+    ['m6', 'chen', 'Mail Delivery Subsystem', 'mailer-daemon', 'Undeliverable: What changed on the Lower East Side this quarter', 'Earlier', 'Sep 26', false, false, 'bounce', [['them', 'Sep 26, 3:12 PM', 'w.chen@delancey155.example — 550 5.1.1 mailbox does not exist']], 'A hard bounce: the address is flagged on Wei Chen’s record and left out of the next send.'],
+    ['m7', 'greene', 'Michael Greene', 'm.greene@example.com', 'Re: 41 Ludlow St offering memorandum', 'Earlier', 'Sep 25', false, false, 'reply', [['me', 'Sep 24, 8:30 AM', 'Michael, attached is the OM for 41 Ludlow St. Given your 1031 timing, happy to walk you through it.'], ['them', 'Sep 25, 7:48 PM', 'Send numbers. I need to identify by Oct 18.']], 'He is a 1031 buyer with 18 days to identify. Suggested: send the 41 Ludlow rent roll and two off-market fits.'],
+  ].map(([id, cid, from, email, subject, day, time, unread, starred, kind, msgs, brain]) => ({ id, cid, from, email, subject, day, time, unread, starred, kind, msgs, brain }));
+  const mailSent = [
+    ['s1', 'adler', 'The Q3 comps you asked for', 'Ruth, as promised, here are the Q3 sales around 64 Essex…', 'thomas@sg-outreach.example', 'Sep 29', 'sent'],
+    ['s2', 'marchetti', '118 Ludlow, refinance or sell', 'Daniel, with the June maturity coming, I laid the refinance…', 'thomas@sgnyc-mail.example', 'Sep 29', 'sent'],
+    ['s3', 'greene', '41 Ludlow St offering memorandum', 'Michael, attached is the OM for 41 Ludlow St…', 'thomas@sg-outreach.example', 'Sep 24', 'sent'],
+    ['s4', 'rivera', 'Air rights on E 3rd St', 'Marisol, a developer paid $410/SF for air rights on E 4th St…', 'thomas@stewartcre-mail.example', 'Oct 1, 9:00 AM', 'scheduled'],
+  ].map(([id, cid, subject, preview, from, when, status]) => ({ id, cid, subject, preview, from, when, status }));
+  // Mail merge campaigns: [id, name, subject, sent, delivered, opened, clicked, replied, bounced, owners, hit, sendable, noEmail, state, date].
+  const mailCampaigns = [
+    ['c1', 'LES Debt Maturity — Q4', 'Your loan on {{address}} is maturing', 438, 425, 212, 27, 8, 9, 120, 38, 76, 6, 'Active', 'Sep 22'],
+    ['c2', 'TriBeCa Long-Hold Owners', 'Recent trades on your block', 382, 371, 164, 19, 14, 6, 382, 382, 0, 0, 'Done', 'Sep 8'],
+    ['c3', 'Chinatown Estate Signals', '{{address}} — estate question', 64, 62, 31, 4, 2, 1, 90, 64, 20, 6, 'Paused', 'Aug 30'],
+  ].map(([id, name, subject, sent, delivered, opened, clicked, replied, bounced, owners, hit, sendable, noEmail, state, date]) => ({ id, name, subject, sent, delivered, opened, clicked, replied, bounced, owners, hit, sendable, noEmail, state, date }));
+  // Narrative templates (the eight from the old platform), with their merge fields.
+  const mailTemplates = [
+    ['Refi Pressure', 'Loan maturing, rates up', '{{address}} — loan maturing', 'Hi {{first_name}}, your {{debt_amount}} loan on {{address}} matures {{maturity_date}}. Refinancing at today’s rates changes the math, so I put a refinance next to a sale for owners in {{neighborhood}}. Worth a short call?'],
+    ['Refi Failure', 'Refinance fell through', '{{address}} — options after the refinance', 'Hi {{first_name}}, lenders have pulled back on walk-ups below 96th St. If the refinance on {{address}} is harder than expected, there are other paths. Happy to lay them out.'],
+    ['Estate / Probate', 'Inherited building', '{{address}} — estate question', 'Hi {{first_name}}, I was sorry to hear about the change in ownership of {{address}}. When the timing is right, I can share what similar buildings in {{neighborhood}} have done.'],
+    ['Partnership Breakdown', 'Partners disagree', '{{address}} — partner options', 'Hi {{first_name}}, when partners want different things, a buyout or a sale can both work. I have helped owners in {{neighborhood}} through both.'],
+    ['Failed Sale', 'Listed and pulled', '{{address}} — a second look', 'Hi {{first_name}}, I saw {{address}} came off the market. Buyers are back below 96th St this quarter. A second look may land differently.'],
+    ['Operational Stress', 'Violations, vacancies', '{{address}} — operating costs', 'Hi {{first_name}}, older walk-ups are carrying higher insurance and repair costs this year. If {{address}} is feeling that, there are options worth comparing.'],
+    ['Liquidity / Portfolio', 'Rebalancing a portfolio', 'Freeing up equity in {{neighborhood}}', 'Hi {{first_name}}, after {{years_held}} years, owners often look at freeing equity from one building to strengthen the rest. Happy to run the numbers on {{address}}.'],
+    ['Clean Holder', 'No pressing signal', 'What is trading near {{address}}', 'Hi {{first_name}}, a quick note on what traded near {{address}} this quarter. No ask, just the numbers for your files.'],
+  ].map(([name, use, subject, body]) => ({ name, use, subject, body }));
+  // Sending fleet: [domain, inboxes [[address, status, per day]]].
+  const mailDomains = [
+    ['sg-outreach.example', [['thomas@sg-outreach.example', 'Active', 50], ['tw@sg-outreach.example', 'Active', 50], ['team@sg-outreach.example', 'Warming', 30]]],
+    ['sgnyc-mail.example', [['thomas@sgnyc-mail.example', 'Active', 50], ['tw@sgnyc-mail.example', 'Active', 40], ['research@sgnyc-mail.example', 'Warming', 30]]],
+    ['stewartcre-mail.example', [['thomas@stewartcre-mail.example', 'Active', 50], ['tw@stewartcre-mail.example', 'Warming', 40]]],
+  ].map(([domain, inboxes]) => ({ domain, inboxes: inboxes.map(([addr, status, day]) => ({ addr, status, day })) }));
+
+  /* Texting (ported from the old Texting page, Oct 28): one Salesmsg line, (212) 555-0190. Conversations per contact; Brain's four tailored drafts
+     (opener, insight, ask, nudge) from the owner's signals. Opted-out owners can't be texted. Blasts wait in Approvals (cap 200). */
+  const textLine = '(212) 555-0190';
+  const textThreads = [
+    ['okafor', true, [['me', 'Sep 29, 4:21 PM', 'Hi Grace, Thomas from Stewart Group. The updated BOV for 90 Clinton St is ready. Lunch tomorrow still good?'], ['them', 'Sep 29, 4:40 PM', 'Yes, see you at 12.']]],
+    ['rivera', true, [['me', 'Sep 28, 10:05 AM', 'Hi Marisol, Thomas from Stewart Group. A developer paid $410/SF for air rights on E 4th St. Worth a look for 212 E 3rd St?'], ['them', 'Sep 28, 11:32 AM', 'Maybe. What are you seeing on prices?']]],
+    ['greene', true, [['me', 'Sep 27, 9:12 AM', 'Michael, Thomas here. Two off-market buildings fit your 1031 box. Want the numbers?'], ['them', 'Sep 27, 9:30 AM', 'Send me the numbers.']]],
+    ['marchetti', false, [['me', 'Sep 29, 3:02 PM', 'Hi Daniel, Thomas from Stewart Group. I’m sending the refi-vs-sale numbers for 118 Ludlow by email today. Happy to talk whenever suits.']]],
+    ['adler', false, [['me', 'Sep 25, 2:44 PM', 'Hi Ruth, Thomas here. Following up on the comps, I’ll email them over Monday.']]],
+    ['baum', false, [['me', 'Aug 30, 11:10 AM', 'Hi Harold, Thomas from Stewart Group. Got a minute to talk about 120 Norfolk St?'], ['them', 'Aug 30, 11:14 AM', 'STOP']]],
+  ].map(([cid, replied, msgs]) => ({ cid, replied, msgs }));
+  // Brain's tailored drafts: [label, text with {first} and {property}].
+  const textDrafts = [
+    ['Discreet opener', 'Hi {first}, Thomas from Stewart Group. We have parties interested in buildings like {property} if you’re ever open to offers. Happy to speak.'],
+    ['Insight', 'Hi {first}, about $94B of NYC commercial mortgages mature through 2027. Owners near {property} are comparing a refinance with a sale.'],
+    ['Ask', 'Hi {first}, happy to send a three-comp snapshot on {property} if useful. No obligation.'],
+    ['Nudge', 'Hi {first}, circling back on my note about {property}. Looking forward to speaking.'],
+  ];
+  const textCampaigns = [
+    ['P1 call block', 'Hi {first}, Thomas from Stewart Group. Quick question on your building, got two minutes this week?', 42, 40, 9, 'Sep 23'],
+    ['Maturity follow-ups', 'Hi {first}, with rates where they are, owners with loans due in 2027 are comparing options. Want the numbers?', 27, 27, 6, 'Sep 15'],
+  ].map(([name, body, audience, sent, replied, date]) => ({ name, body, audience, sent, replied, date }));
+  const textTopics = ['Debt maturities and refinance risk', 'Rate environment and cap rates', 'Off-market sales process', 'Unused air rights', 'Long-hold owners', 'Estate and succession planning', '1031 exchange demand', 'Rent-stabilized economics'];
+
   /* Funnel and trends (3.0 · 3.6, Orientation doc 3 Dashboard): the last 90 days against the 90 before, in funnel order. [label, now, prior]. */
   const funnel = [['Calls', 2140, 1860], ['Confirmed numbers', 486, 402], ['Conversations', 312, 281], ['Meetings', 38, 29], ['Valuations', 14, 11], ['Listings', 4, 3]];
   const near = { at: 'Ludlow St and Delancey St', walk: [['marchetti', 1], ['shah', 3], ['greene', 3], ['morales', 4], ['chen', 5], ['feld', 6], ['baum', 7], ['okafor', 8], ['adler', 9]] };
@@ -281,6 +347,8 @@
 
   /* Teach line per page (3.0 · 2.7, Orientation doc 3): [what this page is for, a worked example or null]. Records explain themselves. */
   const teach = {
+    email: ['Replies to your sends, one-to-one email and mail merges. Nothing bulk goes out without your click.', null],
+    texting: ['Texts from your Salesmsg line, a more personal touch. Brain drafts; you send.', null],
     'attack-plan': ['Who to call first and why, ranked by each owner’s most pressing building.', 'Marchetti is first: his $9.4M loan on 118 Ludlow St is due in June. Open him, read the why now, call, log the outcome, then Next owner.'],
     approvals: ['Every planned email, text, letter, post, valuation and data push waits here for your click.', 'Ruth Adler asked for the Q3 comps on Monday. Open the draft, check the reason, change a line if you like, then Approve. It goes out in the next send.'],
     home: ['The week’s numbers at a glance, led by meetings with owners.', 'Meetings are at 3, up from 1. Calls are on pace, but 2 follow-ups are overdue: clear them from Today.'],
@@ -564,5 +632,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { funnel, near, buyerSide, fitsFor, QUEUES, cleaning, teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { mailThreads, mailSent, mailCampaigns, mailTemplates, mailDomains, textLine, textThreads, textDrafts, textCampaigns, textTopics, funnel, near, buyerSide, fitsFor, QUEUES, cleaning, teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

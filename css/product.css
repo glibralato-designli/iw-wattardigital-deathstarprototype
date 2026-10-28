@@ -1842,3 +1842,111 @@ button.ds-voice svg{width:1.125rem;height:1.125rem;color:var(--brand-primary-tex
 .ds-numtag{font-variant-numeric:tabular-nums;font-weight:var(--weight-medium)}
 .ds-td-bld{display:flex;align-items:center;gap:var(--space-2);min-width:0}
 .ds-td-bld>.ds-numtag{flex:none}
+/* Email and Texting (ported Oct 28, Notion Mail / Gmail pattern): a list of one-line rows grouped by day beside a reading pane; under 1024 they take turns.
+   Rows are flat (a subtle rule between them, unread in semibold); the pane is a white card; Brain's read uses the shared sky-blue .ds-nudge. */
+.ds-mail{display:grid;grid-template-columns:minmax(20rem,30rem) minmax(0,1fr);gap:var(--space-5);align-items:start}
+.ds-mail__list{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.ds-mail__list>.segmented{align-self:flex-start}
+.ds-mailbar{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2)}
+.ds-mailbar__search{flex:1 1 12rem;min-width:0}
+.ds-mail__note{padding:0 var(--space-1)}
+.ds-maillist{display:flex;flex-direction:column;border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg);overflow:hidden}
+.ds-maillist__day{padding:var(--space-2-5) var(--space-3) var(--space-1);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium)}
+.ds-mailrow{display:grid;grid-template-columns:2rem minmax(0,1fr);align-items:center;border-top:var(--border-width) solid var(--border-subtle)}
+.ds-maillist>.ds-mailrow:first-child,.ds-maillist__day+.ds-mailrow{border-top:0}
+.ds-mailrow[aria-current="true"]{background:var(--brand-primary-subtle)}
+.ds-mailrow__star{display:grid;place-items:center;height:100%;border:0;background:transparent;color:var(--fg-subtle);cursor:pointer}
+.ds-mailrow__star svg{width:1rem;height:1rem}
+.ds-mailrow__star[aria-pressed="true"]{color:var(--warning)}
+.ds-mailrow__main{display:grid;grid-template-columns:8.5rem minmax(0,1fr) auto;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-2) var(--space-3) var(--space-2) 0;border:0;background:transparent;color:var(--fg-secondary);text-align:left;font-size:var(--text-sm);line-height:var(--line-height-sm);min-width:0;cursor:pointer}
+.ds-mailrow__main[data-static]{cursor:default}
+button.ds-mailrow__main:hover{color:var(--fg)}
+.ds-mailrow__from,.ds-mailrow__text{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-mailrow__text{display:flex;align-items:center;gap:var(--space-1-5)}
+.ds-mailrow__text>b{flex:none;max-width:60%;overflow:hidden;text-overflow:ellipsis;font-weight:var(--weight-regular);color:var(--fg)}
+.ds-mailrow__text>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;color:var(--fg-muted)}
+.ds-mailrow__time{color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs);white-space:nowrap}
+.ds-mailrow[data-unread] .ds-mailrow__from,.ds-mailrow[data-unread] .ds-mailrow__text>b{font-weight:var(--weight-semibold);color:var(--fg)}
+.ds-mailrow[data-unread] .ds-mailrow__time{color:var(--brand-primary-text);font-weight:var(--weight-medium)}
+.ds-mail .ds-mailrow__main{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"from time" "text text";row-gap:var(--space-0-5)}
+.ds-mail .ds-mailrow__from{grid-area:from}.ds-mail .ds-mailrow__time{grid-area:time}.ds-mail .ds-mailrow__text{grid-area:text}
+.ds-mailread{display:flex;flex-direction:column;gap:var(--space-4);min-width:0;padding:var(--space-6);border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg);position:sticky;top:0}
+.ds-mailread[data-empty]{padding:var(--space-10) var(--space-6)}
+.ds-mailread__tools{display:flex;align-items:center;gap:var(--space-1)}
+.ds-mailread__back{display:none}
+.ds-mailread__subject{font-size:var(--text-lg);line-height:var(--line-height-lg);font-weight:var(--weight-semibold);text-wrap:balance}
+.ds-mailread__who{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2)}
+.ds-mailmsgs{display:flex;flex-direction:column;gap:var(--space-2-5)}
+.ds-mailmsg{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3-5) var(--space-4);border-radius:var(--radius-lg);background:var(--bg-subtle)}
+.ds-mailmsg[data-me]{background:var(--bg);box-shadow:inset 0 0 0 1px var(--border-subtle)}
+.ds-mailmsg header{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--space-2);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-mailmsg p{text-wrap:pretty}
+.ds-mailrec{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1);padding-top:var(--space-1)}
+.ds-mailrec>.ds-meta{margin-right:var(--space-1)}
+.ds-mailreply{display:flex;flex-direction:column;gap:var(--space-2)}
+.ds-mailcamp{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg)}
+.ds-mailcamp__head{display:flex;align-items:flex-start;gap:var(--space-3)}
+.ds-mailcamp__stats{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.ds-mailstat{display:flex;flex-direction:column;gap:var(--space-0-5);min-width:6rem;padding:var(--space-2-5) var(--space-3);border-radius:var(--radius-lg);background:var(--bg-subtle)}
+.ds-mailstat b{font-size:var(--text-lg);line-height:var(--line-height-lg);font-weight:var(--weight-semibold)}
+.ds-mailcamp__foot{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2)}
+.ds-mailbuild{display:flex;flex-direction:column;gap:var(--space-4)}
+.ds-mailsteps{display:flex;flex-wrap:wrap;gap:var(--space-1-5) var(--space-4);margin:0;padding:0;list-style:none;color:var(--fg-muted);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-mailsteps li{display:flex;align-items:center;gap:var(--space-1-5)}
+.ds-mailsteps .num{display:grid;place-items:center;width:1.25rem;height:1.25rem;border-radius:var(--radius-full);background:var(--bg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+.ds-mailsteps li[data-done]{color:var(--fg)}
+.ds-mailsteps li[data-done] .num{background:var(--brand-primary-subtle);color:var(--brand-primary-text)}
+.ds-mailtokens{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1-5)}
+.ds-mailtokens code{padding:0 var(--space-1-5);border-radius:var(--radius-sm);background:var(--bg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+.ds-mailask .field__control{min-width:0;background:var(--bg)}
+.ds-mailpreview{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4);border-radius:var(--radius-lg);background:var(--bg-subtle);text-wrap:pretty}
+.ds-mailtpl{display:grid;grid-template-columns:minmax(14rem,18rem) minmax(0,1fr);gap:var(--space-5);align-items:start}
+.ds-mailtpl__item{display:flex;flex-direction:column;gap:var(--space-0-5);padding:var(--space-3);border:0;border-top:var(--border-width) solid var(--border-subtle);background:transparent;color:var(--fg);text-align:left;cursor:pointer}
+.ds-mailtpl__item:first-child{border-top:0}
+.ds-mailtpl__item[aria-selected="true"]{background:var(--brand-primary-subtle)}
+.ds-maildom{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2);padding:var(--space-2) 0;border-top:var(--border-width) solid var(--border-subtle);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-maildock{position:fixed;right:var(--space-6);bottom:0;z-index:60;display:flex;flex-direction:column;width:min(34rem,calc(100vw - var(--space-8)));max-height:min(40rem,calc(100vh - var(--space-16)));border-radius:var(--radius-xl) var(--radius-xl) 0 0;background:var(--bg);box-shadow:var(--shadow-lg);overflow:hidden}
+.ds-maildock>header{display:flex;align-items:center;gap:var(--space-1);padding:var(--space-2) var(--space-2) var(--space-2) var(--space-4);background:var(--shell);color:var(--shell-fg-strong)}
+.ds-maildock>header .ds-icon-btn{color:var(--shell-fg)}
+.ds-maildock__body{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);overflow:auto}
+.ds-maildock__row{display:grid;grid-template-columns:4rem minmax(0,1fr);align-items:center;gap:var(--space-2);font-size:var(--text-sm);line-height:var(--line-height-sm);color:var(--fg-muted)}
+.ds-maildock__tools{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2)}
+.ds-maildock>footer{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-4);border-top:var(--border-width) solid var(--border-subtle)}
+.ds-maildock__when .field__control{width:auto}
+button.ds-maildock[data-min]{flex-direction:row;align-items:center;gap:var(--space-2);width:18rem;padding:var(--space-3) var(--space-4);border:0;background:var(--shell);color:var(--shell-fg-strong);font:inherit;cursor:pointer}
+button.ds-maildock[data-min] span{flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button.ds-maildock[data-min] svg{width:1rem;height:1rem}
+/* Texting: avatar rows, chat bubbles (mine in navy on the right), Brain's four drafts as a scrolling row inside the sky-blue block. */
+.ds-textrow{display:flex;align-items:center;gap:var(--space-3);width:100%;min-height:var(--touch-target);padding:var(--space-3);border:0;border-top:var(--border-width) solid var(--border-subtle);background:transparent;color:var(--fg);text-align:left;cursor:pointer}
+.ds-textlist>.ds-textrow:first-child{border-top:0}
+.ds-textrow[aria-current="true"]{background:var(--brand-primary-subtle)}
+.ds-textrow__av{display:grid;place-items:center;width:2.25rem;height:2.25rem;flex:none;border-radius:var(--radius-full);background:var(--bg-muted);color:var(--fg-secondary);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-semibold)}
+.ds-textrow__top{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.ds-textrow__top b{font-weight:var(--weight-regular)}
+.ds-textrow[data-unread] .ds-textrow__top b{font-weight:var(--weight-semibold)}
+.ds-textrow[data-unread] .ds-textrow__av{background:var(--brand-primary-subtle);color:var(--brand-primary-text)}
+.ds-textrow .ds-row__body{min-width:0;flex:1}
+.ds-bubbles{display:flex;flex-direction:column;gap:var(--space-2-5);padding:var(--space-2) 0}
+.ds-bubble{display:flex;flex-direction:column;gap:var(--space-1);align-self:flex-start;max-width:min(30rem,85%)}
+.ds-bubble p{padding:var(--space-2-5) var(--space-3-5);border-radius:var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-sm);background:var(--bg-muted);color:var(--fg);text-wrap:pretty}
+.ds-bubble[data-me]{align-self:flex-end;align-items:flex-end}
+.ds-bubble[data-me] p{border-radius:var(--radius-xl) var(--radius-xl) var(--radius-sm) var(--radius-xl);background:var(--brand-primary);color:var(--brand-primary-on)}
+.ds-textdrafts{align-items:start}
+.ds-textdrafts>div{min-width:0}
+.ds-textdrafts__row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2);margin-top:var(--space-2)}
+.ds-textdraft>span:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ds-textdraft{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-2-5) var(--space-3);border:0;border-radius:var(--radius-md);background:var(--bg);color:var(--fg);text-align:left;font-size:var(--text-sm);line-height:var(--line-height-sm);cursor:pointer}
+.ds-textdraft:hover{box-shadow:inset 0 0 0 1px var(--brand-primary-muted)}
+@media (max-width:1023px){
+  .ds-mail{grid-template-columns:minmax(0,1fr)}
+  .ds-mail:not([data-picked]) .ds-mailread{display:none}
+  .ds-mail[data-picked] .ds-mail__list{display:none}
+  .ds-mailread{position:static}
+  .ds-mailread__back{display:inline-flex}
+  .ds-mailtpl{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:767px){
+  .ds-mailread{padding:var(--space-4)}
+  .ds-textdrafts__row{grid-template-columns:minmax(0,1fr)}
+  .ds-maildock{right:0;width:100%;max-height:calc(100vh - var(--space-12))}
+}
