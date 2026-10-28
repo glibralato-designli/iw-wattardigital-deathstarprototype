@@ -50,7 +50,7 @@
     crumbs: () => [{ l: 'Approvals' }],
     scope: () => 'Approvals',
     render: () => { const n = pending().length;
-      return `<div class="ds-page">${ui.pageHead('Approvals', '', `<p class="ds-lede">${n ? n + ' waiting for your click. Nothing goes out without it.' : 'All clear.'}</p>`)}<div class="ds-inbox"${st.picked ? ' data-picked' : ''}>${list()}${preview()}</div></div>`; },
+      return `<div class="ds-page">${ui.pageHead('Approvals', '', '', ui.headStat({ n, l: 'waiting for your click', sub: n ? 'Nothing goes out without it' : 'All clear' }))}<div class="ds-inbox"${st.picked ? ' data-picked' : ''}>${list()}${preview()}</div></div>`; },
     acts: {
       pick: (el, id) => { st.open = id; st.picked = true; st.edit = false; DS.render(); },
       back: () => { st.picked = false; DS.render(); },

@@ -43,7 +43,7 @@
     crumbs: () => [{ l: 'Database', page: 'contacts' }, { l: 'Cleaning' }],
     scope: () => 'Database › Cleaning',
     render: () => { const n = DS.cleanPending();
-      return `<div class="ds-page">${ui.pageHead('Database', ui.dbTabs('cleaning'), n ? `<p class="ds-lede">${n} fixes to review, about ten minutes. Nothing changes in a record until you approve it.</p>` : '')}
+      return `<div class="ds-page">${ui.pageHead('Database', ui.dbTabs('cleaning'), '', ui.headStat({ n, l: n === 1 ? 'fix to review' : 'fixes to review', sub: n ? 'About ten minutes · nothing changes until you approve' : 'Clean for today' }))}
         <div class="ds-fixwrap">${n ? queues() : ''}${list()}${doneGroup()}</div></div>`; },
     acts: {
       queue: (el, k) => { st.q = k; st.sel.clear(); DS.render(); },
