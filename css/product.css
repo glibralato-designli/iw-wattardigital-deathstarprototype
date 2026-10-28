@@ -1969,3 +1969,79 @@ button.ds-maildock[data-min] svg{width:1rem;height:1rem}
 .ds-bubble__sys{display:flex;align-items:center;justify-content:center;gap:var(--space-1-5);color:var(--danger);font-size:var(--text-xs);line-height:var(--line-height-xs);text-align:center}
 .ds-bubble__sys svg{width:.875rem;height:.875rem}
 .ds-bubble[data-queued] p{background:var(--bg);color:var(--fg);box-shadow:inset 0 0 0 1px var(--border-strong)}
+/* Email, Gmail's structure in our style (Oct 28): a mail rail (tinted Compose, pill folders with counts, Mail merge), a pill search,
+   a full-width list in one panel (select, star, sender, bold subject and grey snippet, time; read rows on --bg-subtle like Gmail), and a
+   thread that opens in place of the list (avatar messages, Reply and Forward pills). */
+.ds-gmail{display:grid;grid-template-columns:13.5rem minmax(0,1fr);gap:var(--space-6);align-items:start}
+.ds-gmrail{display:flex;flex-direction:column;gap:var(--space-4);position:sticky;top:0}
+.ds-gmrail .ds-gmrail__compose{align-self:flex-start;min-height:3.25rem;padding:0 var(--space-5);border-radius:var(--radius-xl);background:var(--brand-primary-muted);color:var(--brand-primary-text);box-shadow:var(--shadow-sm)}
+.ds-gmrail .ds-gmrail__compose:hover{background:var(--brand-primary-subtle);color:var(--brand-primary-text);box-shadow:var(--shadow-md)}
+.ds-gmrail__group{display:flex;flex-direction:column;gap:1px}
+.ds-gmrail__h{padding:0 var(--space-3) var(--space-1);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium)}
+.ds-gmrail__item{display:flex;align-items:center;gap:var(--space-3);min-height:2.25rem;padding:0 var(--space-3);border:0;border-radius:var(--radius-full);background:transparent;color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm);text-align:left;cursor:pointer}
+.ds-gmrail__item svg{width:1.125rem;height:1.125rem;flex:none}
+.ds-gmrail__item span{flex:1}
+.ds-gmrail__item b{font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-semibold)}
+.ds-gmrail__item:hover{background:var(--bg-subtle);color:var(--fg)}
+.ds-gmrail__item[aria-current="true"]{background:var(--brand-primary-subtle);color:var(--fg);font-weight:var(--weight-semibold)}
+.ds-gmrail__item[aria-current="true"] svg{color:var(--brand-primary-text)}
+.ds-gmail__main{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.ds-gmsearch{display:flex;align-items:center;gap:var(--space-3);min-height:3rem;padding:0 var(--space-4);border-radius:var(--radius-full);background:var(--bg-muted);color:var(--fg-muted)}
+.ds-gmsearch:focus-within{background:var(--bg);box-shadow:var(--shadow-md)}
+.ds-gmsearch svg{width:1.25rem;height:1.25rem;flex:none}
+.ds-gmsearch input{flex:1;min-width:0;border:0;background:transparent;color:var(--fg);font:inherit;outline:0}
+.ds-gmpanel{display:flex;flex-direction:column;border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg);overflow:hidden}
+.ds-gmbar{display:flex;align-items:center;gap:var(--space-1);min-height:var(--control-lg);padding:var(--space-1-5) var(--space-3);border-bottom:var(--border-width) solid var(--border-subtle)}
+.ds-gmbar .choice{min-height:0;padding:0 var(--space-2)}
+.ds-gmbar .segmented{margin-left:var(--space-2)}
+.ds-gmday{padding:var(--space-2) var(--space-4) var(--space-1);background:var(--bg);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs);font-weight:var(--weight-medium)}
+.ds-gmrow{position:relative;display:grid;grid-template-columns:2.25rem 2rem minmax(0,1fr);align-items:center;padding-left:var(--space-2);border-top:var(--border-width) solid var(--border-subtle);background:var(--bg-subtle)}
+.ds-gmday+.ds-gmrow{border-top-color:transparent}
+.ds-gmrow[data-unread]{background:var(--bg)}
+.ds-gmrow:hover{z-index:1;box-shadow:var(--shadow-md)}
+.ds-gmrow[data-sel]{background:var(--brand-primary-subtle)}
+.ds-gmrow__pick{display:grid;place-items:center;min-height:0}
+.ds-gmrow__star{display:grid;place-items:center;height:100%;padding:0;border:0;background:transparent;color:var(--fg-subtle);cursor:pointer}
+.ds-gmrow__star svg{width:1.125rem;height:1.125rem}
+.ds-gmrow__star[aria-pressed="true"]{color:var(--warning)}
+.ds-gmrow__main{display:grid;grid-template-columns:12rem minmax(0,1fr) auto;align-items:center;gap:var(--space-4);min-height:2.75rem;padding:0 var(--space-4) 0 var(--space-1);border:0;background:transparent;color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm);text-align:left;cursor:pointer;min-width:0}
+.ds-gmrow__main[data-static]{cursor:default}
+.ds-gmrow__from,.ds-gmrow__text{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-gmrow__text{display:flex;align-items:center;gap:var(--space-1-5)}
+.ds-gmrow__text>b{flex:none;max-width:65%;overflow:hidden;text-overflow:ellipsis;font-weight:var(--weight-regular);color:var(--fg)}
+.ds-gmrow__text>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;color:var(--fg-muted)}
+.ds-gmrow__time{color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs);white-space:nowrap}
+.ds-gmrow[data-unread] .ds-gmrow__from,.ds-gmrow[data-unread] .ds-gmrow__text>b,.ds-gmrow[data-unread] .ds-gmrow__time{font-weight:var(--weight-semibold);color:var(--fg)}
+.ds-gmthread__body{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5) var(--space-6) var(--space-6)}
+.ds-gmthread__head{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-3)}
+.ds-gmthread__subject{font-size:var(--text-xl);line-height:var(--line-height-xl);font-weight:var(--weight-regular);text-wrap:balance}
+.ds-gmmsgs{display:flex;flex-direction:column}
+.ds-gmmsg{display:grid;grid-template-columns:2.5rem minmax(0,1fr);gap:var(--space-3);padding:var(--space-4) 0;border-top:var(--border-width) solid var(--border-subtle)}
+.ds-gmmsg:first-child{border-top:0;padding-top:var(--space-1)}
+.ds-gmmsg__av{display:grid;place-items:center;width:2.5rem;height:2.5rem;border-radius:var(--radius-full);background:var(--bg-muted);color:var(--fg-secondary);font-size:var(--text-sm);line-height:var(--line-height-sm);font-weight:var(--weight-semibold)}
+.ds-gmmsg__body{display:flex;flex-direction:column;gap:var(--space-0-5);min-width:0}
+.ds-gmmsg__body header{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--space-1-5);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-gmmsg__body p{margin-top:var(--space-2);text-wrap:pretty}
+.ds-gmactions{display:flex;gap:var(--space-2);padding-left:3.25rem}
+.ds-gmactions .button{border-radius:var(--radius-full)}
+.ds-gmreply{display:grid;grid-template-columns:2.5rem minmax(0,1fr);gap:var(--space-3)}
+.ds-gmreply__box{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);background:var(--bg);box-shadow:var(--shadow-md)}
+.ds-gmreply__box>.ds-meta{display:flex;align-items:center;gap:var(--space-1-5)}
+.ds-gmreply__box>.ds-meta svg{width:.875rem;height:.875rem}
+.ds-gmreply__box .field__control{border:0;padding:0;box-shadow:none;min-height:0}
+@media (max-width:1023px){
+  .ds-gmail{grid-template-columns:minmax(0,1fr);gap:var(--space-3)}
+  .ds-gmrail{position:static;flex-direction:row;align-items:center;gap:var(--space-2);overflow-x:auto;scrollbar-width:none}
+  .ds-gmrail__group{flex-direction:row;gap:var(--space-1)}
+  .ds-gmrail__h{display:none}
+  .ds-gmrail__item{flex:none}
+  .ds-gmrail .ds-gmrail__compose{flex:none;min-height:var(--control-lg)}
+}
+@media (max-width:767px){
+  .ds-gmrow__main{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"from time" "text text";row-gap:var(--space-0-5);padding:var(--space-2) var(--space-3) var(--space-2) 0}
+  .ds-gmrow__from{grid-area:from}.ds-gmrow__time{grid-area:time}.ds-gmrow__text{grid-area:text}
+  .ds-gmrow{grid-template-columns:2rem minmax(0,1fr)}
+  .ds-gmrow__pick{display:none}
+  .ds-gmthread__body{padding:var(--space-4)}
+  .ds-gmactions{padding-left:0}
+}
