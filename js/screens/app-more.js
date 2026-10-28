@@ -1,4 +1,4 @@
-/* App 08 More (field mode, 3.0 · 3.3): the account, Calendar and Activity, then settings with Changes. Reports, Headlines and BOV & OM stay on the web. */
+/* App 08 More (field mode, 3.0 · 3.3): the account, Email and Texting, Calendar and Activity, then settings with Changes. Reports, Headlines and BOV & OM stay on the web. */
 (() => {
   const { D, ui, esc, icon, href } = DS;
   const row = (ic, t, sub, page) => page
@@ -13,6 +13,7 @@
     scope: () => 'More',
     render: () => `<div class="ds-apage">${ui.large('More')}
       <div class="ds-alist"><div class="ds-arow" data-lead><span class="ds-arow__lead" style="border-radius:var(--radius-full)">TW</span><span class="ds-arow__body"><span class="ds-arow__title">Thomas Windels</span><span class="ds-arow__sub">Stewart Group · Main Body Manhattan</span></span></div></div>
+      ${group('Channels', [row('envelope-simple', 'Email', (DS.mailUnread() ? DS.mailUnread() + ' unread · ' : '') + 'replies, compose, end-of-day follow-ups', 'email'), row('chat-text', 'Texting', (DS.textUnread() ? DS.textUnread() + ' replies waiting · ' : '') + D.textLine, 'texting')])}
       ${group('Dashboard', [row('calendar-blank', 'Calendar', '5 events today', 'calendar'), row('chat-text', 'Activity', '9 conversations this week · 2 proposals', 'conversations')])}
       <section class="ds-asec" aria-label="Settings"><div class="ds-ahead"><h2>Settings</h2></div><div class="ds-alist">
         <a class="ds-arow" data-lead href="${href('changes')}"><span class="ds-arow__lead">${icon('clock-counter-clockwise')}</span><span class="ds-arow__body"><span class="ds-arow__title">Changes</span><span class="ds-arow__sub">What changed, with Restore</span></span>${icon('caret-right')}</a>

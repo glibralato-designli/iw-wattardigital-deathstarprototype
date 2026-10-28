@@ -2079,3 +2079,53 @@ button.ds-maildock[data-min] svg{width:1rem;height:1rem}
   .ds-gmsplit .ds-gmthread[data-empty]{display:none}
   .ds-gmview{display:none}
 }
+/* App Email and Texting (Oct 28): avatar mail rows with a star, a thread as its own screen, and Messages-style texting with a docked composer. */
+[data-shell="app"] .ds-amail{display:flex;align-items:flex-start;border-top:var(--border-width) solid var(--border-subtle)}
+[data-shell="app"] .ds-alist>.ds-amail:first-child{border-top:0}
+[data-shell="app"] .ds-amail__main{display:flex;align-items:flex-start;gap:var(--space-3);flex:1;min-width:0;padding:var(--space-3) 0 var(--space-3) var(--space-4);border:0;background:transparent;color:var(--fg);text-align:left;font:inherit}
+[data-shell="app"] .ds-amail__main .ds-row__body{min-width:0;flex:1;gap:1px}
+[data-shell="app"] .ds-amail__top{display:flex;align-items:baseline;gap:var(--space-2)}
+[data-shell="app"] .ds-amail__top b{font-weight:var(--weight-regular)}
+[data-shell="app"] .ds-amail__time{color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+[data-shell="app"] .ds-amail__subj{display:flex;align-items:center;gap:var(--space-1-5);min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:var(--text-sm);line-height:var(--line-height-sm)}
+[data-shell="app"] .ds-amail[data-unread] .ds-amail__top b,[data-shell="app"] .ds-amail[data-unread] .ds-amail__subj{font-weight:var(--weight-semibold)}
+[data-shell="app"] .ds-amail[data-unread] .ds-amail__time{color:var(--brand-primary-text);font-weight:var(--weight-semibold)}
+[data-shell="app"] .ds-amail[data-unread] .ds-textrow__av{background:var(--brand-primary-subtle);color:var(--brand-primary-text)}
+[data-shell="app"] .ds-amail__star{display:grid;place-items:center;width:var(--touch-target);height:var(--touch-target);margin-top:var(--space-5);border:0;background:transparent;color:var(--fg-subtle)}
+[data-shell="app"] .ds-amail__star svg{width:1.125rem;height:1.125rem}
+[data-shell="app"] .ds-amail__star[aria-pressed="true"]{color:var(--warning)}
+[data-shell="app"] .ds-amail__subject{font-size:var(--text-xl);line-height:var(--line-height-xl);font-weight:var(--weight-semibold);text-wrap:balance}
+[data-shell="app"] .ds-amsgs{padding:0 var(--space-4)}
+[data-shell="app"] .ds-amail__brain{width:100%;border:0;text-align:left;font:inherit;cursor:pointer}
+[data-shell="app"] .ds-textlist .ds-textrow>svg{width:1rem;height:1rem;color:var(--fg-subtle);flex:none}
+[data-shell="app"] .ds-atext__drafts{display:flex;gap:var(--space-2);margin-top:var(--space-2);overflow-x:auto;scrollbar-width:none}
+[data-shell="app"] .ds-atext__drafts .ds-textdraft{flex:0 0 14rem}
+[data-shell="app"] .ds-atext__composer{display:flex;align-items:flex-end;gap:var(--space-2);padding:var(--space-2);border-radius:var(--radius-2xl);background:var(--app-card,var(--bg));box-shadow:var(--shadow-sm)}
+[data-shell="app"] .ds-atext__composer .field__control{border:0;box-shadow:none;background:transparent;min-height:0}
+[data-shell="app"] .ds-atext__send{width:2.5rem;height:2.5rem;flex:none;border-radius:var(--radius-full);background:var(--brand-primary);color:var(--brand-primary-on)}
+[data-shell="app"] .ds-alead{display:flex;align-items:center;gap:var(--space-1-5);min-width:0;margin-top:var(--space-1)}
+/* Campaign cards (Oct 28 redesign): head with the main action, a reach bar, one strip of numbers with rates (the reply rate marked), the sequence as a footer. */
+.ds-camps{display:flex;flex-direction:column;gap:var(--space-4)}
+.ds-camp{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5) var(--space-6);border:var(--border-width) solid var(--border);border-radius:var(--radius-xl);background:var(--bg)}
+.ds-camp__head{display:flex;align-items:center;gap:var(--space-3)}
+.ds-camp__head>.ds-row__body{flex:1;min-width:0}
+.ds-camp__icon{display:grid;place-items:center;width:2.5rem;height:2.5rem;flex:none;border-radius:var(--radius-lg);background:var(--brand-primary-subtle);color:var(--brand-primary-text)}
+.ds-camp__icon svg{width:1.25rem;height:1.25rem}
+.ds-camp__title{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2)}
+.ds-camp__title b{font-size:var(--text-base);line-height:var(--line-height-base);font-weight:var(--weight-semibold)}
+.ds-camp__reach{display:flex;flex-direction:column;gap:var(--space-1-5)}
+.ds-camp__bar{height:.375rem;border-radius:var(--radius-full);background:var(--bg-muted);overflow:hidden}
+.ds-camp__bar span{display:block;height:100%;border-radius:var(--radius-full);background:var(--brand-primary)}
+.ds-camp__reach b{color:var(--fg);font-weight:var(--weight-semibold)}
+.ds-camp__stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));border-radius:var(--radius-lg);background:var(--bg-subtle)}
+.ds-camp__stat{display:flex;flex-direction:column;gap:var(--space-0-5);padding:var(--space-3) var(--space-4);box-shadow:inset 1px 0 0 var(--border-subtle)}
+.ds-camp__stat:first-child{box-shadow:none}
+.ds-camp__stat b{font-size:var(--text-lg);line-height:var(--line-height-lg);font-weight:var(--weight-semibold)}
+.ds-camp__stat[data-key] b{color:var(--brand-primary-text)}
+.ds-camp__seq{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2);padding-top:var(--space-3);border-top:var(--border-width) solid var(--border-subtle);font-size:var(--text-sm);line-height:var(--line-height-sm)}
+.ds-camp__seq>svg{width:.875rem;height:.875rem;color:var(--fg-subtle)}
+.ds-camp__step{display:inline-flex;align-items:center;gap:var(--space-1-5)}
+.ds-camp__step>svg{width:1rem;height:1rem;color:var(--brand-primary-text)}
+.ds-camp__step b{font-weight:var(--weight-semibold)}
+.ds-camp .ds-bubble{align-self:flex-start}
+@media (max-width:767px){.ds-camp{padding:var(--space-4)}.ds-camp__head{flex-wrap:wrap}.ds-camp__stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
