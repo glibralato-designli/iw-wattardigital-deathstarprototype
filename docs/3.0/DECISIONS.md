@@ -54,6 +54,7 @@ Recorded by Giulio on 2026-10-27 in the 3.0 decision workbook. A change marked "
 - **3.6 Dashboard names and Funnel and trends:** Option A, Keep the video names, add the funnel to Performance (recommended)
   - Oct 28, at build: steps in funnel order (calls, confirmed numbers, conversations, meetings, valuations, listings), each with its change and conversion. Tab names unchanged. Built Oct 28.
 - **3.7 Best way to reach, and why:** Option A, Add the why and the state (recommended)
+  - Oct 28, at build: web and app; a rejected number stays visible, struck through, with its reason. Built Oct 28.
 
 ## How to read the three notes
 

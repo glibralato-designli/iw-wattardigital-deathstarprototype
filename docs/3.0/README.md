@@ -414,7 +414,7 @@ Features that close the loop between calls, plus the visual standard test.
 
 ### 3.7 Best way to reach, and why
 
-**Status:** Not started · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Case file, app contact
+**Status:** Done, Oct 28, 2026 (Option A) · **Decision:** Option A approved, Oct 27 · **Effort:** S · **Screens:** Case file, app contact
 
 - **The brief:** Several phones and emails per person, each with a confidence, a source and a history, re-ranked by outcomes. Show "best way to reach, and why", not a flat list. (Doc 3 insights, doc 1 §8)
 - **Today:** A Best way to reach card with confidence percentages.

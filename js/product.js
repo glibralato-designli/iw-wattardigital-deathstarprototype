@@ -28,7 +28,7 @@
   const read = (storage, key) => { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (_) { return null; } };
   const write = (storage, key, value) => { try { storage.setItem(key, JSON.stringify(value)); } catch (_) {} };
   // Presets that change demo data render a snapshot; they never overwrite the saved demo.
-  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'approved', 'decided', 'bulk', 'wave', 'booked', 'cleaned', 'cleanbulk', 'restored', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
+  const isSnapshot = () => ['called', 'call', 'flag', 'added', 'approved', 'ask', 'chat', 'reset', 'primary', 'optout', 'optedout', 'approved', 'decided', 'bulk', 'wave', 'wrong', 'booked', 'cleaned', 'cleanbulk', 'restored', 'saved', 'pushed', 'taught', 'dropped', 'posted', 'dismissed', 'queued', 'suggsaved'].some(k => params.has(k)) && params.get('reset') !== '1';
   let snapshot = isSnapshot();
   let S = { ...fresh(), ...(read(localStorage, STORE) || {}) };
   if (params.get('reset') === '1') { S = fresh(); write(localStorage, STORE, S); try { sessionStorage.removeItem(UI); } catch (_) {} }
@@ -37,6 +37,8 @@
   D.C.forEach(c => { if ((S.optOut || {})[c.id]) optOut(c); });
   // Booking page (3.0 · 3.5): booked=1, an owner booked through the public page; the meeting is on the calendar and counts in Meetings this week.
   if (params.get('booked') === '1') { S.calNew = [...(S.calNew || []), { t: 'Booked · Marisol Rivera', off: 1, s: 11, dur: 0.5, cal: 'mtg', cid: 'rivera', n: 'Booked through your booking page', booked: true }]; S.meetings = (S.meetings || 0) + 1; }
+  // Best way to reach (3.0 · 3.7): wrong=1 with id=<contact>, a wrong-person outcome was logged, so the best phone moves to Rejected.
+  if (params.get('wrong') === '1' && D.cById[params.get('id')]) S.bad = { ...S.bad, [params.get('id')]: true };
   if (params.has('restored')) params.get('restored').split(',').forEach(id => { S.restored = { ...S.restored, [id]: true }; });
   const loadU = () => ({ navRail: null, moreOpen: false, navGrp: {}, brainUser: null, msgs: null, chatTitle: null, chatId: null, seen: false, scopeOff: false, call: null, outcome: null, ...(read(sessionStorage, UI) || {}) });
   let U = loadU();
@@ -128,6 +130,18 @@
     const prim = phones.includes(S.primary[c.id]) ? S.primary[c.id] : (base.find(x => x[0] === 'phone' && x[2] === 'Primary' && !bad.includes(x[1])) || [])[1] || phones[0];
     return base.map(x => { let st = x[2]; if (x[0] === 'phone') st = bad.includes(x[1]) ? 'Bad' : x[1] === prim ? 'Primary' : st === 'Primary' ? 'Verified' : st; return [x[0], x[1], st, x[3]]; });
   };
+  /* Best way to reach, and why (3.0 · 3.7): each channel with a one-line reason and a state: Confirmed (reached the owner),
+     Candidate (sources agree, not reached yet) or Rejected (a logged outcome said wrong person or bad number). Outcomes re-rank them. */
+  const reachOf = c => { const h = [...c.id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7), cps = contactPointsOf(c), phone = (cps.find(x => x[0] === 'phone' && x[2] === 'Primary') || cps[0])[1];
+    const dead = badOf(c).includes(phone), mine = S.primary[c.id] === phone, spoke = mine || /Connected|Conversation|Callback/.test(c.last), when = (c.last || '').split(' · ')[0];
+    const first = c.name.split(' ')[0].toLowerCase(), lastN = c.name.split(' ')[1].toLowerCase(), domain = c.entity.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(' ').slice(0, 2).join('') + '.com';
+    const out = [
+      { k: 'phone', l: 'Best phone', v: phone, pc: dead ? 12 : 70 + (h % 26), state: dead ? 'Rejected' : spoke ? 'Confirmed' : 'Candidate', why: dead ? 'A logged call said wrong person or bad number' : mine ? 'You marked it primary after a logged call' : spoke ? 'The owner answered on a logged call, ' + when : 'Three sources agree; not answered on a call yet' },
+      { k: 'envelope-simple', l: 'Personal email', v: first + '.' + lastN + '@example.com', pc: 55 + (h % 30), state: h % 3 ? 'Candidate' : 'Confirmed', why: h % 3 ? 'Delivered on the last send, no reply yet' : 'Replied on Sep 14; no bounce since' },
+      { k: 'briefcase', l: 'Business email', v: first[0] + lastN + '@' + domain, pc: 45 + ((h >> 3) % 30), state: 'Candidate', why: 'Domain matches the owning entity; one source' }];
+    out.rejected = badOf(c).filter(x => x !== phone); return out;
+  };
+  ui.cpState = s => s === 'Confirmed' ? `<span class="badge" data-status="success">${icon('check')}Confirmed</span>` : s === 'Rejected' ? `<span class="badge" data-status="danger">${icon('x')}Rejected</span>` : '<span class="badge">Candidate</span>';
   const bestPhone = c => { const cps = contactPointsOf(c); return (cps.find(x => x[0] === 'phone' && x[2] === 'Primary') || cps[0])[1]; };
   /* Calendar events linked to a contact: this week's fixtures (Mon–Fri, today is Wednesday) and events Thomas added.
      Past ones join the contact's timeline; today's (from the 10:30 AM now line) and later ones are upcoming. */
@@ -347,7 +361,7 @@
   };
 
   /* ───────── Screen registry ───────── */
-  const DS = { D, S: () => S, U: () => U, V, ui, esc, icon, href, params, OFF, loc, pct, fmtL, fmtS, fmtMD, tFmt, initials, isEmptyVal, lastOf, callIds, callsDone, evidenceOf, contactPointsOf, bestPhone, badOf, eventsOf, emailsOf, timelineOf, portfolio, addTimeline, remember, save, attrs, acts: {}, inputs: {}, screen: null };
+  const DS = { D, S: () => S, U: () => U, V, ui, esc, icon, href, params, OFF, loc, pct, fmtL, fmtS, fmtMD, tFmt, initials, isEmptyVal, lastOf, callIds, callsDone, evidenceOf, contactPointsOf, reachOf, bestPhone, badOf, eventsOf, emailsOf, timelineOf, portfolio, addTimeline, remember, save, attrs, acts: {}, inputs: {}, screen: null };
   DS.set = patch => { Object.assign(V, patch); render(); };
   DS.store = fn => { fn(S, U); save(); render(); };
   window.DS = DS;

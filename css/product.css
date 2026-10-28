@@ -1811,3 +1811,8 @@ button.ds-voice svg{width:1.125rem;height:1.125rem;color:var(--brand-primary-tex
 .ds-funnel__v b{font-size:var(--text-xl);line-height:var(--line-height-xl);font-weight:var(--weight-semibold)}
 @media (max-width:1023px){.ds-funnel{grid-template-columns:repeat(3,minmax(0,1fr))}.ds-funnel__step{box-shadow:inset 1px 0 0 var(--border-subtle),inset 0 1px 0 var(--border-subtle)}}
 @media (max-width:767px){.ds-funnel{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Best way to reach, and why (3.0 · 3.7): a state badge (Confirmed, Candidate, Rejected) and a one-line reason under each channel. */
+.ds-cpwhy{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-1) var(--space-2);margin-top:var(--space-1)}
+.ds-cp[data-why]{border-bottom:0;padding-bottom:var(--space-0-5)}
+.ds-cp__why{padding:0 0 var(--space-2-5) calc(8.25rem + var(--space-3));border-bottom:var(--border-width) solid var(--border-subtle);color:var(--fg-muted);font-size:var(--text-xs);line-height:var(--line-height-xs)}
+@media (max-width:767px){.ds-cp__why{padding-left:0}}
