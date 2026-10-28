@@ -200,10 +200,10 @@
   ].map(([id, cid, subject, preview, from, when, status]) => ({ id, cid, subject, preview, from, when, status }));
   // Mail merge campaigns: [id, name, subject, sent, delivered, opened, clicked, replied, bounced, owners, hit, sendable, noEmail, state, date].
   const mailCampaigns = [
-    ['c1', 'LES Debt Maturity — Q4', 'Your loan on {{address}} is maturing', 438, 425, 212, 27, 8, 9, 120, 38, 76, 6, 'Active', 'Sep 22'],
+    ['c1', 'LES Debt Maturity — Q4', 'Your loan on {{address}} is maturing', 438, 425, 212, 27, 8, 9, 120, 38, 76, 6, 'Active', 'Sep 22', [212, 41, 18]],
     ['c2', 'TriBeCa Long-Hold Owners', 'Recent trades on your block', 382, 371, 164, 19, 14, 6, 382, 382, 0, 0, 'Done', 'Sep 8'],
     ['c3', 'Chinatown Estate Signals', '{{address}} — estate question', 64, 62, 31, 4, 2, 1, 90, 64, 20, 6, 'Paused', 'Aug 30'],
-  ].map(([id, name, subject, sent, delivered, opened, clicked, replied, bounced, owners, hit, sendable, noEmail, state, date]) => ({ id, name, subject, sent, delivered, opened, clicked, replied, bounced, owners, hit, sendable, noEmail, state, date }));
+  ].map(([id, name, subject, sent, delivered, opened, clicked, replied, bounced, owners, hit, sendable, noEmail, state, date, seq]) => ({ id, name, subject, sent, delivered, opened, clicked, replied, bounced, owners, hit, sendable, noEmail, state, date, seq }));
   // Narrative templates (the eight from the old platform), with their merge fields.
   const mailTemplates = [
     ['Refi Pressure', 'Loan maturing, rates up', '{{address}} — loan maturing', 'Hi {{first_name}}, your {{debt_amount}} loan on {{address}} matures {{maturity_date}}. Refinancing at today’s rates changes the math, so I put a refinance next to a sale for owners in {{neighborhood}}. Worth a short call?'],
@@ -244,6 +244,21 @@
     ['P1 call block', 'Hi {first}, Thomas from Stewart Group. Quick question on your building, got two minutes this week?', 42, 40, 9, 'Sep 23'],
     ['Maturity follow-ups', 'Hi {first}, with rates where they are, owners with loans due in 2027 are comparing options. Want the numbers?', 27, 27, 6, 'Sep 15'],
   ].map(([name, body, audience, sent, replied, date]) => ({ name, body, audience, sent, replied, date }));
+  /* End of day (step 2, Oct 28; Thomas, P2 07:39): Brain builds “follow up with today’s conversations” from the calls logged today,
+     drafts one email each from the call note, and the batch waits in Approvals. [contact id, today's note, subject, body]. */
+  const eodFollowups = [
+    ['adler', 'Wants to meet with her brother next week', 'Next week at 64 Essex', 'Ruth, thank you for the time today. Tuesday or Wednesday next week both work for me to meet you and your brother at 64 Essex. I’ll bring the Q3 comps.'],
+    ['okafor', 'Lunch confirmed, son joins', 'Today’s lunch, and the recap', 'Grace, great to see you and your son today. As promised, the recap next to a sale is attached, with the August maturity marked.'],
+    ['marchetti', 'Asked what similar buildings trade for', 'Three trades near 118 Ludlow', 'Daniel, thanks for the call. Here are three walk-ups that traded near you this quarter. Easier to talk through than to read, so let’s find 20 minutes.'],
+    ['rivera', 'Curious about air-rights pricing', 'Air rights on your block', 'Marisol, as discussed, the E 4th St air-rights sale set $410/SF. I can run what 9,400 SF could mean for 212 E 3rd St.'],
+    ['greene', '1031: must identify by Oct 18', 'Two fits before Oct 18', 'Michael, following our call, here are 64 Essex and 212 E 3rd St, both in your box. Given Oct 18, can we look at them this week?'],
+    ['shah', 'Not selling, check back in Q1', 'Keeping you posted', 'Anita, thanks for picking up today. I’ll keep the quarterly note coming and check back in January.'],
+  ].map(([cid, note, subject, body]) => ({ cid, note, subject, body }));
+  // Cross-channel sequence (Thomas, P2 10:51): an open or click on the email triggers a text, then a LinkedIn request that mentions it.
+  const sequence = [['envelope-simple', 'Email', 'Day 1, the campaign email'], ['chat-text', 'Text', 'Same day if they open or click: “Saw you took a look…”'], ['linkedin-logo', 'LinkedIn', 'Next day: a request that mentions the text']];
+  // Texting opt-ins (Salesmsg style): 'in' with how, 'out' (STOP, every channel, permanently) or none on record.
+  const textOptin = { okafor: ['in', 'Sep 12 call'], rivera: ['in', 'Replied Sep 28'], greene: ['in', 'Replied Sep 27'], adler: ['in', 'Sep 25 call'], baum: ['out', 'Replied STOP Aug 30'] };
+  const quietHours = [20, 9];
   const textTopics = ['Debt maturities and refinance risk', 'Rate environment and cap rates', 'Off-market sales process', 'Unused air rights', 'Long-hold owners', 'Estate and succession planning', '1031 exchange demand', 'Rent-stabilized economics'];
 
   /* Funnel and trends (3.0 · 3.6, Orientation doc 3 Dashboard): the last 90 days against the 90 before, in funnel order. [label, now, prior]. */
@@ -632,5 +647,5 @@
   };
   const DS_fmt = n => Number(n).toLocaleString('en-US');
 
-  window.DS_DATA = { mailThreads, mailSent, mailCampaigns, mailTemplates, mailDomains, textLine, textThreads, textDrafts, textCampaigns, textTopics, funnel, near, buyerSide, fitsFor, QUEUES, cleaning, teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
+  window.DS_DATA = { eodFollowups, sequence, textOptin, quietHours, mailThreads, mailSent, mailCampaigns, mailTemplates, mailDomains, textLine, textThreads, textDrafts, textCampaigns, textTopics, funnel, near, buyerSide, fitsFor, QUEUES, cleaning, teach, changes, touches, LANES, approvals, openers, buyers, buyersFor, dncList, TODAY, addD, TERRITORY, DB, suggested, taught, okaforLesson, dropFile, headlines, postDraft, comps, engagement, linkedin, touched, teamHistory, teamOf, relationship, critCounts, brainList, listCrit, C, P, cById, pById, propFacts, CLASS, TIER, TRUST, evidence, drivers, antis, baseTimeline, contactPoints, callIds, tiles, meetings, tasks, cats, goals, weekFocus, weekAlt, calendars, events, conversations, chats, proactive, docs, nav, more, links, dashboardTabs, databaseTabs, lists, listsOff, hoods, customLists, outreachPerf, reporting, listings, inquiries, inbound, web, nudges };
 })();

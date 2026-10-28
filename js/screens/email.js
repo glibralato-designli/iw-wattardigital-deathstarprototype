@@ -2,7 +2,9 @@
    Tabs: Inbox (All · Unread · Starred · Bounces), Sent, Campaigns (mail merges and the New campaign builder), Templates, Domains.
    A one-to-one reply sends on Thomas's click; a campaign goes to Approvals. Brain's read of each thread sits in its sky-blue block.
    The old Email Cleaning actions live on each reply (Add note, Off blasts · 1 yr, Mark primary, Mark bad).
-   Presets: tab=sent|campaigns|templates|domains, open=<thread id>, filter=unread|starred|bounces, compose=1, build=1, preview=1. */
+   Step 2 (Oct 28): End of day, Brain drafts a follow-up for each of today's conversations (eod=1); campaigns run a cross-channel sequence
+   (email, then a text if they open or click, then LinkedIn).
+   Presets: tab=sent|campaigns|templates|domains, open=<thread id>, filter=unread|starred|bounces, compose=1, build=1, preview=1, eod=1, eodsent=1. */
 (() => {
   const { D, ui, esc, icon, href, params } = DS;
   const S = DS.S();
@@ -11,7 +13,8 @@
   const st = { tab: TABS.some(t => t[0] === params.get('tab')) ? params.get('tab') : 'inbox', filter: params.get('filter') || 'all', q: '', open: params.get('open') || null, picked: params.has('open'),
     reply: '', compose: params.get('compose') === '1' ? { to: 'marchetti', from: D.mailDomains[0].inboxes[0].addr, subject: '', body: '', tpl: '', when: '', min: false } : null,
     build: params.get('build') === '1' || params.get('preview') === '1' ? { list: 'Class A sellers', tpl: 0, subject: D.mailTemplates[0].subject, body: D.mailTemplates[0].body, limit: 50, previewed: params.get('preview') === '1', ask: '' } : null,
-    tpl: 0, sentOpen: null, domain: '', domainMsg: '' };
+    tpl: 0, sentOpen: null, domain: '', domainMsg: '', eod: params.get('eod') === '1', eodOff: {}, eodOpen: 'adler' };
+  if (params.get('eodsent') === '1' && !(S.mail || {}).eodSent) { D.eodFollowups.forEach(x => DS.apprAdd({ lane: 'email', cid: x.cid, pid: D.cById[x.cid].pid, title: x.subject, why: 'End-of-day follow-up. Your note: ' + x.note + '.', body: ['Subject: ' + x.subject, x.body] })); S.mail = { ...S.mail, eodSent: true }; }
   const who = cid => cid ? D.cById[cid] : null;
   const threads = () => D.mailThreads.map(DS.mailOf).filter(t => !t.archived);
   const shown = () => { const q = st.q.trim().toLowerCase();
@@ -28,13 +31,23 @@
   const list = () => { const xs = shown();
     const filters = ui.segmented([['all', 'All'], ['unread', 'Unread'], ['starred', 'Starred'], ['bounces', 'Bounces']], st.filter, 'filter', 'Inbox filter', 'sm');
     const bar = `<div class="ds-mailbar"><label class="ds-input-icon ds-mailbar__search">${icon('magnifying-glass')}<input id="mail-q" aria-label="Search mail" placeholder="Search mail and people" value="${esc(st.q)}" data-input="q" autocomplete="off"></label>${ui.btn({ label: 'Compose', ic: 'note-pencil', act: 'compose' })}</div>${filters}`;
+    const eodDone = !!(S.mail || {}).eodSent, nE = D.eodFollowups.length;
+    const eod = st.filter === 'all' ? (eodDone ? `<a class="ds-waiting" href="${href('approvals')}">${icon('tray')}${nE} end-of-day follow-ups wait in Approvals</a>` : `<div class="ds-nudge" role="note" aria-label="Brain suggests">${icon('sparkle')}<p><b>End of day</b> Follow up with today’s ${nE} conversations. Brain drafted one email each from your call notes.</p><button type="button" class="ds-link-btn" data-act="eod">Review ${nE} drafts${icon('caret-right')}</button></div>`) : '';
     const note = st.filter === 'bounces' ? `<p class="ds-meta ds-mail__note">A hard bounce flags that address on the record and leaves it out of the next send. A delay is only a warning.</p>` : '';
-    if (!xs.length) return bar + note + `<div class="ds-maillist">${ui.empty({ ic: 'tray', title: st.filter === 'starred' ? 'Nothing starred' : st.filter === 'bounces' ? 'No delivery failures' : 'No replies match', text: st.filter === 'starred' ? 'Star a thread to pin it here.' : 'Replies to your mail merges thread here on their own.' })}</div>`;
+    if (!xs.length) return bar + eod + note + `<div class="ds-maillist">${ui.empty({ ic: 'tray', title: st.filter === 'starred' ? 'Nothing starred' : st.filter === 'bounces' ? 'No delivery failures' : 'No replies match', text: st.filter === 'starred' ? 'Star a thread to pin it here.' : 'Replies to your mail merges thread here on their own.' })}</div>`;
     const days = ['Today', 'Yesterday', 'Earlier'].map(d => [d, xs.filter(t => t.day === d)]).filter(([, g]) => g.length);
-    return bar + note + `<div class="ds-maillist">${days.map(([d, g]) => `<section aria-label="${d}"><h3 class="ds-maillist__day">${d}</h3>${g.map(row).join('')}</section>`).join('')}</div>`; };
+    return bar + eod + note + `<div class="ds-maillist">${days.map(([d, g]) => `<section aria-label="${d}"><h3 class="ds-maillist__day">${d}</h3>${g.map(row).join('')}</section>`).join('')}</div>`; };
   const recordActs = t => { const c = who(t.cid); if (!c || t.kind !== 'reply') return ''; const m = (S.mail || {})[t.id] || {};
     return `<div class="ds-mailrec"><span class="ds-meta">Record</span>${ui.btn({ label: 'Add note', ic: 'note', size: 'sm', variant: 'ghost', act: 'rec', arg: t.id + '|note' })}${ui.btn({ label: m.off ? 'Off blasts until Sep 30, 2027' : 'Off blasts · 1 yr', size: 'sm', variant: 'ghost', act: 'rec', arg: t.id + '|off', disabled: !!m.off })}${ui.btn({ label: m.primary ? 'Primary email' : 'Mark primary', size: 'sm', variant: 'ghost', act: 'rec', arg: t.id + '|primary', disabled: !!m.primary })}${ui.btn({ label: 'Mark bad', size: 'sm', variant: 'ghost', act: 'rec', arg: t.id + '|bad', disabled: !!m.bad })}</div>`; };
-  const reader = () => { const t = current();
+  const eodPanel = () => { const xs = D.eodFollowups, on = xs.filter(x => !st.eodOff[x.cid]);
+    return `<section class="ds-mailread" aria-label="End of day follow-ups" data-anim="fade" data-key="eod">
+      <div class="ds-mailread__tools"><button type="button" class="ds-back ds-mailread__back" data-act="eod-close">${icon('caret-left')}Inbox</button><span class="ds-grow"></span>${ui.iconBtn({ ic: 'x', aria: 'Close', act: 'eod-close' })}</div>
+      <h2 class="ds-mailread__subject">Follow up with today’s conversations</h2>
+      <p class="ds-meta">${xs.length} calls logged today. One draft each, written from your note. Untick any you’d rather not send.</p>
+      <div class="ds-eod">${xs.map(x => { const c = D.cById[x.cid], open = st.eodOpen === x.cid, off = !!st.eodOff[x.cid]; return `<article class="ds-eod__item"${off ? ' data-off' : ''}><div class="ds-eod__head"><label class="choice"><input type="checkbox" data-change="eodPick" value="${x.cid}"${off ? '' : ' checked'}><span class="sr-only">Include ${esc(c.name)}</span></label><button type="button" class="ds-eod__toggle" aria-expanded="${open}" data-act="eod-open" data-arg="${x.cid}"><span class="ds-row__body"><b>${esc(c.name)}</b><span class="ds-meta">Your note: ${esc(x.note)}</span></span>${icon(open ? 'caret-up' : 'caret-down')}</button></div>
+          ${open ? `<div class="ds-mailpreview"><b>${esc(x.subject)}</b><p>${esc(x.body)}</p></div>` : ''}</article>`; }).join('')}</div>
+      <div class="ds-toolbar">${ui.btn({ label: 'Send ' + on.length + ' to Approvals', ic: 'tray', act: 'eod-send', disabled: !on.length })}<span class="ds-meta">Each goes from your inbox once you approve it.</span></div></section>`; };
+  const reader = () => { if (st.eod) return eodPanel(); const t = current();
     if (!t) return `<section class="ds-mailread" data-empty>${ui.empty({ ic: 'envelope-simple', title: 'Pick a thread', text: 'Replies, auto-replies and bounces from your sends land in the Inbox.' })}</section>`;
     const c = who(t.cid), p = c && D.pById[c.pid], mine = ((S.mail || {})[t.id] || {}).replies || [];
     const msgs = [...t.msgs, ...mine.map(x => ['me', 'Just now', x])];
@@ -48,7 +61,7 @@
       ${recordActs(t)}
       ${t.kind === 'reply' ? `<div class="ds-mailreply"><textarea id="mail-reply" class="field__control" rows="3" placeholder="Reply to ${esc(t.from.split(' ')[0])}…" data-input="reply">${esc(st.reply)}</textarea><div class="ds-toolbar">${ui.btn({ label: 'Send', ic: 'paper-plane-tilt', act: 'send-reply', arg: t.id })}${ui.btn({ label: 'Open in composer', variant: 'ghost', act: 'reply-compose', arg: t.id })}<span class="ds-grow"></span><span class="ds-meta">Sends now, on your click</span></div></div>` : ''}
     </section>`; };
-  const inbox = () => `<div class="ds-mail"${st.picked ? ' data-picked' : ''}><div class="ds-mail__list">${list()}</div>${reader()}</div>`;
+  const inbox = () => `<div class="ds-mail"${st.picked || st.eod ? ' data-picked' : ''}><div class="ds-mail__list">${list()}</div>${reader()}</div>`;
 
   /* ── Sent ── */
   const sentAll = () => [...((S.mail || {}).sentNew || []), ...D.mailSent];
@@ -60,6 +73,7 @@
   const campaign = c => { const sentRest = ((S.mail || {}).rest || {})[c.id];
     return `<article class="ds-mailcamp"><div class="ds-mailcamp__head"><div class="ds-row__body"><b>${esc(c.name)}</b><span class="ds-meta">“${esc(c.subject)}” · started ${esc(c.date)}</span></div><span class="badge"${c.state === 'Active' ? ' data-status="success"' : c.state === 'Paused' ? ' data-status="warning"' : ''}>${esc(c.state)}</span></div>
       <div class="ds-mailcamp__stats">${stat('sent', c.sent)}${stat('delivered', c.delivered)}${stat('opened', c.opened)}${stat('clicked', c.clicked)}${stat('replied', c.replied)}${stat('bounced', c.bounced)}</div>
+      ${c.seq ? `<div class="ds-seq" aria-label="Sequence">${D.sequence.map(([ic, l], i) => `<span class="ds-seq__step">${icon(ic)}<b>${esc(l)}</b><span class="ds-meta num">${DS.loc(c.seq[i])} ${i === 0 ? 'opened' : i === 1 ? 'texted' : 'requested'}</span></span>${i < 2 ? icon('arrow-right') : ''}`).join('')}</div>` : ''}
       <div class="ds-mailcamp__foot"><span class="ds-meta">${c.hit} of ${c.owners} owners reached${c.sendable ? ` · ${c.sendable} can still be sent` : ''}${c.noEmail ? ` · ${c.noEmail} need an email` : ''}</span><span class="ds-grow"></span>${c.sendable ? (sentRest ? `<a class="ds-waiting" href="${href('approvals')}">${icon('tray')}In Approvals</a>` : ui.btn({ label: 'Send to the rest (' + c.sendable + ')', size: 'sm', variant: 'outline', act: 'rest', arg: c.id })) : '<span class="ds-meta">List finished</span>'}</div></article>`; };
   const fill = (txt, c) => { const p = D.pById[c.pid]; return txt.replace(/{{first_name}}/g, c.name.split(' ')[0]).replace(/{{address}}|{{property}}/g, p.addr).replace(/{{debt_amount}}/g, p.debt).replace(/{{maturity_date}}|{{maturity}}/g, p.mat).replace(/{{neighborhood}}/g, p.hood).replace(/{{years_held}}/g, c.years).replace(/{{units}}/g, p.units); };
   const builder = () => { const b = st.build, owners = (D.lists.find(l => l[1] === b.list) || [0, 0, 120])[2], c = D.cById.marchetti, n = Math.min(b.limit, owners);
@@ -74,6 +88,7 @@
       <div class="ds-mailtokens"><span class="ds-meta">Fills per owner:</span>${['{{first_name}}', '{{address}}', '{{debt_amount}}', '{{maturity_date}}', '{{neighborhood}}', '{{years_held}}'].map(t => `<code>${t}</code>`).join('')}</div>
       <div class="ds-nudge ds-mailask">${icon('sparkle')}<input id="b-ask" class="field__control" placeholder="Tell Brain how to change it: shorter, lead with the maturity, warmer…" value="${esc(b.ask)}" data-input="bAsk" aria-label="Tell Brain how to change the email">${ui.btn({ label: 'Rewrite', size: 'sm', variant: 'outline', act: 'b-rewrite' })}</div>
       <div class="ds-two" style="gap:var(--space-3);align-items:end"><label class="field"><span class="field__label">Send limit</span><input id="b-limit" class="field__control" type="number" min="1" max="${CAP - USED}" value="${b.limit}" data-input="bLimit"></label><p class="ds-meta">${owners > 30 ? 'A canary of 10 goes first. If bounces stay under 3% after two hours, the rest follow; otherwise it holds and tells you.' : 'Small list: it goes out in one batch.'} Owners without a verified email wait until one is found.</p></div>
+      <div class="ds-seqpick"><label class="choice"><input type="checkbox" data-change="bSeq"${b.seq !== false ? ' checked' : ''}><span>Follow up opens and clicks as a sequence</span></label><div class="ds-seq">${D.sequence.map(([ic, l, w], i) => `<span class="ds-seq__step" title="${esc(w)}">${icon(ic)}<b>${esc(l)}</b><span class="ds-meta">${esc(w)}</span></span>${i < 2 ? icon('arrow-right') : ''}`).join('')}</div><p class="ds-meta">Texts respect quiet hours and opt-outs. Every step still waits for your click in Approvals.</p></div>
       ${b.previewed ? `<div class="ds-mailpreview" data-anim="grow" data-key="preview"><p class="ds-meta">Preview for ${esc(c.name)} · ${esc(D.pById[c.pid].addr)}</p><b>${esc(fill(b.subject, c))}</b><p>${esc(fill(b.body, c))}</p><p class="ds-meta">Thomas W. · The Stewart Group at Marcus &amp; Millichap · (212) 555-0184</p></div>` : ''}
       <div class="ds-toolbar">${b.previewed ? ui.btn({ label: 'Send ' + n + ' to Approvals', ic: 'tray', act: 'b-send' }) : ui.btn({ label: 'Send to Approvals', ic: 'tray', disabled: true, tip: 'Preview on a real owner first' })}${ui.btn({ label: b.previewed ? 'Preview again' : 'Preview on a real owner', variant: 'outline', act: 'b-preview' })}<span class="ds-grow"></span><span class="ds-meta">${DS.loc(owners)} owners on the list · sending ${n} now</span></div>
     </section>`; };
@@ -111,6 +126,10 @@
     overlays: composer,
     acts: {
       tab: (el, k) => { st.tab = k; DS.render(); },
+      eod: () => { st.eod = true; st.picked = true; st.open = null; DS.render(); },
+      'eod-close': () => { st.eod = false; st.picked = false; DS.render(); },
+      'eod-open': (el, cid) => { st.eodOpen = st.eodOpen === cid ? null : cid; DS.render(); },
+      'eod-send': () => { const on = D.eodFollowups.filter(x => !st.eodOff[x.cid]); on.forEach(x => DS.apprAdd({ lane: 'email', cid: x.cid, pid: D.cById[x.cid].pid, title: x.subject, why: 'End-of-day follow-up. Your note: ' + x.note + '.', body: ['Subject: ' + x.subject, x.body] })); S.mail = { ...S.mail, eodSent: true }; DS.save(); st.eod = false; st.picked = false; DS.render(); DS.toast(on.length + ' follow-ups in Approvals · they wait for your click'); },
       filter: (el, k) => { st.filter = k; DS.render(); },
       pick: (el, id) => { st.open = id; st.picked = true; st.reply = ''; setMail(id, { read: true }); DS.render(); },
       back: () => { st.picked = false; DS.render(); },
@@ -135,13 +154,13 @@
       'build-close': () => { st.build = null; DS.render(); },
       'b-preview': () => { st.build.previewed = true; DS.render(); },
       'b-rewrite': () => { const b = st.build; if (!b.ask.trim()) { DS.toast('Tell Brain what to change'); return; } b.body = b.body.split('. ').slice(0, 2).join('. ').replace(/\.?$/, '.') + ' Worth a short call this week?'; b.ask = ''; b.previewed = false; DS.render(); DS.toast('Brain rewrote it shorter. Preview again before sending.'); },
-      'b-send': () => { const b = st.build, n = Math.min(b.limit, (D.lists.find(l => l[1] === b.list) || [0, 0, 120])[2]); DS.apprAdd({ lane: 'email', title: b.list + ' · ' + D.mailTemplates[b.tpl].name, why: 'Mail merge to “' + b.list + '”. A canary of 10 goes first, then the rest if bounces stay under 3%.', body: ['Subject: ' + b.subject, b.body], n, wave: 10 }); st.build = null; DS.render(); DS.toast('In Approvals · ' + n + ' owners wait for your click'); },
+      'b-send': () => { const b = st.build, n = Math.min(b.limit, (D.lists.find(l => l[1] === b.list) || [0, 0, 120])[2]); DS.apprAdd({ lane: 'email', title: b.list + ' · ' + D.mailTemplates[b.tpl].name, why: 'Mail merge to “' + b.list + '”. A canary of 10 goes first, then the rest if bounces stay under 3%.' + (b.seq !== false ? ' Opens and clicks get a text, then a LinkedIn request.' : ''), body: ['Subject: ' + b.subject, b.body], n, wave: 10 }); st.build = null; DS.render(); DS.toast('In Approvals · ' + n + ' owners wait for your click'); },
       tpl: (el, i) => { st.tpl = Number(i); DS.render(); },
       'tpl-use': (el, i) => { const t = D.mailTemplates[Number(i)], c = D.cById.marchetti; st.compose = { to: 'marchetti', from: D.mailDomains[0].inboxes[0].addr, subject: fill(t.subject, c), body: fill(t.body, c), tpl: i, when: '', min: false }; DS.render(); },
       'tpl-camp': (el, i) => { const t = D.mailTemplates[Number(i)]; st.tab = 'campaigns'; st.build = { list: 'Class A sellers', tpl: Number(i), subject: t.subject, body: t.body, limit: 50, previewed: false, ask: '' }; DS.render(); },
       'domain-check': () => { const d = st.domain.trim(); st.domainMsg = !d ? 'Type a domain first.' : /stewart/.test(d) ? d + ' is available · about $18 a year. Buying it adds DNS, two or three inboxes and two weeks of warmup.' : d + ' is taken. Try a variation with stewart in it.'; DS.render(); },
     },
-    inputs: { q: v => { st.q = v; DS.render(); }, reply: v => { st.reply = v; }, domain: v => { st.domain = v; },
+    inputs: { eodPick: (v, el) => { st.eodOff = { ...st.eodOff, [v]: !el.checked }; DS.render(); }, bSeq: (v, el) => { st.build.seq = el.checked; }, q: v => { st.q = v; DS.render(); }, reply: v => { st.reply = v; }, domain: v => { st.domain = v; },
       cTo: v => { st.compose.to = v; }, cFrom: v => { st.compose.from = v; }, cSubject: v => { st.compose.subject = v; }, cBody: v => { st.compose.body = v; }, cWhen: v => { st.compose.when = v; DS.render(); },
       cTpl: v => { if (v === '') return; const t = D.mailTemplates[Number(v)], c = who(st.compose.to); st.compose.subject = fill(t.subject, c); st.compose.body = fill(t.body, c); DS.render(); },
       bList: v => { st.build.list = v; st.build.previewed = false; DS.render(); }, bTpl: v => { const t = D.mailTemplates[Number(v)]; Object.assign(st.build, { tpl: Number(v), subject: t.subject, body: t.body, previewed: false }); DS.render(); },
